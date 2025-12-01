@@ -53,5 +53,5 @@ nav:
     - SPARQL functions: 'ontology/functions.md'
     - SPARQL aggregates: 'ontology/aggregates.md'
   - Paper: 'https://doi.org/10.1007/978-3-031-99554-5_12'
-  - Jena implementation: 'https://github.com/RDF-tensor/jena-datatensor/tree/main/jena-datatensor'
-  - Example dataset & queries: 'https://github.com/RDF-tensor/jena-datatensor/tree/main/example_dataset_and_queries'
+  - Jena implementation (outdated): 'https://github.com/RDF-tensor/jena-datatensor/tree/main/jena-datatensor'
+  - Example dataset & queries (outdated): 'https://github.com/RDF-tensor/jena-datatensor/tree/main/example_dataset_and_queries'
