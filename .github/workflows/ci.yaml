@@ -30,7 +30,7 @@ jobs:
           bin/build_ontology.sh
           rm docs/ontology/files/*.ttl
           cp publish/*.ttl docs/ontology/files/
-          ls -la docs/ontology/files/
+          ls -la publish/*
 
       - name: Compile docs
         run: |
