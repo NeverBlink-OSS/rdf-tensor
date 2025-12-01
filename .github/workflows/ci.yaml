@@ -1,0 +1,40 @@
+name: PR docs check
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  compile:
+    name: Test changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements.txt
+  
+      - uses: Jelly-RDF/setup-cli@v1
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: 'Convert ontologies, prepare for publishing'
+        run: |
+          bin/build_ontology.sh
+          rm docs/ontology/files/*.ttl
+          cp publish/*.ttl docs/ontology/files/
+          ls -la publish/*
+
+      - name: Compile docs
+        run: |
+          git fetch origin gh-pages --depth=1
+          git config user.name ci-bot
+          git config user.email ci-bot@example.com
+          mkdocs build --strict
