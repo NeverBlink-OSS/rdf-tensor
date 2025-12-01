@@ -2,37 +2,29 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX dta: <https://w3id.org/rdf-tensor/aggregates#>
+PREFIX tensor: <https://w3id.org/rdf-tensor/vocab#>
 PREFIX sd: <http://www.w3.org/ns/sparql-service-description#>
 
-dta:sum  a               sd:Aggregate;
-        dc:date          "2024-07-28"^^xsd:date;
-        rdfs:label       "Sum";
-        rdfs:comment     "Sums grouped tensors"@en;
-        dc:description   "Sums grouped tensors"@en;
-        skos:definition  "Sums grouped tensors"@en;
-        dc:creator       "Piotr Marciniak" .
+tensor:sum  a         sd:Aggregate;
+        dc:date       "2024-07-28"^^xsd:date;
+        rdfs:label    "Sum";
+        rdfs:comment  "Sums grouped tensors"@en;
+        dc:creator    "Piotr Marciniak" .
 
-dta:avg  a               sd:Aggregate;
-        dc:date          "2024-07-28"^^xsd:date;
-        rdfs:label       "Average";
-        rdfs:comment     "Averages grouped tensors by summing them elementwise and dividing the result by the number of tensors"@en;
-        dc:description   "Averages grouped tensors by summing them elementwise and dividing the result by the number of tensors"@en;
-        skos:definition  "Averages grouped tensors by summing them elementwise and dividing the result by the number of tensors"@en;
-        dc:creator       "Piotr Marciniak" .
+tensor:avg  a         sd:Aggregate;
+        dc:date       "2024-07-28"^^xsd:date;
+        rdfs:label    "Average";
+        rdfs:comment  "Averages grouped tensors by summing them elementwise and dividing the result by the number of tensors"@en;
+        dc:creator    "Piotr Marciniak" .
 
-dta:var  a               sd:Aggregate;
-        dc:date          "2024-07-28"^^xsd:date;
-        rdfs:label       "Variance";
-        rdfs:comment     "Calculates the variance of grouped tensors"@en;
-        dc:description   "Calculates the variance of grouped tensors"@en;
-        skos:definition  "Calculates the variance of grouped tensors"@en;
-        dc:creator       "Piotr Marciniak" .
+tensor:var  a         sd:Aggregate;
+        dc:date       "2024-07-28"^^xsd:date;
+        rdfs:label    "Variance";
+        rdfs:comment  "Calculates the variance of grouped tensors"@en;
+        dc:creator    "Piotr Marciniak" .
 
-dta:std  a               sd:Aggregate;
-        dc:date          "2024-07-28"^^xsd:date;
-        rdfs:label       "Standard Deviation";
-        rdfs:comment     "Calculates the standard deviation of grouped tensors"@en;
-        dc:description   "Calculates the standard deviation of grouped tensors"@en;
-        skos:definition  "Calculates the standard deviation of grouped tensors"@en;
-        dc:creator       "Piotr Marciniak" .
+tensor:std  a         sd:Aggregate;
+        dc:date       "2024-07-28"^^xsd:date;
+        rdfs:label    "Standard Deviation";
+        rdfs:comment  "Calculates the standard deviation of grouped tensors"@en;
+        dc:creator    "Piotr Marciniak" .
