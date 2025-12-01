@@ -8,8 +8,8 @@ This is an extension to RDF and SPARQL that introduces 2 new datatypes, dozens o
 ## Features
 
 - **New datatypes:**
-  - `dt:NumericDataTensor` – represents tensors containing numeric values.
-  - `dt:BooleanDataTensor` – represents tensors containing boolean values.
+  - `tensor:NumericDataTensor` – represents tensors containing numeric values.
+  - `tensor:BooleanDataTensor` – represents tensors containing boolean values.
 - **New SPARQL functions:**
   - Tensor manipulations (addition, multiplication, reshaping, etc.)
   - Algebraic computations
