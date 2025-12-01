@@ -1,0 +1,54 @@
+name: Publish (dev/pre-release)
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements.txt
+  
+      - uses: Jelly-RDF/setup-cli@v1
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: 'Convert ontologies, prepare for publishing'
+        run: |
+          bin/build_ontology.sh
+          rm docs/ontology/files/*.ttl
+          cp publish/*.ttl docs/ontology/files/
+
+      - name: Deploy site
+        run: |
+          git fetch origin gh-pages --depth=1
+          git config user.name ci-bot
+          git config user.email ci-bot@example.com
+          mkdocs gh-deploy --remote-branch gh-pages --remote-name origin --force
+
+      - name: 'Publish ontology files'
+        uses: ncipollo/release-action@v1.16.0
+        with:
+          allowUpdates: true
+          prerelease: true
+          draft: false
+          omitDraftDuringUpdate: false
+          makeLatest: false
+          tag: dev
+          name: "Development build"
+          artifacts: 'publish/*'
+          generateReleaseNotes: true
