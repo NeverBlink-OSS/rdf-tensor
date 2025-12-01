@@ -1,0 +1,3060 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://rdf-tensor.github.io/jena-datatensor/">
+      
+      
+      
+        <link rel="next" href="ontology/datatypes/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Data tensors in RDF</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#data-tensors-in-rdf" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Data tensors in RDF" class="md-header__button md-logo" aria-label="Data tensors in RDF" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Data tensors in RDF
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home – specification
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/RDF-tensor/jena-datatensor" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    RDF-tensor/jena-datatensor
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Data tensors in RDF" class="md-nav__button md-logo" aria-label="Data tensors in RDF" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Data tensors in RDF
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/RDF-tensor/jena-datatensor" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    RDF-tensor/jena-datatensor
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home – specification
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home – specification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#abstract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Abstract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-of-this-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status of This Document
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-document-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Document Conventions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-dtnumericdatatensor-datatype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The dt:NumericDataTensor Datatype
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The dt:NumericDataTensor Datatype">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IRI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lexical-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lexical Space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#value-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Value Space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lexical-to-value-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lexical-To-Value Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-dtbooleandatatensor-datatype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The dt:BooleanDataTensor Datatype
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The dt:BooleanDataTensor Datatype">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iri_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IRI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definition_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lexical-space_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lexical Space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#value-space_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Value Space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lexical-to-value-mapping_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lexical-To-Value Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-sparql-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. SPARQL Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. SPARQL Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-transforming-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1. Transforming Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1. Transforming Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtfcos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:cos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfexp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:exp
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtflog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:log
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtflogp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:logp
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfpoly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:poly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfsin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:sin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfabs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:abs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfcast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:cast
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2 Operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtfnot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:not
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfadd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:add
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfsubtract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:subtract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfmultiply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:multiply
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfdivide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:divide
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfeq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:eq
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfneq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:neq
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:and
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:or
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfgt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:gt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtflt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:lt
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indexing-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3. Indexing Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3. Indexing Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtfgetsubdt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:getSubDT
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-concatenating-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Concatenating Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.4 Concatenating Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtfconcat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:concat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfhstack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:hstack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfvstack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:vstack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-reduction-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5. Reduction Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.5. Reduction Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtfall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:all
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfany" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:any
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfavg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:avg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfsum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfmax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:max
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfmedian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:median
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:min
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfstd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:std
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfvar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:var
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfnorm1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:norm1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfnorm2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:norm2
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-similarity-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6. Similarity Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.6. Similarity Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtfcosinesimilarity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:cosineSimilarity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfeuclideandistance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:euclideanDistance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-sparql-aggregates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. SPARQL Aggregates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. SPARQL Aggregates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtasum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dta:sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtaavg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dta:avg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtavar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dta:var
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtastd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dta:std
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. References
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A. References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a1-informative-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A.1. Informative references
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ontology
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ontology
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ontology/datatypes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RDF datatypes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ontology/functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPARQL functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ontology/aggregates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPARQL aggregates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://arxiv.org/abs/2504.19224" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Paper
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/RDF-tensor/jena-datatensor/tree/main/jena-datatensor" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jena implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/RDF-tensor/jena-datatensor/tree/main/example_dataset_and_queries" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example dataset & queries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#abstract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Abstract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-of-this-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status of This Document
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-document-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Document Conventions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-dtnumericdatatensor-datatype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The dt:NumericDataTensor Datatype
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The dt:NumericDataTensor Datatype">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IRI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lexical-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lexical Space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#value-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Value Space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lexical-to-value-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lexical-To-Value Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-dtbooleandatatensor-datatype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The dt:BooleanDataTensor Datatype
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The dt:BooleanDataTensor Datatype">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iri_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IRI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definition_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lexical-space_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lexical Space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#value-space_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Value Space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lexical-to-value-mapping_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lexical-To-Value Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-sparql-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. SPARQL Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. SPARQL Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-transforming-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1. Transforming Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1. Transforming Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtfcos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:cos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfexp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:exp
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtflog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:log
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtflogp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:logp
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfpoly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:poly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfsin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:sin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfabs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:abs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfcast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:cast
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2 Operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtfnot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:not
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfadd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:add
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfsubtract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:subtract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfmultiply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:multiply
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfdivide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:divide
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfeq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:eq
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfneq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:neq
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:and
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:or
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfgt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:gt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtflt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:lt
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indexing-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3. Indexing Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3. Indexing Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtfgetsubdt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:getSubDT
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-concatenating-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Concatenating Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.4 Concatenating Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtfconcat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:concat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfhstack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:hstack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfvstack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:vstack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-reduction-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5. Reduction Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.5. Reduction Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtfall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:all
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfany" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:any
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfavg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:avg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfsum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfmax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:max
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfmedian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:median
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:min
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfstd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:std
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfvar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:var
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfnorm1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:norm1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfnorm2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:norm2
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-similarity-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6. Similarity Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.6. Similarity Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtfcosinesimilarity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:cosineSimilarity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtfeuclideandistance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtf:euclideanDistance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-sparql-aggregates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. SPARQL Aggregates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. SPARQL Aggregates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtasum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dta:sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtaavg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dta:avg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtavar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dta:var
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtastd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dta:std
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. References
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A. References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a1-informative-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A.1. Informative references
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/RDF-tensor/jena-datatensor/edit/main/docs/index.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="data-tensors-in-rdf">Data tensors in RDF</h1>
+<p><strong>Unofficial Draft</strong><br />
+<em>Date: May 25, 2025</em></p>
+<p><strong>Editors:</strong> <br> 
+&nbsp;Piotr Marciniak<br>
+&nbsp;<a href="https://ostrzyciel.eu">Piotr Sowiński</a></p>
+<hr />
+<h2 id="abstract">Abstract</h2>
+<p>This specification defines an approach to represent data tensors (multi-dimensional arrays) as literals in RDF.
+It introduces two new RDF datatypes – <code>dt:NumericDataTensor</code> and <code>dt:BooleanDataTensor</code>, along with an extension of the SPARQL language.
+This extension includes 36 functions and 6 aggregates, enabling the efficient processing of tensor data within RDF frameworks.</p>
+<p><strong><a href="https://arxiv.org/abs/2504.19224">See our paper for more information</a></strong></p>
+<h2 id="status-of-this-document">Status of This Document</h2>
+<p>This document is a draft and does not represent an official standard. It is intended for discussion and gathering feedback within the community.</p>
+<h2 id="1-introduction">1. Introduction</h2>
+<h3 id="11-document-conventions">1.1 Document Conventions</h3>
+<p><em>This section is non-normative.</em></p>
+<p>Examples in this document assume that the following prefixes have been declared to represent the IRIs shown with them here:</p>
+<p><strong>Prefixes used:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Prefix</th>
+<th>Namespace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ex</code></td>
+<td><code>http://example.org/data-tensor#</code></td>
+</tr>
+<tr>
+<td><code>dt</code></td>
+<td><code>https://w3id.org/rdf-tensor/datatypes#</code></td>
+</tr>
+<tr>
+<td><code>dtf</code></td>
+<td><code>https://w3id.org/rdf-tensor/functions#</code></td>
+</tr>
+<tr>
+<td><code>dta</code></td>
+<td><code>https://w3id.org/rdf-tensor/aggregates#</code></td>
+</tr>
+<tr>
+<td><code>xsd</code></td>
+<td><code>http://www.w3.org/2001/XMLSchema#</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-the-dtnumericdatatensor-datatype">2. The <code>dt:NumericDataTensor</code> Datatype</h2>
+<h3 id="iri">IRI</h3>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor"><code>https://w3id.org/rdf-tensor/datatypes#NumericDataTensor</code></a></p>
+<h3 id="definition">Definition</h3>
+<p>Represents a multi-dimensional array (tensor) of numeric values.</p>
+<h3 id="lexical-space">Lexical Space</h3>
+<p>A valid JSON object <strong>[<a href="#rfc-8259">RFC-8259</a>]</strong> with the following structure:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>type</code></td>
+<td><code>string</code></td>
+<td>Must be one of: <code>float16</code>, <code>float32</code>, <code>float64</code>, <code>int16</code>, <code>int32</code>, <code>int64</code>. Defines the type of numbers.</td>
+</tr>
+<tr>
+<td><code>shape</code></td>
+<td><code>array of integers</code></td>
+<td>Specifies the size of each dimension. The product of the integers must equal the length of the <code>data</code> array.</td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td><code>array of numbers</code></td>
+<td>A flat array of numbers in row-major (C-style) order. Numbers must use decimal or exponential notation.</td>
+</tr>
+</tbody>
+</table>
+<p>Other keys may be present in the JSON object, but they are ignored by the datatype.</p>
+<h3 id="value-space">Value Space</h3>
+<p>An n-dimensional numeric tensor, where <em>n</em> is the length of shape array.</p>
+<h3 id="lexical-to-value-mapping">Lexical-To-Value Mapping</h3>
+<p>The lexical representation is parsed as a JSON object. 
+The <code>shape</code> key is used to determine the dimensions of the tensor, the <code>data</code> key contains the numeric values, 
+the <code>type</code> key is used to efficiently choose the number of bytes for storing numbers and set precision. 
+After parsing, the JSON object is converted into a tensor structure.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [3, 2], \&quot;data\&quot;: [0.1, 1.2, 2.2, 3.2, 4.1, 5.4e2]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;int32\&quot;, \&quot;shape\&quot;: [1, 2, 2, 2], \&quot;data\&quot;: [1, 3, 4, 12, 22, 32, 41, 5]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<h2 id="3-the-dtbooleandatatensor-datatype">3. The <code>dt:BooleanDataTensor</code> Datatype</h2>
+<h3 id="iri_1">IRI</h3>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor"><code>https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor</code></a></p>
+<h3 id="definition_1">Definition</h3>
+<p>Represents a multi-dimensional array (tensor) of boolean values.</p>
+<h3 id="lexical-space_1">Lexical Space</h3>
+<p>A valid JSON object <strong>[<a href="#rfc-8259">RFC-8259</a>]</strong> with the following structure:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>shape</code></td>
+<td><code>array of integers</code></td>
+<td>Specifies the size of each dimension. The product of the integers must equal the length of the <code>data</code> array.</td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td><code>array of booleans</code></td>
+<td>A flat array of boolean values (<code>true</code> or <code>false</code>), stored in row-major (C-style) order.</td>
+</tr>
+</tbody>
+</table>
+<p>Other keys may be present in the JSON object, but they are ignored by the datatype.</p>
+<h3 id="value-space_1">Value Space</h3>
+<p>An n-dimensional boolean tensor, where <em>n</em> is the length of shape array.</p>
+<h3 id="lexical-to-value-mapping_1">Lexical-To-Value Mapping</h3>
+<p>The lexical representation is parsed as a JSON object.
+The <code>shape</code> key is used to determine the dimensions of the tensor, and the <code>data</code> key contains the boolean values.
+After parsing, the JSON object is converted into a tensor structure.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="s">&quot;{\&quot;shape\&quot;: [2, 2], \&quot;data\&quot;: [true, false, false, true]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span> <span class="p">.</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="s">&quot;{\&quot;shape\&quot;: [2, 2, 2], \&quot;data\&quot;: [true, false, false, true, false, false, false, true]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span> <span class="p">.</span>
+</span></code></pre></div>
+</div>
+<h2 id="4-sparql-functions">4. SPARQL Functions</h2>
+<h3 id="41-transforming-functions">4.1. Transforming Functions</h3>
+<h4 id="dtfcos"><code>dtf:cos</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:cos</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>The result of the function is a tensor of the same shape as the input tensor, where each element is replaced by its cosine value.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">cos</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [0, 3.1415]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [1, -1]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfexp"><code>dtf:exp</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:exp</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>The result of the function is a tensor of the same shape as the input tensor, where each element is replaced by its exponential value.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">exp</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [0, 1]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [1, 2.7183]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtflog"><code>dtf:log</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:log</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>The result of the function is a tensor of the same shape as the input tensor, where each element is replaced by its natural logarithm value.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">log</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 2.7183]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [0, 1]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtflogp"><code>dtf:logp</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:logp</strong> (xsd:double <em>p</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>The result is a tensor of the same shape, where each element is replaced by its logarithm with base <em>p</em>.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">logp</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 10]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [0, 1]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfpoly"><code>dtf:poly</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:poly</strong> (xsd:double <em>n</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>The result is a tensor where each element is raised to the power <em>n</em>.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">poly</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [2, 3]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [4, 9]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfscale"><code>dtf:scale</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:scale</strong> (xsd:double <em>factor</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>The result is a tensor of the same shape, where each element is multiplied by the given scalar factor.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">scale</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [2, 3]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [6, 9]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfsin"><code>dtf:sin</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:sin</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>The result of the function is a tensor of the same shape as the input tensor, where each element is replaced by its sine value.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">sin</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [0, 3.1415]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [0, 0]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfabs"><code>dtf:abs</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:abs</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>The result of the function is a tensor of the same shape as the input tensor, where each element is replaced by its absolute value.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">abs</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [-1, 2]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [1, 2]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfcast"><code>dtf:cast</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:cast</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, xsd:string <em>type</em>)</p>
+<p>The result of the function is a tensor of the same shape as the input tensor, where each element is cast to the specified type. The supported types are: <code>float16</code>, <code>float32</code>, <code>float64</code>, <code>int16</code>, <code>int32</code>, and <code>int64</code>.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">cast</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1.5, 2.5]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;int32&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;int32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [1, 2]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<h3 id="42-operators">4.2 Operators</h3>
+<p>When using the binary operators, the input tensors are broadcasted to a common shape. The broadcasting rules are the same as in NumPy<strong>[<a href="#numpy">NumPy 8259</a>]</strong>. In the case of numeric tensors, the result of the mathematical operation is a tensor with the more precise type of the two input tensors. For example, if one tensor is <code>float32</code> and the other is <code>int32</code>, the result will be <code>float32</code>. </p>
+<h4 id="dtfnot"><code>dtf:not</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <strong>dtf:not</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>term_1</em>)</p>
+<p>The result of the function is a tensor of the same shape as the input tensor, where each element is logically negated.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">not</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">bool\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [true, false]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;bool\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [false, true]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfadd"><code>dtf:add</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:add</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p>The result of the function is a tensor of broadcasted shape, where each element is the sum of corresponding elements in the input tensors.</p>
+<div class="admonition example">
+<p class="admonition-title">Example 1</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">add</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 2]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [4, 6]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<div class="admonition example">
+<p class="admonition-title">Example 2</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">add</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[1, 2, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[3, 2, 3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[1],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[1, 2]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2, 2], \&quot;data\&quot;: [4, 4, 4, 6]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfsubtract"><code>dtf:subtract</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:subtract</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p>The result of the function is a tensor of broadcasted shape, where each element is the difference between corresponding elements in the input tensors.</p>
+<div class="admonition example">
+<p class="admonition-title">Example 1</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">subtract</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [5, 7]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [2, 3]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [3, 4]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<div class="admonition example">
+<p class="admonition-title">Example 2</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">subtract</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[3, 2, 3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[2, 1]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [2, 2], \&quot;data\&quot;: [1, 1, 1, 3]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfmultiply"><code>dtf:multiply</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:multiply</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p>The result of the function is a tensor of broadcasted shape, where each element is the product of corresponding elements in the input tensors.</p>
+<div class="admonition example">
+<p class="admonition-title">Example 1</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">multiply</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [2, 3]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [4, 5]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [8, 15]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<div class="admonition example">
+<p class="admonition-title">Example 2</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">multiply</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[3, 2, 3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[2, 1]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [2, 2], \&quot;data\&quot;: [6, 2, 6, 4]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfdivide"><code>dtf:divide</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:divide</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p>The result of the function is a tensor of broadcasted shape, where each element is the quotient of corresponding elements in the input tensors.</p>
+<div class="admonition example">
+<p class="admonition-title">Example 1</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">divide</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [8, 9]}&quot;</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [2, 3]}&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [4, 3]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<div class="admonition example">
+<p class="admonition-title">Example 2</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">divide</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[3, 2, 3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[2, 1]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;int32\&quot;, \&quot;shape\&quot;: [2, 2], \&quot;data\&quot;: [1, 2, 1, 2]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfeq"><code>dtf:eq</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <strong>dtf:eq</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <strong>dtf:eq</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>term_2</em>)</p>
+<p>The function returns a boolean tensor with a broadcasted shape, where each element is <code>true</code> if the corresponding elements in the two tensors are equal, and <code>false</code> otherwise.</p>
+<div class="admonition example">
+<p class="admonition-title">Example 1</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">eq</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 2]}&quot;</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 3]}&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="s">&quot;{\&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [true, false]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span>
+</span></code></pre></div>
+</div>
+<div class="admonition example">
+<p class="admonition-title">Example 2</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">eq</span><span class="p">(</span><span class="s">&quot;\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [true, false]}&quot;</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [true]}&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="s">&quot;{\&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [true, false]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfneq"><code>dtf:neq</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <strong>dtf:neq</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <strong>dtf:neq</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>term_2</em>)</p>
+<p>The function returns a boolean tensor with a broadcasted shape, where each element is <code>true</code> if the corresponding elements in the two tensors are not equal, and <code>false</code> otherwise.</p>
+<div class="admonition example">
+<p class="admonition-title">Example 1</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">neq</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 2]}&quot;</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 3]}&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="s">&quot;{\&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [false, true]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span>
+</span></code></pre></div>
+</div>
+<div class="admonition example">
+<p class="admonition-title">Example 2</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">neq</span><span class="p">(</span><span class="s">&quot;\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [true, false]}&quot;</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [true]}&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="s">&quot;{\&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [false, true]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfand"><code>dtf:and</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <strong>dtf:and</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>term_2</em>)</p>
+<p>The function returns a boolean tensor with a broadcasted shape, where each element is the logical AND of the input tensors.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">and</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [true, false]}&quot;</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [true, true]}&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a><span class="s">&quot;{\&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [true, false]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfor"><code>dtf:or</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <strong>dtf:or</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>term_2</em>)</p>
+<p>The function returns a boolean tensor with a broadcasted shape, where each element is the logical OR of the input tensors.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">or</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [true, false]}&quot;</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [false, true]}&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="s">&quot;{\&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [true, true]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfgt"><code>dtf:gt</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <strong>dtf:gt</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p>The function returns a boolean tensor with a broadcasted shape, where each element is <code>true</code> if the corresponding element from <em>term_1</em> is greater than the corresponding element from <em>term_2</em>, and <code>false</code> otherwise.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">gt</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [4, 2]}&quot;</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [3, 3]}&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="s">&quot;{\&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [true, false]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtflt"><code>dtf:lt</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <strong>dtf:lt</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p>The function returns a boolean tensor with a broadcasted shape, where each element is <code>true</code> if the corresponding element from <em>term_1</em> is lesser than the corresponding element from <em>term_2</em>, and <code>false</code> otherwise.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">lt</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [4, 2]}&quot;</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [3, 3]}&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="s">&quot;{\&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [false, true]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span>
+</span></code></pre></div>
+</div>
+<h3 id="43-indexing-functions">4.3. Indexing Functions</h3>
+<h4 id="dtfgetsubdt"><code>dtf:getSubDT</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:getSubDT</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>tensor</em>, <a href="https://w3id.org/rdf-tensor/datatypes#DataTensor">dt:NumericDataTensor</a> <em>indexTensor</em>)</p>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:getSubDT</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>tensor</em>, <a href="https://w3id.org/rdf-tensor/datatypes#DataTensor">dt:BooleanDataTensor</a> <em>indexTensor</em>)</p>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <strong>dtf:getSubDT</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:BooleanDataTensor</a> <em>tensor</em>, <a href="https://w3id.org/rdf-tensor/datatypes#DataTensor">dt:NumericDataTensor</a> <em>indexTensor</em>)</p>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <strong>dtf:getSubDT</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>tensor</em>, <a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>indexTensor</em>)</p>
+<p>The result of the function is a sub-tensor extracted from the input numerical tensor using the boolean or numerical index tensor. The selection depends on the structure and values of the index tensor.</p>
+<ul>
+<li>When the <em>tensor</em> is 1-dimensional, the <em>index tensor</em> is a 1-dimensional tensor of indices, and the result is a 1-dimensional tensor containing the elements at those indices.</li>
+</ul>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-54-1"><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">getSubDT</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[8],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[3, 2, 3, 4, 3, 2, 3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[0, 1]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-55-1"><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;int32\&quot;, \&quot;shape\&quot;: [1, 2], \&quot;data\&quot;: [1, 3]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<ul>
+<li>When the tensor is multi-dimensional, and the number of rows in the <em>index tensor</em> is equal to the number of dimensions in the tensor, the index tensor is a 2-dimensional tensor where each row contains indices for each dimension. The result is a 1-dimensional tensor containing the elements at those indices.</li>
+</ul>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-56-1"><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">getSubDT</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2, 2],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[3, 2, 3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2, 2],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[0, 1, 1, 0]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-57-1"><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;int32\&quot;, \&quot;shape\&quot;: [2], \&quot;data\&quot;: [3, 4]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<ul>
+<li>
+<p>When the tensor is multi-dimensional, and the number of rows in the <em>index tensor</em> is not equal to the number of dimensions in the tensor, than slice indexing is performed (depends on the index tensor dimensionality).</p>
+</li>
+<li>
+<p>The index tensor is 1-dimensional (it has to be row vector), than slicing is performed along the first dimension, and the result is a tensor with the same number of dimensions as the input tensor, but with the first dimension reduced to the length of the <em>index tensor</em>.</p>
+</li>
+</ul>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-58-1"><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">getSubDT</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2, 2, 2],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[1, 2, 3, 4, 5, 6, 7, 8]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[1, 1],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[1]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-59-1"><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;int32\&quot;, \&quot;shape\&quot;: [2, 2], \&quot;data\&quot;: [5, 6, 7, 8]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<ul>
+<li>The index tensor is 2-dimensional, than slicing is performed firstly the first dimension, and then the second dimension, and the result is a tensor with the same number of dimensions as the input tensor, but with the first two dimensions reduced to the lengths of the <em>index tensor</em>.</li>
+</ul>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-60-1"><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">getSubDT</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2, 2, 2],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[1, 2, 3, 4, 5, 6, 7, 8]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2, 2],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[0, 0, 1, 1]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-61-1"><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;int32\&quot;, \&quot;shape\&quot;: [2], \&quot;data\&quot;: [3, 4, 3, 4]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<ul>
+<li>
+<p>When the index tensor is more than 3-dimensional, the function will raise an error, as it is not supported.</p>
+</li>
+<li>
+<p>If the index tensor is a boolean tensor, it is used to select elements from the input tensor based on the <code>true</code> values in the index tensor. The result is a 1-dimensional tensor containing the selected elements from the flattened tensor.</p>
+</li>
+</ul>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-62-1"><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">getSubDT</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">int32\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2, 2],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[3, 2, 3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">:\</span><span class="se">&quot;</span><span class="s">bool\</span><span class="se">&quot;</span><span class="s">,\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">:[2, 2],\</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">:[true, false, true, true]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-63-1"><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;int32\&quot;, \&quot;shape\&quot;: [3], \&quot;data\&quot;: [3, 3, 4]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<h3 id="44-concatenating-functions">4.4 Concatenating Functions</h3>
+<h4 id="dtfconcat"><code>dtf:concat</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:concat</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p>This function returns a tensor that is the concatenation of the two input tensors along the specified axis. The other dimensions must match.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-64-1"><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">concat</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 2, 3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [5, 6, 7, 8]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-65-1"><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [4, 2], \&quot;data\&quot;: [1, 2, 3, 4, 5, 6, 7, 8]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<h4 id="dtfhstack"><code>dtf:hstack</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:hstack</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p>This function returns a tensor that is the result of horizontally stacking the two input tensors (i.e., concatenation along the last axis). The tensors must be broadcast-compatible along other dimensions.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-66-1"><a id="__codelineno-66-1" name="__codelineno-66-1" href="#__codelineno-66-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">hstack</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 2, 3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [5, 6, 7, 8]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-67-1"><a id="__codelineno-67-1" name="__codelineno-67-1" href="#__codelineno-67-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [2, 4], \&quot;data\&quot;: [1, 2, 5, 6, 3, 4, 7, 8]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfvstack"><code>dtf:vstack</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:vstack</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p>This function returns a tensor that is the result of vertically stacking the two input tensors (i.e., concatenation along the first axis). The tensors must be broadcast-compatible along other dimensions.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-68-1"><a id="__codelineno-68-1" name="__codelineno-68-1" href="#__codelineno-68-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">vstack</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 2, 3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2, 2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [5, 6, 7, 8]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-69-1"><a id="__codelineno-69-1" name="__codelineno-69-1" href="#__codelineno-69-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [4, 2], \&quot;data\&quot;: [1, 2, 3, 4, 5, 6, 7, 8]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<h3 id="45-reduction-functions">4.5. Reduction Functions</h3>
+<h4 id="dtfall"><code>dtf:all</code></h4>
+<p><a href="http://www.w3.org/2001/XMLSchema#boolean">xsd:boolean</a> <strong>dtf:all</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>term_1</em>)</p>
+<p>This function checks if all elements in the boolean tensor are true. Returns a single boolean value.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-70-1"><a id="__codelineno-70-1" name="__codelineno-70-1" href="#__codelineno-70-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">all</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [true, true]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span><span class="p">)</span>  
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-71-1"><a id="__codelineno-71-1" name="__codelineno-71-1" href="#__codelineno-71-1"></a><span class="s">&quot;true&quot;</span><span class="p">^^</span><span class="nn">xsd</span><span class="p">:</span><span class="nt">boolean</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfany"><code>dtf:any</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <strong>dtf:any</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#BooleanDataTensor">dt:BooleanDataTensor</a> <em>term_1</em>)</p>
+<p>This function checks if any element in the boolean tensor is true. Returns a single boolean value.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-72-1"><a id="__codelineno-72-1" name="__codelineno-72-1" href="#__codelineno-72-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">any</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [false, true]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">BooleanDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-73-1"><a id="__codelineno-73-1" name="__codelineno-73-1" href="#__codelineno-73-1"></a><span class="s">&quot;true&quot;</span><span class="p">^^</span><span class="nn">xsd</span><span class="p">:</span><span class="nt">boolean</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfavg"><code>dtf:avg</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:avg</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)
+<a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> <strong>dtf:avg</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>This function computes the average along the specified axis. If the axis is negative, the average is calculated over the entire tensor. It returns a reduced tensor or a scalar.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-74-1"><a id="__codelineno-74-1" name="__codelineno-74-1" href="#__codelineno-74-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">avg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2,2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 2, 3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-75-1"><a id="__codelineno-75-1" name="__codelineno-75-1" href="#__codelineno-75-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [2], \&quot;data\&quot;: [1.5, 3.5]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfsum"><code>dtf:sum</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:sum</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)
+<a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> <strong>dtf:sum</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>This function computes the sum along the specified axis. If the axis is negative, the sum is calculated over the entire tensor. It returns a reduced tensor or a scalar.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-76-1"><a id="__codelineno-76-1" name="__codelineno-76-1" href="#__codelineno-76-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2,2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 2, 3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-77-1"><a id="__codelineno-77-1" name="__codelineno-77-1" href="#__codelineno-77-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [2], \&quot;data\&quot;: [3, 7]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfmax"><code>dtf:max</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:max</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p><a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> <strong>dtf:max</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>This function computes the maximum along the specified axis. If the axis is negative, the maximum is calculated over the entire tensor. It returns a reduced tensor or a scalar.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-78-1"><a id="__codelineno-78-1" name="__codelineno-78-1" href="#__codelineno-78-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2,2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 5, 2, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-79-1"><a id="__codelineno-79-1" name="__codelineno-79-1" href="#__codelineno-79-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [2], \&quot;data\&quot;: [5, 4]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfmedian"><code>dtf:median</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:median</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p><a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> <strong>dtf:median</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>This function computes the median along the specified axis. If the axis is negative, the median is calculated over the entire tensor. It returns a reduced tensor or a scalar.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-80-1"><a id="__codelineno-80-1" name="__codelineno-80-1" href="#__codelineno-80-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">median</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1, 3], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [7, 1, 3]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-81-1"><a id="__codelineno-81-1" name="__codelineno-81-1" href="#__codelineno-81-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1], \&quot;data\&quot;: [3]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfmin"><code>dtf:min</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:min</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p><a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> <strong>dtf:min</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>This function computes the minimum along the specified axis. If the axis is negative, the minimum is calculated over the entire tensor. It returns a reduced tensor or a scalar.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-82-1"><a id="__codelineno-82-1" name="__codelineno-82-1" href="#__codelineno-82-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1,3], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [7, 1, 3]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-83-1"><a id="__codelineno-83-1" name="__codelineno-83-1" href="#__codelineno-83-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1], \&quot;data\&quot;: [1]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfstd"><code>dtf:std</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:std</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p><a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> <strong>dtf:std</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>This function computes the standard deviation along the specified axis. If the axis is negative, the standard deviation is calculated over the entire tensor. It returns a reduced tensor or a scalar.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-84-1"><a id="__codelineno-84-1" name="__codelineno-84-1" href="#__codelineno-84-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">std</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1,3], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 2, 3]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-85-1"><a id="__codelineno-85-1" name="__codelineno-85-1" href="#__codelineno-85-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1], \&quot;data\&quot;: [0.8165]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfvar"><code>dtf:var</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:var</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p><a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> <strong>dtf:var</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>This function computes the variance along the specified axis. If the axis is negative, the variance is calculated over the entire tensor. It returns a reduced tensor or a scalar.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-86-1"><a id="__codelineno-86-1" name="__codelineno-86-1" href="#__codelineno-86-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">var</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [1,3], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 2, 3]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-87-1"><a id="__codelineno-87-1" name="__codelineno-87-1" href="#__codelineno-87-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [1], \&quot;data\&quot;: [0.6667]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfnorm1"><code>dtf:norm1</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:norm1</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p><a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> <strong>dtf:norm1</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>This function computes the L1 norm (sum of absolute values) along the specified axis. If the axis is negative, the L1 norm (sum of absolute values) is calculated over the entire tensor. It returns a reduced tensor or a scalar.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-88-1"><a id="__codelineno-88-1" name="__codelineno-88-1" href="#__codelineno-88-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">norm1</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2,2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, -1, -2, 2]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>  
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-89-1"><a id="__codelineno-89-1" name="__codelineno-89-1" href="#__codelineno-89-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [2], \&quot;data\&quot;: [2, 4]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfnorm2"><code>dtf:norm2</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <strong>dtf:norm2</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p><a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> <strong>dtf:norm1</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>axis</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>)</p>
+<p>This function computes the L2 norm (Euclidean norm) along the specified axis. If the axis is negative, the L2 norm (Euclidean norm) is calculated over the entire tensor. It returns a reduced tensor or a scalar.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-90-1"><a id="__codelineno-90-1" name="__codelineno-90-1" href="#__codelineno-90-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">norm2</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2,2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [3, 4, 6, 8]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-91-1"><a id="__codelineno-91-1" name="__codelineno-91-1" href="#__codelineno-91-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float32\&quot;, \&quot;shape\&quot;: [2], \&quot;data\&quot;: [5, 10]}&quot;</span><span class="p">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span>
+</span></code></pre></div>
+</div>
+<h3 id="46-similarity-functions">4.6. Similarity Functions</h3>
+<h4 id="dtfcosinesimilarity"><code>dtf:cosineSimilarity</code></h4>
+<p><a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> <strong>dtf:cosineSimilarity</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p>This function computes the cosine similarity between two numerical tensors. Returns a numeric scalar value.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-92-1"><a id="__codelineno-92-1" name="__codelineno-92-1" href="#__codelineno-92-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">cosineSimilarity</span><span class="p">(</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [3], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 0, 1]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [3], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 1, 0]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-93-1"><a id="__codelineno-93-1" name="__codelineno-93-1" href="#__codelineno-93-1"></a><span class="s">&quot;0.5&quot;</span><span class="p">^^</span><span class="nn">xsd</span><span class="p">:</span><span class="nt">float</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="dtfeuclideandistance"><code>dtf:euclideanDistance</code></h4>
+<p><a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> <strong>dtf:euclideanDistance</strong> (<a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_1</em>, <a href="https://w3id.org/rdf-tensor/datatypes#NumericDataTensor">dt:NumericDataTensor</a> <em>term_2</em>)</p>
+<p>This function computes the Euclidean distance between two numerical tensors. Returns a numeric scalar value.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-94-1"><a id="__codelineno-94-1" name="__codelineno-94-1" href="#__codelineno-94-1"></a><span class="nn">dtf</span><span class="p">:</span><span class="nt">euclideanDistance</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [3, 4]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">,</span> <span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [0, 0]}&quot;</span><span class="o">^^</span><span class="nn">dt</span><span class="p">:</span><span class="nt">NumericDataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-95-1"><a id="__codelineno-95-1" name="__codelineno-95-1" href="#__codelineno-95-1"></a><span class="err">`</span><span class="s">&quot;5.0&quot;</span><span class="p">^^</span><span class="nn">xsd</span><span class="p">:</span><span class="nt">float</span>
+</span></code></pre></div>
+</div>
+<h2 id="5-sparql-aggregates">5. SPARQL Aggregates</h2>
+<p>The following aggregation functions are implemented as SPARQL extension aggregates. Each function operates over NumericDataTensor values and returns a NumericDataTensor with the most precise type used within each group. These functions do not support the DISTINCT modifier.</p>
+<h3 id="dtasum"><code>dta:sum</code></h3>
+<ul>
+<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/aggregates#sum</code></li>
+<li><strong>Description:</strong> Sums grouped numeric tensors element-wise.</li>
+<li><strong>Input:</strong> A group of <code>NumericDataTensor</code> values.</li>
+<li><strong>Output:</strong> A <code>NumericDataTensor</code> representing the element-wise sum of all tensors in the group.</li>
+</ul>
+<h3 id="dtaavg"><code>dta:avg</code></h3>
+<ul>
+<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/aggregates#avg</code></li>
+<li><strong>Description:</strong> Computes the element-wise average of grouped tensors.</li>
+<li><strong>Input:</strong> A group of <code>NumericDataTensor</code> values.</li>
+<li><strong>Output:</strong> A <code>NumericDataTensor</code> representing the average tensor.</li>
+</ul>
+<h3 id="dtavar"><code>dta:var</code></h3>
+<ul>
+<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/aggregates#var</code></li>
+<li><strong>Description:</strong> Calculates the element-wise variance across grouped tensors.</li>
+<li><strong>Input:</strong> A group of <code>NumericDataTensor</code> values.</li>
+<li><strong>Output:</strong> A <code>NumericDataTensor</code> representing the variance tensor.</li>
+</ul>
+<h3 id="dtastd"><code>dta:std</code></h3>
+<ul>
+<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/aggregates#std</code></li>
+<li><strong>Description:</strong> Computes the element-wise standard deviation across grouped tensors.</li>
+<li><strong>Input:</strong> A group of <code>NumericDataTensor</code> values.</li>
+<li><strong>Output:</strong> A <code>NumericDataTensor</code> representing the standard deviation tensor.</li>
+</ul>
+<h2 id="a-references">A. References</h2>
+<h3 id="a1-informative-references">A.1. Informative references</h3>
+<p><strong>[rdf11-concepts]</strong></p>
+<p><a name="rdf-11"></a>
+&nbsp; <a href="https://www.w3.org/TR/rdf11-concepts/">RDF 1.1 Concepts and Abstract Syntax</a>. Richard Cyganiak; David Wood; Markus Lanthaler. W3C. 25 February 2014. W3C Recommendation. URL: https://www.w3.org/TR/rdf11-concepts/</p>
+<p><strong>[RFC-8259]</strong></p>
+<p><a name="rfc-8259"></a>
+&nbsp; <a href="https://www.rfc-editor.org/rfc/rfc8259">RFC 8259</a>. Tim Bray. JSON Data Interchange Format. 2017. URL: https://www.rfc-editor.org/rfc/rfc8259</p>
+<p><strong>[NumPy]</strong>
+<a name="numpy"></a>
+&nbsp; <a href="https://numpy.org/">NumPy</a>. NumPy Developers. NumPy. 2023. URL: https://numpy.org/</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+        <a href="https://www.apache.org/licenses/LICENSE-2.0">
+        <span style="font-size: 1.1em;">
+        </span>Apache License 2.0</a><br />The contents of this website are licensed under Apache License 2.0.<br />Copyright: <a href="https://github.com/cinekele">Piotr Marciniak</a>, <a href="https://github.com/Ostrzyciel">Piotr Sowiński</a>.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/RDF-tensor/jena-datatensor" target="_blank" rel="noopener" title="GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

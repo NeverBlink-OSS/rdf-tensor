@@ -1,0 +1,22 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dt: <https://w3id.org/rdf-tensor/datatypes#> .
+
+dt:NumericDataTensor  a rdfs:Datatype ;
+  dc:date "2024-07-28"^^xsd:date ;
+  rdfs:label "Numeric Data Tensor" ;
+  rdfs:comment "The datatype for a tensor representing numeric data."@en ;
+  dc:description "The datatype for a tensor representing numeric data."@en ;
+  skos:definition "The datatype for a tensor representing numeric data."@en ;
+  dc:creator "Piotr Marciniak" .
+
+dt:BooleanDataTensor  a rdfs:Datatype ;
+  dc:date "2024-07-28"^^xsd:date ;
+  rdfs:label "Boolean Data Tensor" ;
+  rdfs:comment "The datatype for a tensor representing boolean data."@en ;
+  dc:description "The datatype for a tensor representing boolean data."@en ;
+  skos:definition "The datatype for a tensor representing boolean data."@en ;
+  dc:creator "Piotr Marciniak" .
+    
