@@ -1,8 +1,8 @@
 site_name: Data tensors in RDF
-site_url: https://rdf-tensor.github.io/jena-datatensor/
+site_url: https://neverblink-oss.github.io/rdf-tensor/
 
-repo_url: 'https://github.com/RDF-tensor/jena-datatensor'
-repo_name: RDF-tensor/jena-datatensor
+repo_url: 'https://github.com/NeverBlink-OSS/rdf-tensor'
+repo_name: NeverBlink-OSS/rdf-tensor
 edit_uri: edit/main/docs/
 
 plugins:
@@ -43,7 +43,7 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: 'https://github.com/RDF-tensor/jena-datatensor'
+      link: 'https://github.com/NeverBlink-OSS/rdf-tensor'
       name: GitHub
 
 nav:
@@ -52,6 +52,6 @@ nav:
     - RDF datatypes: 'ontology/datatypes.md'
     - SPARQL functions: 'ontology/functions.md'
     - SPARQL aggregates: 'ontology/aggregates.md'
-  - Paper: 'https://arxiv.org/abs/2504.19224'
+  - Paper: 'https://doi.org/10.1007/978-3-031-99554-5_12'
   - Jena implementation: 'https://github.com/RDF-tensor/jena-datatensor/tree/main/jena-datatensor'
   - Example dataset & queries: 'https://github.com/RDF-tensor/jena-datatensor/tree/main/example_dataset_and_queries'
