@@ -864,6 +864,7 @@ This function checks if no elements in the boolean tensor are true. In case of n
     ```
 
 !!! example "Example 2"
+
     Evaluating the SPARQL expression
 
     ```sparql
