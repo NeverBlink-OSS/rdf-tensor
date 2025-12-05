@@ -100,7 +100,7 @@ tensor:lt  a          sd:Function;
         rdfs:comment  "Compares if first tensor is less than the second element-wise."@en;
         dc:creator    "Piotr Marciniak" .
 
-tensor:getSubDT  a    sd:Function;
+tensor:sub  a         sd:Function;
         rdfs:label    "Get Sub-Tensor";
         rdfs:comment  "Extracts a sub-tensor based on an index or mask tensor."@en;
         dc:creator    "Piotr Marciniak" .
