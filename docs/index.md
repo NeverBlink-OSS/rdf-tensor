@@ -290,7 +290,7 @@ The result of the function is a tensor of the same shape as the input tensor, wh
 ---
 
 #### `tensor:cast`
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:cast** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*, xsd:string *type*)
+[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:cast** (xsd:string *type*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
 
 The result of the function is a tensor of the same shape as the input tensor, where each element is cast to the specified type. The supported types are: `float16`, `float32`, `float64`, `int16`, `int32`, and `int64`.
 
@@ -299,7 +299,7 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:cast("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1.5, 2.5]}"^^tensor:NumericDataTensor, "int32")
+    tensor:cast("int32", "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1.5, 2.5]}"^^tensor:NumericDataTensor)
     ```
 
     returns
