@@ -5,7 +5,7 @@
 
 **Editors:** <br> 
 &nbsp;Piotr Marciniak<br>
-&nbsp;[Piotr Sowiński](https://ostrzyciel.eu)
+&nbsp;[Piotr Sowiński](https://ostrzyciel.eu)<br>
 &nbsp;[Nikita Kozlov](https://nik.kot.tools)
 
 ---
