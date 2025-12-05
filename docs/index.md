@@ -841,6 +841,42 @@ This function checks if any element in the boolean tensor is true. Returns a sin
 
 ---
 
+#### `tensor:none`
+
+[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:none** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *term_1*)
+
+[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:none** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
+
+This function checks if no elements in the boolean tensor are true. In case of numeric tensor, it checks if all elements are zero. Returns a single boolean value.
+
+!!! example "Example 1"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:none("{\"shape\": [2], \"data\": [false, false]}"^^tensor:BooleanDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "true"^^xsd:boolean
+    ```
+
+!!! example "Example 2"
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:none("{\"shape\": [2], \"data\": [0, 0]}"^^tensor:NumericDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "true"^^xsd:boolean
+    ```
+---
+
 #### `tensor:avg`
 [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:avg** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) *axis*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
 [xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:avg** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) *axis*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
