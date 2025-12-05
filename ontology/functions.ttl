@@ -140,6 +140,11 @@ tensor:sum a sd:Function ;
     rdfs:comment "Computes the sum along a specified axis."@en ;
     dc:creator "Piotr Marciniak" .
 
+tensor:prod a sd:Function ;
+    rdfs:label "Product" ;
+    rdfs:comment "Computes the product along a specified axis."@en ;
+    dc:creator "Nikita Kozlov" .
+
 tensor:max a sd:Function ;
     rdfs:label "Maximum" ;
     rdfs:comment "Computes the maximum along a specified axis."@en ;
