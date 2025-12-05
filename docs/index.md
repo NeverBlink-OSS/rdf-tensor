@@ -820,7 +820,7 @@ This function checks if all elements in the boolean tensor are true. Returns a s
 ---
 
 #### `tensor:any`
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:any** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *term_1*)
+[xsd:boolean](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:any** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *term_1*)
 
 This function checks if any element in the boolean tensor is true. Returns a single boolean value.
 
