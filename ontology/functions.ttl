@@ -130,6 +130,11 @@ tensor:any a sd:Function ;
     rdfs:comment "Checks whether any element in a boolean tensor is true."@en ;
     dc:creator "Piotr Marciniak" .
 
+tensor:none a sd:Function ;
+    rdfs:label "None True" ;
+    rdfs:comment "Checks whether no elements in a boolean tensor are non-zero or true."@en ;
+    dc:creator "Nikita Kozlov" .
+
 tensor:avg a sd:Function ;
     rdfs:label "Average" ;
     rdfs:comment "Computes the average along a specified axis."@en ;
