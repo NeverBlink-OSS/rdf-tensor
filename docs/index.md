@@ -315,9 +315,11 @@ When using the binary operators, the input tensors are broadcasted to a common s
 #### `tensor:not`
 [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:not** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *term_1*)
 
-The result of the function is a tensor of the same shape as the input tensor, where each element is logically negated.
+[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:not** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
 
-!!! example
+The result of the function is a tensor of the same shape as the input tensor, where each element is logically negated. For numeric tensors, non-zero values are treated as `true`, and zero and negative values as `false`.
+
+!!! example "Example 1"
 
     Evaluating the SPARQL expression
 
@@ -329,6 +331,20 @@ The result of the function is a tensor of the same shape as the input tensor, wh
 
     ```turtle
     "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [false, true]}"^^tensor:BooleanDataTensor
+    ```
+
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:not("{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [0, 5]}"^^tensor:NumericDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:BooleanDataTensor
     ```
 
 ---
@@ -802,9 +818,11 @@ This function returns a tensor that is the result of vertically stacking the two
 #### `tensor:all`
 [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:all** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *term_1*)
 
-This function checks if all elements in the boolean tensor are true. Returns a single boolean value.
+[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:all** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
 
-!!! example
+This function checks if all elements in the boolean tensor are true. In case of numeric tensor, it checks if all elements are non-zero. Returns a single boolean value.
+
+!!! example "Example 1"
 
     Evaluating the SPARQL expression
 
@@ -818,19 +836,50 @@ This function checks if all elements in the boolean tensor are true. Returns a s
     "true"^^xsd:boolean
     ```
 
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:all("{\"shape\": [2], \"data\": [1, 2]}"^^tensor:NumericDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "true"^^xsd:boolean
+    ```
+
 ---
 
 #### `tensor:any`
-[xsd:boolean](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:any** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *term_1*)
 
-This function checks if any element in the boolean tensor is true. Returns a single boolean value.
+[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:any** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *term_1*)
 
-!!! example
+[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:any** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
+
+This function checks if any element in the boolean tensor is true. In case of numeric tensor, it checks if any element is non-zero. Returns a single boolean value.
+
+!!! example "Example 1"
 
     Evaluating the SPARQL expression
 
     ```sparql
     tensor:any("{\"shape\": [2], \"data\": [false, true]}"^^tensor:BooleanDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "true"^^xsd:boolean
+    ```
+
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:any("{\"shape\": [2], \"data\": [1, 0]}"^^tensor:NumericDataTensor)
     ```
 
     returns
