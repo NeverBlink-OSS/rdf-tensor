@@ -6,6 +6,7 @@
 **Editors:** <br> 
 &nbsp;Piotr Marciniak<br>
 &nbsp;[Piotr Sowiński](https://ostrzyciel.eu)
+&nbsp;[Nikita Kozlov](https://nik.kot.tools)
 
 ---
 
@@ -640,14 +641,14 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
 
 ### 4.3. Indexing Functions
 
-#### `tensor:getSubDT`
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:getSubDT** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
+#### `tensor:sub`
+[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:sub** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:getSubDT** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
+[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:sub** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:getSubDT** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
+[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:sub** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:getSubDT** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *tensor*, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *indexTensor*)
+[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:sub** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *tensor*, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *indexTensor*)
 
 The result of the function is a sub-tensor extracted from the input numerical tensor using the boolean or numerical index tensor. The selection depends on the structure and values of the index tensor.
 
@@ -657,7 +658,7 @@ The result of the function is a sub-tensor extracted from the input numerical te
 
     Evaluating the SPARQL expression
     ```sparql
-    tensor:getSubDT("{\"type\":\"int32\",\"shape\":[8],\"data\":[3, 2, 3, 4, 3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[0, 1]}"^^tensor:NumericDataTensor)
+    tensor:sub("{\"type\":\"int32\",\"shape\":[8],\"data\":[3, 2, 3, 4, 3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[0, 1]}"^^tensor:NumericDataTensor)
     ```
 
     returns
@@ -673,7 +674,7 @@ The result of the function is a sub-tensor extracted from the input numerical te
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:getSubDT("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[0, 1, 1, 0]}"^^tensor:NumericDataTensor)
+    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[0, 1, 1, 0]}"^^tensor:NumericDataTensor)
     ```
     
     returns
@@ -691,7 +692,7 @@ The result of the function is a sub-tensor extracted from the input numerical te
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:getSubDT("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[1, 1],\"data\":[1]}"^^tensor:NumericDataTensor)
+    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[1, 1],\"data\":[1]}"^^tensor:NumericDataTensor)
     ```
     
     returns
@@ -707,7 +708,7 @@ The result of the function is a sub-tensor extracted from the input numerical te
     Evaluating the SPARQL expression
             
     ```sparql
-    tensor:getSubDT("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[0, 0, 1, 1]}"^^tensor:NumericDataTensor)
+    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[0, 0, 1, 1]}"^^tensor:NumericDataTensor)
     ```
         
     returns
@@ -725,7 +726,7 @@ The result of the function is a sub-tensor extracted from the input numerical te
     Evaluating the SPARQL expression
                 
     ```sparql
-    tensor:getSubDT("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"bool\",\"shape\":[2, 2],\"data\":[true, false, true, true]}"^^tensor:BooleanDataTensor)
+    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"bool\",\"shape\":[2, 2],\"data\":[true, false, true, true]}"^^tensor:BooleanDataTensor)
     ```
             
     returns
