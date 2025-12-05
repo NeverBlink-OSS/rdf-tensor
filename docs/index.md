@@ -885,6 +885,29 @@ This function computes the sum along the specified axis. If the axis is negative
 
 ---
 
+#### `tensor:prod`
+
+[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:prod** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) *axis*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:prod** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) *axis*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
+
+This function computes the product along the specified axis. If the axis is negative, the product is calculated over the entire tensor. It returns a reduced tensor or a scalar.
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:prod(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [1, 2, 3, 4]}"^^tensor:NumericDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"float32\", \"shape\": [2], \"data\": [2, 12]}"^^tensor:NumericDataTensor
+    ```
+
+---
+
 #### `tensor:max`
 [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:max** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) *axis*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
 
