@@ -1039,7 +1039,7 @@
   <a href="#tensorsum_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        tensor:sum
+        tensor:SUM
       
     </span>
   </a>
@@ -1050,7 +1050,7 @@
   <a href="#tensoravg_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        tensor:avg
+        tensor:AVG
       
     </span>
   </a>
@@ -1061,7 +1061,7 @@
   <a href="#tensorvar_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        tensor:var
+        tensor:VAR
       
     </span>
   </a>
@@ -1072,7 +1072,7 @@
   <a href="#tensorstd_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        tensor:std
+        tensor:STD
       
     </span>
   </a>
@@ -2131,7 +2131,7 @@
   <a href="#tensorsum_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        tensor:sum
+        tensor:SUM
       
     </span>
   </a>
@@ -2142,7 +2142,7 @@
   <a href="#tensoravg_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        tensor:avg
+        tensor:AVG
       
     </span>
   </a>
@@ -2153,7 +2153,7 @@
   <a href="#tensorvar_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        tensor:var
+        tensor:VAR
       
     </span>
   </a>
@@ -2164,7 +2164,7 @@
   <a href="#tensorstd_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        tensor:std
+        tensor:STD
       
     </span>
   </a>
@@ -3039,30 +3039,30 @@ After parsing, the JSON object is converted into a tensor structure.</p>
 </div>
 <h2 id="5-sparql-aggregates">5. SPARQL Aggregates</h2>
 <p>The following aggregation functions are implemented as SPARQL extension aggregates. Each function operates over NumericDataTensor values and returns a NumericDataTensor with the most precise type used within each group. These functions do not support the DISTINCT modifier.</p>
-<h3 id="tensorsum_1"><code>tensor:sum</code></h3>
+<h3 id="tensorsum_1"><code>tensor:SUM</code></h3>
 <ul>
-<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/vocab#sum</code></li>
+<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/vocab#SUM</code></li>
 <li><strong>Description:</strong> Sums grouped numeric tensors element-wise.</li>
 <li><strong>Input:</strong> A group of <code>NumericDataTensor</code> values.</li>
 <li><strong>Output:</strong> A <code>NumericDataTensor</code> representing the element-wise sum of all tensors in the group.</li>
 </ul>
-<h3 id="tensoravg_1"><code>tensor:avg</code></h3>
+<h3 id="tensoravg_1"><code>tensor:AVG</code></h3>
 <ul>
-<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/vocab#avg</code></li>
+<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/vocab#AVG</code></li>
 <li><strong>Description:</strong> Computes the element-wise average of grouped tensors.</li>
 <li><strong>Input:</strong> A group of <code>NumericDataTensor</code> values.</li>
 <li><strong>Output:</strong> A <code>NumericDataTensor</code> representing the average tensor.</li>
 </ul>
-<h3 id="tensorvar_1"><code>tensor:var</code></h3>
+<h3 id="tensorvar_1"><code>tensor:VAR</code></h3>
 <ul>
-<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/vocab#var</code></li>
+<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/vocab#VAR</code></li>
 <li><strong>Description:</strong> Calculates the element-wise variance across grouped tensors.</li>
 <li><strong>Input:</strong> A group of <code>NumericDataTensor</code> values.</li>
 <li><strong>Output:</strong> A <code>NumericDataTensor</code> representing the variance tensor.</li>
 </ul>
-<h3 id="tensorstd_1"><code>tensor:std</code></h3>
+<h3 id="tensorstd_1"><code>tensor:STD</code></h3>
 <ul>
-<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/vocab#std</code></li>
+<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/vocab#STD</code></li>
 <li><strong>Description:</strong> Computes the element-wise standard deviation across grouped tensors.</li>
 <li><strong>Input:</strong> A group of <code>NumericDataTensor</code> values.</li>
 <li><strong>Output:</strong> A <code>NumericDataTensor</code> representing the standard deviation tensor.</li>
