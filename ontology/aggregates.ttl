@@ -5,25 +5,25 @@
 @prefix tensor: <https://w3id.org/rdf-tensor/vocab#> .
 @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
 
-tensor:sum a sd:Aggregate ;
+tensor:SUM a sd:Aggregate ;
     dc:date "2024-07-28"^^xsd:date ;
     rdfs:label "Sum" ;
     rdfs:comment "Sums grouped tensors"@en ;
     dc:creator "Piotr Marciniak" .
 
-tensor:avg a sd:Aggregate ;
+tensor:AVG a sd:Aggregate ;
     dc:date "2024-07-28"^^xsd:date ;
     rdfs:label "Average" ;
     rdfs:comment "Averages grouped tensors by summing them elementwise and dividing the result by the number of tensors"@en ;
     dc:creator "Piotr Marciniak" .
 
-tensor:var a sd:Aggregate ;
+tensor:VAR a sd:Aggregate ;
     dc:date "2024-07-28"^^xsd:date ;
     rdfs:label "Variance" ;
     rdfs:comment "Calculates the variance of grouped tensors"@en ;
     dc:creator "Piotr Marciniak" .
 
-tensor:std a sd:Aggregate ;
+tensor:STD a sd:Aggregate ;
     dc:date "2024-07-28"^^xsd:date ;
     rdfs:label "Standard Deviation" ;
     rdfs:comment "Calculates the standard deviation of grouped tensors"@en ;

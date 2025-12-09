@@ -1200,26 +1200,26 @@ This function computes the Euclidean distance between two numerical tensors. Ret
 
 The following aggregation functions are implemented as SPARQL extension aggregates. Each function operates over NumericDataTensor values and returns a NumericDataTensor with the most precise type used within each group. These functions do not support the DISTINCT modifier.
 
-### `tensor:sum`
-- **IRI:** `https://w3id.org/rdf-tensor/vocab#sum`
+### `tensor:SUM`
+- **IRI:** `https://w3id.org/rdf-tensor/vocab#SUM`
 - **Description:** Sums grouped numeric tensors element-wise.
 - **Input:** A group of `NumericDataTensor` values.
 - **Output:** A `NumericDataTensor` representing the element-wise sum of all tensors in the group.
 
-### `tensor:avg`
-- **IRI:** `https://w3id.org/rdf-tensor/vocab#avg`
+### `tensor:AVG`
+- **IRI:** `https://w3id.org/rdf-tensor/vocab#AVG`
 - **Description:** Computes the element-wise average of grouped tensors.
 - **Input:** A group of `NumericDataTensor` values.
 - **Output:** A `NumericDataTensor` representing the average tensor.
 
-### `tensor:var`
-- **IRI:** `https://w3id.org/rdf-tensor/vocab#var`
+### `tensor:VAR`
+- **IRI:** `https://w3id.org/rdf-tensor/vocab#VAR`
 - **Description:** Calculates the element-wise variance across grouped tensors.
 - **Input:** A group of `NumericDataTensor` values.
 - **Output:** A `NumericDataTensor` representing the variance tensor.
 
-### `tensor:std`
-- **IRI:** `https://w3id.org/rdf-tensor/vocab#std`
+### `tensor:STD`
+- **IRI:** `https://w3id.org/rdf-tensor/vocab#STD`
 - **Description:** Computes the element-wise standard deviation across grouped tensors.
 - **Input:** A group of `NumericDataTensor` values.
 - **Output:** A `NumericDataTensor` representing the standard deviation tensor.
