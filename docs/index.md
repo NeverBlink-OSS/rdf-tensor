@@ -690,7 +690,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
 
 [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:sub** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
 
-The result of the function is a sub-tensor extracted from the input numerical tensor using numerical index tensor. The selection depends on the structure and values of the index tensor.
+The result of the function is a sub-tensor extracted from the input tensor using numerical index tensor. The selection depends on the structure and values of the index tensor.
 
 * When the *tensor* is 1-dimensional, the *index tensor* is a 1-dimensional tensor of indices, and the result is a 1-dimensional tensor containing the elements at those indices.
 
@@ -764,7 +764,7 @@ The result of the function is a sub-tensor extracted from the input numerical te
 
 [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:mask** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *tensor*, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *indexTensor*)
 
-The result of the function is a sub-tensor extracted from the input numerical tensor using the boolean mask tensor. The selection depends on the mask tensor.
+The result of the function is a sub-tensor extracted from the input tensor using the boolean mask tensor. The selection depends on the mask tensor.
 
 * The mask tensor is used to select elements from the input tensor based on the `true` values in the index tensor. The result is a 1-dimensional tensor containing the selected elements from the flattened tensor.
 
