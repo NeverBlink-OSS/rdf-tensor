@@ -292,9 +292,9 @@ The result of the function is a tensor of the same shape as the input tensor, wh
 #### `tensor:cast`
 [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:cast** (xsd:string *type*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
 
-The result of the function is a tensor of the same shape as the input tensor, where each element is cast to the specified type. The supported types are: `float16`, `float32`, `float64`, `int16`, `int32`, and `int64`.
+The result of the function is a tensor of the same shape as the input tensor, where each element is cast to the specified type. The supported types are: `float16`, `float32`, `float64`, `int16`, `int32`, `int64` and `bool`. `Bool` type is special - all non-zero values are cast to `true`, and zero values are cast to `false`, and the tensor becomes a `tensor:BooleanDataTensor` literal. If a `tensor:BooleanDataTensor` literal is cast to a numeric type, `true` values become `1`, and `false` values become `0` and datatype becomes `tensor:NumericDataTensor`.
 
-!!! example
+!!! example "Example 1"
 
     Evaluating the SPARQL expression
 
@@ -306,6 +306,34 @@ The result of the function is a tensor of the same shape as the input tensor, wh
 
     ```turtle
     "{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [1, 2]}"^^tensor:NumericDataTensor
+    ```
+
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:cast("bool", "{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [0, 5]}"^^tensor:NumericDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:BooleanDataTensor
+    ```
+
+!!! example "Example 3"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:cast("float32", "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:BooleanDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1.0, 0.0]}"^^tensor:NumericDataTensor
     ```
 
 ### 4.2 Operators
@@ -660,13 +688,9 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
 #### `tensor:sub`
 [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:sub** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:sub** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
-
 [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:sub** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:sub** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *tensor*, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *indexTensor*)
-
-The result of the function is a sub-tensor extracted from the input numerical tensor using the boolean or numerical index tensor. The selection depends on the structure and values of the index tensor.
+The result of the function is a sub-tensor extracted from the input numerical tensor using numerical index tensor. The selection depends on the structure and values of the index tensor.
 
 * When the *tensor* is 1-dimensional, the *index tensor* is a 1-dimensional tensor of indices, and the result is a 1-dimensional tensor containing the elements at those indices.
 
@@ -735,7 +759,14 @@ The result of the function is a sub-tensor extracted from the input numerical te
             
   - When the index tensor is more than 3-dimensional, the function will raise an error, as it is not supported.
 
-* If the index tensor is a boolean tensor, it is used to select elements from the input tensor based on the `true` values in the index tensor. The result is a 1-dimensional tensor containing the selected elements from the flattened tensor.
+#### `tensor:mask`
+[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:mask** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
+
+[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:mask** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *tensor*, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *indexTensor*)
+
+The result of the function is a sub-tensor extracted from the input numerical tensor using the boolean mask tensor. The selection depends on the mask tensor.
+
+* The mask tensor is used to select elements from the input tensor based on the `true` values in the index tensor. The result is a 1-dimensional tensor containing the selected elements from the flattened tensor.
 
 !!! example  
 
@@ -750,7 +781,6 @@ The result of the function is a sub-tensor extracted from the input numerical te
     ```turtle
     "{\"type\": \"int32\", \"shape\": [3], \"data\": [3, 3, 4]}"^^tensor:NumericDataTensor
     ```
-
 
 ### 4.4 Concatenating Functions
 
