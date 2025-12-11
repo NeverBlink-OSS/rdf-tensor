@@ -45,6 +45,11 @@ tensor:abs a sd:Function ;
     rdfs:comment "Applies absolute value to each element."@en ;
     dc:creator "Piotr Marciniak" .
 
+tensor:cast a sd:Function ;
+    rdfs:label "Type Cast" ;
+    rdfs:comment "Casts tensor elements to a specified data type."@en ;
+    dc:creator "Piotr Marciniak" .
+
 tensor:not a sd:Function ;
     rdfs:label "Logical NOT" ;
     rdfs:comment "Computes the logical negation of each boolean tensor element."@en ;
@@ -102,8 +107,13 @@ tensor:lt a sd:Function ;
 
 tensor:sub a sd:Function ;
     rdfs:label "Get Sub-Tensor" ;
-    rdfs:comment "Extracts a sub-tensor based on an index or mask tensor."@en ;
+    rdfs:comment "Extracts a sub-tensor based on an index tensor."@en ;
     dc:creator "Piotr Marciniak" .
+
+tensor:mask a sd:Function ;
+    rdfs:label "Mask Tensor" ;
+    rdfs:comment "Extracts elements from a tensor using a boolean mask tensor."@en ;
+    dc:creator "Nikita Kozlov" .
 
 tensor:concat a sd:Function ;
     rdfs:label "Concatenate Tensors" ;
