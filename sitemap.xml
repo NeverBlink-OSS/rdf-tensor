@@ -2,22 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://neverblink-oss.github.io/rdf-tensor/</loc>
-         <lastmod>2025-12-09</lastmod>
+         <lastmod>2025-12-11</lastmod>
     </url>
     <url>
          <loc>https://neverblink-oss.github.io/rdf-tensor/ontology/aggregates/</loc>
-         <lastmod>2025-12-09</lastmod>
+         <lastmod>2025-12-11</lastmod>
     </url>
     <url>
          <loc>https://neverblink-oss.github.io/rdf-tensor/ontology/datatypes/</loc>
-         <lastmod>2025-12-09</lastmod>
+         <lastmod>2025-12-11</lastmod>
     </url>
     <url>
          <loc>https://neverblink-oss.github.io/rdf-tensor/ontology/functions/</loc>
-         <lastmod>2025-12-09</lastmod>
+         <lastmod>2025-12-11</lastmod>
     </url>
     <url>
          <loc>https://neverblink-oss.github.io/rdf-tensor/ontology/files/</loc>
-         <lastmod>2025-12-09</lastmod>
+         <lastmod>2025-12-11</lastmod>
     </url>
 </urlset>
