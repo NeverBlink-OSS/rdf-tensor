@@ -336,6 +336,44 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1.0, 0.0]}"^^tensor:NumericDataTensor
     ```
 
+---
+
+#### `tensor:reshape`
+
+[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:reshape** (xsd:integer ... *newShape*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
+
+[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:reshape** (xsd:integer ... *newShape*, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *term_1*)
+
+The result of the function is a tensor with the specified new shape. The total number of elements will remain the same; thus, the product of the dimensions in the new shape must equal the product of the dimensions in the original shape.
+
+!!! example "Example 1"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:reshape(2, 2, "{\"type\":\"int32\",\"shape\":[4],\"data\":[1, 2, 3, 4]}"^^tensor:NumericDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [1, 2, 3, 4]}"^^tensor:NumericDataTensor
+    ```
+
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:reshape(1, 4, "{\"type\":\"bool\",\"shape\":[4],\"data\":[true, false, true, false]}"^^tensor:BooleanDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"bool\", \"shape\": [1, 4], \"data\": [true, false, true, false]}"^^tensor:BooleanDataTensor
+    ```
+
 ### 4.2 Operators
 
 When using the binary operators, the input tensors are broadcasted to a common shape. The broadcasting rules are the same as in NumPy**[[NumPy 8259](#numpy)]**. In the case of numeric tensors, the result of the mathematical operation is a tensor with the more precise type of the two input tensors. For example, if one tensor is `float32` and the other is `int32`, the result will be `float32`. 
@@ -759,6 +797,8 @@ The result of the function is a sub-tensor extracted from the input tensor using
             
   - When the index tensor is more than 3-dimensional, the function will raise an error, as it is not supported.
 
+---
+
 #### `tensor:mask`
 [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:mask** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
 
@@ -780,6 +820,50 @@ The result of the function is a sub-tensor extracted from the input tensor using
             
     ```turtle
     "{\"type\": \"int32\", \"shape\": [3], \"data\": [3, 3, 4]}"^^tensor:NumericDataTensor
+    ```
+
+---
+
+#### tensor:index
+
+[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:index** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *tensor*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
+
+[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:index** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *tensor*, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) *indexTensor*)
+
+The result of the function is an element or sub-tensor extracted from the input tensor using numerical index tensor. The selection depends on the structure and values of the index tensor.
+
+* When the *index tensor* size matches the number of dimensions in the input tensor, the *index tensor* is a 1-dimensional tensor where each element corresponds to an index for each dimension. The result is a scalar value at that index.
+
+* When the *index tensor* size is less than the number of dimensions in the input tensor, the *index tensor* is a 1-dimensional tensor where each element corresponds to an index for the first dimensions. The result is a sub-tensor with the remaining dimensions.
+
+* When the *index tensor* size is greater than the number of dimensions in the input tensor, an error is raised.
+
+!!! example "Example 1"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:index("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[1, 0]}"^^tensor:NumericDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "4"^^xsd:int
+    ```
+
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:index("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[1, 0]}"^^tensor:NumericDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:NumericDataTensor
     ```
 
 ### 4.4 Concatenating Functions
@@ -1224,6 +1308,42 @@ This function computes the Euclidean distance between two numerical tensors. Ret
 
     ```turtle
     `"5.0"^^xsd:float
+    ```
+
+### 4.7 Creation Functions
+
+#### `tensor:create`
+
+[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:create** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) *type*,  [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) | [xsd:float](http://www.w3.org/2001/XMLSchema#float) | [xsd:double](http://www.w3.org/2001/XMLSchema#double) | [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) ... values)
+
+This function creates a `NumericDataTensor` or `BooleanDataTensor` from a list of scalar values of the specified type. The resulting tensor has a shape of 1xN, where N is the number of input values.
+
+!!! example "Example 1"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:create("int32", 1, 2, 3, 4)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [1, 4], \"data\": [1, 2, 3, 4]}"^^tensor:NumericDataTensor
+    ```
+
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:create("bool", true, false, true)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"bool\", \"shape\": [1, 3], \"data\": [true, false, true]}"^^tensor:BooleanDataTensor
     ```
 
 ## 5. SPARQL Aggregates
