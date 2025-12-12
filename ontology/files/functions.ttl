@@ -50,6 +50,11 @@ tensor:cast  a        sd:Function;
         rdfs:comment  "Casts tensor elements to a specified data type."@en;
         dc:creator    "Piotr Marciniak" .
 
+tensor:reshape  a     sd:Function;
+        rdfs:label    "Reshape Tensor";
+        rdfs:comment  "Reshapes a tensor to a new shape."@en;
+        dc:creator    "Nikita Kozlov" .
+
 tensor:not  a         sd:Function;
         rdfs:label    "Logical NOT";
         rdfs:comment  "Computes the logical negation of each boolean tensor element."@en;
@@ -113,6 +118,11 @@ tensor:sub  a         sd:Function;
 tensor:mask  a        sd:Function;
         rdfs:label    "Mask Tensor";
         rdfs:comment  "Extracts elements from a tensor using a boolean mask tensor."@en;
+        dc:creator    "Nikita Kozlov" .
+
+tensor:index  a       sd:Function;
+        rdfs:label    "Get From Tensor By Index";
+        rdfs:comment  "Extracts elements from a tensor using an index tensor."@en;
         dc:creator    "Nikita Kozlov" .
 
 tensor:concat  a      sd:Function;
@@ -206,3 +216,8 @@ tensor:euclideanDistance
         rdfs:label    "Euclidean Distance";
         rdfs:comment  "Computes the Euclidean distance between two numerical tensors."@en;
         dc:creator    "Piotr Marciniak" .
+
+tensor:create  a      sd:Function;
+        rdfs:label    "Create Tensor";
+        rdfs:comment  "Creates a tensor from raw data and type."@en;
+        dc:creator    "Nikita Kozlov" .
