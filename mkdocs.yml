@@ -8,6 +8,9 @@ edit_uri: edit/main/docs/
 plugins:
   - search
   - include-markdown
+  - git-revision-date-localized:
+      enable_creation_date: true
+      strict: false
 
 markdown_extensions:
   - attr_list

@@ -1,12 +1,12 @@
 # Data tensors in RDF
 
 **Unofficial Draft**  
-*Date: May 25, 2025*
+*Date: {{ git_revision_date_localized }}*
 
 **Editors:** <br> 
-&nbsp;Piotr Marciniak<br>
-&nbsp;[Piotr Sowiński](https://ostrzyciel.eu)<br>
-&nbsp;[Nikita Kozlov](https://nik.kot.tools)
+&nbsp;Piotr Marciniak (Warsaw University of Technology)<br>
+&nbsp;[Piotr Sowiński](https://ostrzyciel.eu) ([NeverBlink](https://neverblink.eu))<br>
+&nbsp;[Nikita Kozlov](https://nik.kot.tools) ([NeverBlink](https://neverblink.eu))
 
 ---
 
