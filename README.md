@@ -1,4 +1,5 @@
-# rdf-tensor
+# RDF-tensor
+
 Specification for tensor literals in RDF &amp; SPARQL
 
 **[See the website](https://w3id.org/rdf-tensor) for more information.**
