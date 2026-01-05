@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+title: RDF-tensor – data tensor literals in RDF and SPARQL
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - name: NeverBlink
+    website: 'https://neverblink.eu'
+    email: contact@neverblink.eu
+  - name: Piotr Marciniak
+  - name: Piotr Sowiński
+    website: 'https://ostrzyciel.eu'
+  - name: RDF-tensor contributors
+    website: >-
+      https://github.com/NeverBlink-OSS/rdf-tensor/graphs/contributors
+repository-code: 'https://github.com/NeverBlink-OSS/rdf-tensor'
+url: 'https://w3id.org/rdf-tensor'
+abstract: >-
+  RDF-tensor is an extension to RDF and SPARQL that introduces 2 new datatypes, dozens of SPARQL functions, and new aggregates to allow for processing of data tensors within RDF graphs. A data tensor is a multi-dimensional array of values, which can be numeric or boolean, commonly used for example in machine learning embeddings.
+license: Apache-2.0
+preferred-citation:
+  type: conference-paper
+  authors:
+  - family-names: "Marciniak"
+    given-names: "Piotr"
+  - family-names: "Sowiński"
+    given-names: "Piotr"
+  - family-names: "Ganzha"
+    given-names: "Maria"
+  collection-title: "Curry, E., et al. The Semantic Web: ESWC 2025 Satellite Events. ESWC 2025. Lecture Notes in Computer Science"
+  collection-type: proceedings
+  publisher:
+    name: "Springer, Cham"
+  url: "https://doi.org/10.1007/978-3-031-99554-5_12"
+  volume: "15832"
+  title: "Representing and Querying Data Tensors in RDF and SPARQL"
+  year: 2025
