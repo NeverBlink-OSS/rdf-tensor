@@ -40,7 +40,7 @@ This repository is licensed under [Apache License 2.0](https://www.apache.org/li
 
 ## Citation
 
-If you use this work academically, please cite it as follows:
+If you use this work in an academic context, please cite it as follows:
 
 > Marciniak, P., Sowiński, P., & Ganzha, M. (2025). Representing and Querying Data Tensors in RDF and SPARQL [Conference paper]. Curry, E., et al. The Semantic Web: ESWC 2025 Satellite Events. ESWC 2025. Lecture Notes in Computer Science, 15832. https://doi.org/10.1007/978-3-031-99554-5_12
 
