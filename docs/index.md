@@ -346,6 +346,8 @@ The result of the function is a tensor of the same shape as the input tensor, wh
 
 The result of the function is a tensor with the specified new shape. The total number of elements will remain the same; thus, the product of the dimensions in the new shape must equal the product of the dimensions in the original shape.
 
+If one of the dimensions in the new shape is specified as -1, its size will be inferred such that the total number of elements remains unchanged.
+
 !!! example "Example 1"
 
     Evaluating the SPARQL expression
@@ -372,6 +374,96 @@ The result of the function is a tensor with the specified new shape. The total n
 
     ```turtle
     "{\"type\": \"bool\", \"shape\": [1, 4], \"data\": [true, false, true, false]}"^^tensor:BooleanDataTensor
+    ```
+
+!!! example "Example 3"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:reshape(2, -1, "{\"type\":\"int32\",\"shape\":[6],\"data\":[1, 2, 3, 4, 5, 6]}"^^tensor:NumericDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [2, 3], \"data\": [1, 2, 3, 4, 5, 6]}"^^tensor:NumericDataTensor
+    ```
+
+---
+
+#### `tensor:transpose`
+
+[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:transpose** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
+
+[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:transpose** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *term_1*)
+
+The result of the function is a tensor where the dimensions are reversed. For example, a tensor with shape `[2, 3, 4]` will become a tensor with shape `[4, 3, 2]`.
+
+!!! example "Example 1"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:transpose("{\"type\":\"int32\",\"shape\":[2, 3],\"data\":[1, 2, 3, 4, 5, 6]}"^^tensor:NumericDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [3, 2], \"data\": [1, 4, 2, 5, 3, 6]}"^^tensor:NumericDataTensor
+    ```
+
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:transpose("{\"shape\":[2, 2],\"data\":[true, false, false, true]}"^^tensor:BooleanDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"shape\": [2, 2], \"data\": [true, false, false, true]}"^^tensor:BooleanDataTensor
+    ```
+
+---
+
+#### `tensor:flatten`
+
+[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:flatten** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) *term_1*)
+
+[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:flatten** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) *term_1*)
+
+The result of the function is a one-dimensional tensor containing all the elements of the input tensor in row-major (C-style) order.
+
+!!! example "Example 1"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:flatten("{\"type\":\"int32\",\"shape\":[2, 3],\"data\":[1, 2, 3, 4, 5, 6]}"^^tensor:NumericDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [6], \"data\": [1, 2, 3, 4, 5, 6]}"^^tensor:NumericDataTensor
+    ```
+
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:flatten("{\"shape\":[2, 2],\"data\":[true, false, false, true]}"^^tensor:BooleanDataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"shape\": [4], \"data\": [true, false, false, true]}"^^tensor:BooleanDataTensor
     ```
 
 ### 4.2 Operators

@@ -219,3 +219,13 @@ tensor:create a sd:Function ;
     rdfs:label "Create Tensor" ;
     rdfs:comment "Creates a tensor from raw data and type."@en ;
     dc:creator "Nikita Kozlov" .
+
+tensor:transpose a sd:Function ;
+    rdfs:label "Transpose Tensor" ;
+    rdfs:comment "Transposes a tensor by permuting its dimensions."@en ;
+    dc:creator "Nikita Kozlov" .
+
+tensor:flatten a sd:Function ;
+    rdfs:label "Flatten Tensor" ;
+    rdfs:comment "Flattens a tensor into a one-dimensional array."@en ;
+    dc:creator "Nikita Kozlov" .
