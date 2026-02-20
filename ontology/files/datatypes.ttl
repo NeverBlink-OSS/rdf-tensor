@@ -4,16 +4,14 @@ PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX tensor: <https://w3id.org/rdf-tensor/vocab#>
 
-tensor:NumericDataTensor
-        a             rdfs:Datatype;
-        dc:date       "2024-07-28"^^xsd:date;
-        rdfs:label    "Numeric Data Tensor";
-        rdfs:comment  "The datatype for a tensor representing numeric data."@en;
-        dc:creator    "Piotr Marciniak" .
+tensor:DataTensor  a  rdfs:Datatype;
+        dc:date       "2026-02-20"^^xsd:date;
+        rdfs:label    "Data Tensor";
+        rdfs:comment  "The datatype for a tensor representing numeric or boolean data."@en;
+        dc:creator    "Nikita Kozlov" .
 
-tensor:BooleanDataTensor
-        a             rdfs:Datatype;
-        dc:date       "2024-07-28"^^xsd:date;
-        rdfs:label    "Boolean Data Tensor";
-        rdfs:comment  "The datatype for a tensor representing boolean data."@en;
-        dc:creator    "Piotr Marciniak" .
+tensor:Range  a       rdfs:Datatype;
+        dc:date       "2026-02-20"^^xsd:date;
+        rdfs:label    "Range";
+        rdfs:comment  "The datatype for a range of numeric values."@en;
+        dc:creator    "Nikita Kozlov" .
