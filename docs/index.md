@@ -1483,6 +1483,10 @@ This function creates a `Range` object representing a sequence of indices from `
     ```
 
     returns a `Range` object representing the indices from 0 to 4.
+    
+    ```turtle
+    "{\"type\": \"concrete\", \"from\": 0, \"to\": 5}"^^tensor:Range
+    ```
 
 !!! example "Example 2"
 
@@ -1493,6 +1497,10 @@ This function creates a `Range` object representing a sequence of indices from `
     ```
 
     returns a `Range` object representing the full range of indices for slicing tensors.
+
+    ```turtle
+    "{\"type\": \"full\"}"^^tensor:Range
+    ```
 
 ---
 
