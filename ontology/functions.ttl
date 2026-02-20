@@ -229,3 +229,13 @@ tensor:flatten a sd:Function ;
     rdfs:label "Flatten Tensor" ;
     rdfs:comment "Flattens a tensor into a one-dimensional array."@en ;
     dc:creator "Nikita Kozlov" .
+
+tensor:range a sd:Function ;
+    rdfs:label "Create Range" ;
+    rdfs:comment "Creates a range of values defined as full or concrete."@en ;
+    dc:creator "Nikita Kozlov" .
+
+tensor:shape a sd:Function ;
+    rdfs:label "Get Tensor Shape" ;
+    rdfs:comment "Returns the shape of a tensor as a list of integers."@en ;
+    dc:creator "Nikita Kozlov" .

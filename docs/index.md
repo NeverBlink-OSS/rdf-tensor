@@ -1434,9 +1434,9 @@ This function computes the Euclidean distance between two numerical tensors. Ret
 
 #### `tensor:create`
 
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:create** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) | [xsd:float](http://www.w3.org/2001/XMLSchema#float) | [xsd:double](http://www.w3.org/2001/XMLSchema#double) | [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) ... values)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:create** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) | [xsd:float](http://www.w3.org/2001/XMLSchema#float) | [xsd:double](http://www.w3.org/2001/XMLSchema#double) | [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) ... _values_)
 
-This function creates a `DataTensor` or `DataTensor` from a list of scalar values of the specified type. The resulting tensor has a shape of 1xN, where N is the number of input values.
+This function creates a `DataTensor` from a list of scalar values of the specified type. The resulting tensor has a shape of `[N]`, where N is the number of input values.
 
 !!! example "Example 1"
 
@@ -1449,7 +1449,7 @@ This function creates a `DataTensor` or `DataTensor` from a list of scalar value
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [1, 4], \"data\": [1, 2, 3, 4]}"^^tensor:DataTensor
+    "{\"type\": \"int32\", \"shape\": [4], \"data\": [1, 2, 3, 4]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -1463,8 +1463,60 @@ This function creates a `DataTensor` or `DataTensor` from a list of scalar value
     returns
 
     ```turtle
-    "{\"type\": \"bool\", \"shape\": [1, 3], \"data\": [true, false, true]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [3], \"data\": [true, false, true]}"^^tensor:DataTensor
     ```
+
+#### `tensor:range`
+
+[tensor:Range](https://w3id.org/rdf-tensor/vocab#Range) **tensor:range** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _from_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _to_)
+
+[tensor:Range](https://w3id.org/rdf-tensor/vocab#Range) **tensor:range** ()
+
+This function creates a `Range` object representing a sequence of indices from `from` to `to` (inclusive of `from`, exclusive of `to`). If no arguments are provided, it represents the full range.
+
+!!! example "Example 1"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:range(0, 5)
+    ```
+
+    returns a `Range` object representing the indices from 0 to 4.
+
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:range()
+    ```
+
+    returns a `Range` object representing the full range of indices for slicing tensors.
+
+---
+
+#### `tensor:shape`
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:shape** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+
+This function returns a 1-dimensional tensor of type `int64` containing the shape (dimensions) of the input tensor. For example, if the input tensor has shape `[2, 3, 4]`, the result is a 1-dimensional tensor `[2, 3, 4]` with shape `[3]`.
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:shape("{\"type\": \"float32\", \"shape\": [2, 3, 4], \"data\": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]}"^^tensor:DataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int64\", \"shape\": [3], \"data\": [2, 3, 4]}"^^tensor:DataTensor
+    ```
+
+---
 
 ## 5. SPARQL Aggregates
 
@@ -1515,3 +1567,7 @@ The following aggregation functions are implemented as SPARQL extension aggregat
 **[NumPy]**
 <a name="numpy"></a>
 &nbsp; [NumPy](https://numpy.org/). NumPy Developers. NumPy. 2023. URL: https://numpy.org/
+
+**[ONNX (Open Neural Network Exchange)]**
+<a name="onnx"></a>
+&nbsp; [ONNX (Open Neural Network Exchange)](https://onnx.ai/). ONNX. 2019. URL: https://onnx.ai/
