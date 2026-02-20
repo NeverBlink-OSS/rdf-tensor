@@ -13,7 +13,7 @@ _Date: {{ git_revision_date_localized }}_
 ## Abstract
 
 This specification defines an approach to represent data tensors (multi-dimensional arrays) as literals in RDF.
-It introduces two new RDF datatypes – `tensor:NumericDataTensor` and `tensor:BooleanDataTensor`, along with an extension of the SPARQL language.
+It introduces two new RDF datatypes – `tensor:DataTensor` and `tensor:DataTensor`, along with an extension of the SPARQL language.
 This extension includes 36 functions and 6 aggregates, enabling the efficient processing of tensor data within RDF frameworks.
 
 **[See our paper for more information](https://arxiv.org/abs/2504.19224)**
@@ -54,7 +54,7 @@ A valid JSON object **[[RFC-8259](#rfc-8259)]** with the following structure:
 
 | Key     | Type                        | Description                                                                                                                                                        |
 | ------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `type`  | `string`                    | Must be one of: `float16`, `float32`, `float64`, `int16`, `int32`, `int64`, `bool`, `uint8`, `uint16`, `uint32`, `uint64`. Defines the type of numbers.            |
+| `type`  | `string`                    | Must be one of: `float16`, `float32`, `float64`, `int16`, `int32`, `int64`, `bool`, `uint8`, `uint16`, `uint32`, `uint64`. Defines the type of elements.            |
 | `shape` | `array of integers`         | Specifies the size of each dimension. The product of the integers must equal the length of the `data` array.                                                       |
 | `data`  | `array of numbers or bools` | A flat array of numbers or booleans in row-major (C-style) order. Numbers must use decimal or exponential notation. Booleans are represented as `true` or `false`. |
 
@@ -74,9 +74,9 @@ After parsing, the JSON object is converted into a tensor structure.
 !!! example
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [3, 2], \"data\": [0.1, 1.2, 2.2, 3.2, 4.1, 5.4e2]}"^^tensor:NumericDataTensor
-    "{\"type\": \"int32\", \"shape\": [1, 2, 2, 2], \"data\": [1, 3, 4, 12, 22, 32, 41, 5]}"^^tensor:NumericDataTensor
-    "{\"type\": \"bool\", \"shape\": [2, 3], \"data\": [true, false, true, false, true, false]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [3, 2], \"data\": [0.1, 1.2, 2.2, 3.2, 4.1, 5.4e2]}"^^tensor:DataTensor
+    "{\"type\": \"int32\", \"shape\": [1, 2, 2, 2], \"data\": [1, 3, 4, 12, 22, 32, 41, 5]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [2, 3], \"data\": [true, false, true, false, true, false]}"^^tensor:DataTensor
     ```
 
 ## 3. The `tensor:Range` Datatype
@@ -87,7 +87,7 @@ After parsing, the JSON object is converted into a tensor structure.
 
 ### Definition
 
-Represents a range of numeric values, defined by a minimum and maximum value or a "full" range, which includes all possible numeric values.
+Represents a range of numeric values, defined by a minimum (inclusive) and maximum (exclusive) value or a "full" range, which includes all possible numeric values.
 
 ### Lexical Space
 
@@ -103,13 +103,13 @@ Other keys may be present in the JSON object, but they are ignored by the dataty
 
 ### Value Space
 
-An interval of numeric values, defined by the minimum and maximum values, or the full range of numeric values.
+An interval of numeric values, defined by the minimum (inclusive) and maximum (exclusive) values, or the full range of numeric values.
 
 ### Lexical-To-Value Mapping
 
 The lexical representation is parsed as a JSON object.
 The `type` key is used to determine if the range is `full` or `concrete`.
-If `type` is `concrete`, the `from` and `to` keys are used to define the range.
+If `type` is `concrete`, the `from` and `to` keys are used to define the range, where `from` is the minimum value (inclusive) and `to` is the maximum value (exclusive).
 After parsing, the JSON object is converted into a tensor structure.
 
 !!! example
@@ -125,7 +125,7 @@ After parsing, the JSON object is converted into a tensor structure.
 
 #### `tensor:cos`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:cos** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:cos** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 The result of the function is a tensor of the same shape as the input tensor, where each element is replaced by its cosine value.
 
@@ -134,20 +134,20 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:cos("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 3.1415]}"^^tensor:NumericDataTensor)
+    tensor:cos("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 3.1415]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, -1]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, -1]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:exp`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:exp** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:exp** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 The result of the function is a tensor of the same shape as the input tensor, where each element is replaced by its exponential value.
 
@@ -156,20 +156,20 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:exp("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 1]}"^^tensor:NumericDataTensor)
+    tensor:exp("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 1]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, 2.7183]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, 2.7183]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:log`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:log** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:log** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 The result of the function is a tensor of the same shape as the input tensor, where each element is replaced by its natural logarithm value.
 
@@ -178,20 +178,20 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:log("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, 2.7183]}"^^tensor:NumericDataTensor)
+    tensor:log("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, 2.7183]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 1]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 1]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:logp`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:logp** (xsd:double _p_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:logp** (xsd:double _p_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 The result is a tensor of the same shape, where each element is replaced by its logarithm with base _p_.
 
@@ -200,20 +200,20 @@ The result is a tensor of the same shape, where each element is replaced by its 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:logp(10, "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, 10]}"^^tensor:NumericDataTensor)
+    tensor:logp(10, "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, 10]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 1]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 1]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:poly`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:poly** (xsd:double _n_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:poly** (xsd:double _n_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 The result is a tensor where each element is raised to the power _n_.
 
@@ -222,20 +222,20 @@ The result is a tensor where each element is raised to the power _n_.
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:poly(2, "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [2, 3]}"^^tensor:NumericDataTensor)
+    tensor:poly(2, "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [2, 3]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [4, 9]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [4, 9]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:scale`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:scale** (xsd:double _factor_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:scale** (xsd:double _factor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 The result is a tensor of the same shape, where each element is multiplied by the given scalar factor.
 
@@ -244,20 +244,20 @@ The result is a tensor of the same shape, where each element is multiplied by th
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:scale(3, "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [2, 3]}"^^tensor:NumericDataTensor)
+    tensor:scale(3, "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [2, 3]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [6, 9]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [6, 9]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:sin`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:sin** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:sin** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 The result of the function is a tensor of the same shape as the input tensor, where each element is replaced by its sine value.
 
@@ -266,20 +266,20 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:sin("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 3.1415]}"^^tensor:NumericDataTensor)
+    tensor:sin("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 3.1415]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 0]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 0]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:abs`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:abs** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:abs** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 The result of the function is a tensor of the same shape as the input tensor, where each element is replaced by its absolute value.
 
@@ -288,35 +288,35 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:abs("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [-1, 2]}"^^tensor:NumericDataTensor)
+    tensor:abs("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [-1, 2]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, 2]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, 2]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:cast`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:cast** (xsd:string _type_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:cast** (xsd:string _type_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-The result of the function is a tensor of the same shape as the input tensor, where each element is cast to the specified type. The supported types are: `float16`, `float32`, `float64`, `int16`, `int32`, `int64` and `bool`. `Bool` type is special - all non-zero values are cast to `true`, and zero values are cast to `false`, and the tensor becomes a `tensor:BooleanDataTensor` literal. If a `tensor:BooleanDataTensor` literal is cast to a numeric type, `true` values become `1`, and `false` values become `0` and datatype becomes `tensor:NumericDataTensor`.
+The result of the function is a tensor of the same shape as the input tensor, where each element is cast to the specified type. The supported types are: `float16`, `float32`, `float64`, `int16`, `int32`, `int64` and `bool`. `Bool` type is special - all non-zero values are cast to `true`, and zero values are cast to `false`, and the tensor becomes a `tensor:DataTensor` literal. If a `tensor:DataTensor` literal is cast to a numeric type, `true` values become `1`, and `false` values become `0` and datatype becomes `tensor:DataTensor`.
 
 !!! example "Example 1"
 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:cast("int32", "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1.5, 2.5]}"^^tensor:NumericDataTensor)
+    tensor:cast("int32", "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1.5, 2.5]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [1, 2]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [1, 2]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -324,13 +324,13 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:cast("bool", "{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [0, 5]}"^^tensor:NumericDataTensor)
+    tensor:cast("bool", "{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [0, 5]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:BooleanDataTensor
+    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 3"
@@ -338,22 +338,22 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:cast("float32", "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:BooleanDataTensor)
+    tensor:cast("float32", "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1.0, 0.0]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1.0, 0.0]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:reshape`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:reshape** (xsd:integer ... _newShape_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:reshape** (xsd:integer ... _newShape_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:reshape** (xsd:integer ... _newShape_, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:reshape** (xsd:integer ... _newShape_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 The result of the function is a tensor with the specified new shape. The total number of elements will remain the same; thus, the product of the dimensions in the new shape must equal the product of the dimensions in the original shape.
 
@@ -364,13 +364,13 @@ If one of the dimensions in the new shape is specified as -1, its size will be i
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:reshape(2, 2, "{\"type\":\"int32\",\"shape\":[4],\"data\":[1, 2, 3, 4]}"^^tensor:NumericDataTensor)
+    tensor:reshape(2, 2, "{\"type\":\"int32\",\"shape\":[4],\"data\":[1, 2, 3, 4]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [1, 2, 3, 4]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [1, 2, 3, 4]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -378,13 +378,13 @@ If one of the dimensions in the new shape is specified as -1, its size will be i
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:reshape(1, 4, "{\"type\":\"bool\",\"shape\":[4],\"data\":[true, false, true, false]}"^^tensor:BooleanDataTensor)
+    tensor:reshape(1, 4, "{\"type\":\"bool\",\"shape\":[4],\"data\":[true, false, true, false]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"bool\", \"shape\": [1, 4], \"data\": [true, false, true, false]}"^^tensor:BooleanDataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 4], \"data\": [true, false, true, false]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 3"
@@ -392,22 +392,22 @@ If one of the dimensions in the new shape is specified as -1, its size will be i
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:reshape(2, -1, "{\"type\":\"int32\",\"shape\":[6],\"data\":[1, 2, 3, 4, 5, 6]}"^^tensor:NumericDataTensor)
+    tensor:reshape(2, -1, "{\"type\":\"int32\",\"shape\":[6],\"data\":[1, 2, 3, 4, 5, 6]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [2, 3], \"data\": [1, 2, 3, 4, 5, 6]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [2, 3], \"data\": [1, 2, 3, 4, 5, 6]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:transpose`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:transpose** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:transpose** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:transpose** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:transpose** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 The result of the function is a tensor where the dimensions are reversed. For example, a tensor with shape `[2, 3, 4]` will become a tensor with shape `[4, 3, 2]`.
 
@@ -416,13 +416,13 @@ The result of the function is a tensor where the dimensions are reversed. For ex
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:transpose("{\"type\":\"int32\",\"shape\":[2, 3],\"data\":[1, 2, 3, 4, 5, 6]}"^^tensor:NumericDataTensor)
+    tensor:transpose("{\"type\":\"int32\",\"shape\":[2, 3],\"data\":[1, 2, 3, 4, 5, 6]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [3, 2], \"data\": [1, 4, 2, 5, 3, 6]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [3, 2], \"data\": [1, 4, 2, 5, 3, 6]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -430,22 +430,22 @@ The result of the function is a tensor where the dimensions are reversed. For ex
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:transpose("{\"shape\":[2, 2],\"data\":[true, false, false, true]}"^^tensor:BooleanDataTensor)
+    tensor:transpose("{\"shape\":[2, 2],\"data\":[true, false, false, true]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"shape\": [2, 2], \"data\": [true, false, false, true]}"^^tensor:BooleanDataTensor
+    "{\"shape\": [2, 2], \"data\": [true, false, false, true]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:flatten`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:flatten** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:flatten** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:flatten** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:flatten** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 The result of the function is a one-dimensional tensor containing all the elements of the input tensor in row-major (C-style) order.
 
@@ -454,13 +454,13 @@ The result of the function is a one-dimensional tensor containing all the elemen
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:flatten("{\"type\":\"int32\",\"shape\":[2, 3],\"data\":[1, 2, 3, 4, 5, 6]}"^^tensor:NumericDataTensor)
+    tensor:flatten("{\"type\":\"int32\",\"shape\":[2, 3],\"data\":[1, 2, 3, 4, 5, 6]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [6], \"data\": [1, 2, 3, 4, 5, 6]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [6], \"data\": [1, 2, 3, 4, 5, 6]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -468,13 +468,13 @@ The result of the function is a one-dimensional tensor containing all the elemen
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:flatten("{\"shape\":[2, 2],\"data\":[true, false, false, true]}"^^tensor:BooleanDataTensor)
+    tensor:flatten("{\"shape\":[2, 2],\"data\":[true, false, false, true]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"shape\": [4], \"data\": [true, false, false, true]}"^^tensor:BooleanDataTensor
+    "{\"shape\": [4], \"data\": [true, false, false, true]}"^^tensor:DataTensor
     ```
 
 ### 4.2 Operators
@@ -483,9 +483,9 @@ When using the binary operators, the input tensors are broadcasted to a common s
 
 #### `tensor:not`
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:not** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:not** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:not** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:not** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 The result of the function is a tensor of the same shape as the input tensor, where each element is logically negated. For numeric tensors, non-zero values are treated as `true`, and zero and negative values as `false`.
 
@@ -494,13 +494,13 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:not("{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:BooleanDataTensor)
+    tensor:not("{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [false, true]}"^^tensor:BooleanDataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -508,20 +508,20 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:not("{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [0, 5]}"^^tensor:NumericDataTensor)
+    tensor:not("{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [0, 5]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:BooleanDataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:add`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:add** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:add** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 The result of the function is a tensor of broadcasted shape, where each element is the sum of corresponding elements in the input tensors.
 
@@ -530,13 +530,13 @@ The result of the function is a tensor of broadcasted shape, where each element 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:add("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, 2]}"^^tensor:NumericDataTensor, "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [3, 4]}"^^tensor:NumericDataTensor)
+    tensor:add("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, 2]}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [3, 4]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [4, 6]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [4, 6]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -544,20 +544,20 @@ The result of the function is a tensor of broadcasted shape, where each element 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:add("{\"type\":\"float32\",\"shape\":[1, 2, 2], \"data\":[3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[1],\"data\":[1, 2]}"^^tensor:NumericDataTensor)
+    tensor:add("{\"type\":\"float32\",\"shape\":[1, 2, 2], \"data\":[3, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[1],\"data\":[1, 2]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2, 2], \"data\": [4, 4, 4, 6]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2, 2], \"data\": [4, 4, 4, 6]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:subtract`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:subtract** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:subtract** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 The result of the function is a tensor of broadcasted shape, where each element is the difference between corresponding elements in the input tensors.
 
@@ -566,13 +566,13 @@ The result of the function is a tensor of broadcasted shape, where each element 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:subtract("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [5, 7]}"^^tensor:NumericDataTensor, "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [2, 3]}"^^tensor:NumericDataTensor)
+    tensor:subtract("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [5, 7]}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [2, 3]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [3, 4]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [3, 4]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -580,20 +580,20 @@ The result of the function is a tensor of broadcasted shape, where each element 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:subtract("{\"type\":\"float32\",\"shape\":[2, 2], \"data\":[3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[2, 1]}"^^tensor:NumericDataTensor)
+    tensor:subtract("{\"type\":\"float32\",\"shape\":[2, 2], \"data\":[3, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[2, 1]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [1, 1, 1, 3]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [1, 1, 1, 3]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:multiply`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:multiply** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:multiply** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 The result of the function is a tensor of broadcasted shape, where each element is the product of corresponding elements in the input tensors.
 
@@ -602,13 +602,13 @@ The result of the function is a tensor of broadcasted shape, where each element 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:multiply("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [2, 3]}"^^tensor:NumericDataTensor, "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [4, 5]}"^^tensor:NumericDataTensor)
+    tensor:multiply("{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [2, 3]}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [4, 5]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [8, 15]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [8, 15]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -616,20 +616,20 @@ The result of the function is a tensor of broadcasted shape, where each element 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:multiply("{\"type\":\"int32\",\"shape\":[2, 2], \"data\":[3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[2, 1]}"^^tensor:NumericDataTensor)
+    tensor:multiply("{\"type\":\"int32\",\"shape\":[2, 2], \"data\":[3, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[2, 1]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [6, 2, 6, 4]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [6, 2, 6, 4]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:divide`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:divide** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:divide** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 The result of the function is a tensor of broadcasted shape, where each element is the quotient of corresponding elements in the input tensors.
 
@@ -644,7 +644,7 @@ The result of the function is a tensor of broadcasted shape, where each element 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [4, 3]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [4, 3]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -652,22 +652,22 @@ The result of the function is a tensor of broadcasted shape, where each element 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:divide("{\"type\":\"int32\",\"shape\":[2, 2], \"data\":[3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[2, 1]}"^^tensor:NumericDataTensor)
+    tensor:divide("{\"type\":\"int32\",\"shape\":[2, 2], \"data\":[3, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[2, 1]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [1, 2, 1, 2]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [1, 2, 1, 2]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:eq`
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:eq** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:eq** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:eq** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_1_, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:eq** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 The function returns a boolean tensor with a broadcasted shape, where each element is `true` if the corresponding elements in the two tensors are equal, and `false` otherwise.
 
@@ -682,7 +682,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:BooleanDataTensor
+    "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -696,16 +696,16 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:BooleanDataTensor
+    "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:neq`
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:neq** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:neq** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:neq** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_1_, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:neq** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 The function returns a boolean tensor with a broadcasted shape, where each element is `true` if the corresponding elements in the two tensors are not equal, and `false` otherwise.
 
@@ -720,7 +720,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:BooleanDataTensor
+    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -734,14 +734,14 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:BooleanDataTensor
+    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:and`
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:and** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_1_, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:and** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 The function returns a boolean tensor with a broadcasted shape, where each element is the logical AND of the input tensors.
 
@@ -756,14 +756,14 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:BooleanDataTensor
+    "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:or`
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:or** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_1_, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:or** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 The function returns a boolean tensor with a broadcasted shape, where each element is the logical OR of the input tensors.
 
@@ -778,14 +778,14 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [true, true]}"^^tensor:BooleanDataTensor
+    "{\"shape\": [1, 2], \"data\": [true, true]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:gt`
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:gt** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:gt** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 The function returns a boolean tensor with a broadcasted shape, where each element is `true` if the corresponding element from _term_1_ is greater than the corresponding element from _term_2_, and `false` otherwise.
 
@@ -800,14 +800,14 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:BooleanDataTensor
+    "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:lt`
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:lt** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:lt** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 The function returns a boolean tensor with a broadcasted shape, where each element is `true` if the corresponding element from _term_1_ is lesser than the corresponding element from _term_2_, and `false` otherwise.
 
@@ -822,16 +822,16 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:BooleanDataTensor
+    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
     ```
 
 ### 4.3. Indexing Functions
 
 #### `tensor:sub`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:sub** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _tensor_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:sub** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:sub** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _tensor_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:sub** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
 
 The result of the function is a sub-tensor extracted from the input tensor using numerical index tensor. The selection depends on the structure and values of the index tensor.
 
@@ -841,13 +841,13 @@ The result of the function is a sub-tensor extracted from the input tensor using
 
     Evaluating the SPARQL expression
     ```sparql
-    tensor:sub("{\"type\":\"int32\",\"shape\":[8],\"data\":[3, 2, 3, 4, 3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[0, 1]}"^^tensor:NumericDataTensor)
+    tensor:sub("{\"type\":\"int32\",\"shape\":[8],\"data\":[3, 2, 3, 4, 3, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[0, 1]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [1, 3]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [1, 3]}"^^tensor:DataTensor
     ```
 
 - When the tensor is multi-dimensional, and the number of rows in the _index tensor_ is equal to the number of dimensions in the tensor, the index tensor is a 2-dimensional tensor where each row contains indices for each dimension. The result is a 1-dimensional tensor containing the elements at those indices.
@@ -857,13 +857,13 @@ The result of the function is a sub-tensor extracted from the input tensor using
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[0, 1, 1, 0]}"^^tensor:NumericDataTensor)
+    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[0, 1, 1, 0]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [2], \"data\": [3, 4]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [2], \"data\": [3, 4]}"^^tensor:DataTensor
     ```
 
 - When the tensor is multi-dimensional, and the number of rows in the _index tensor_ is not equal to the number of dimensions in the tensor, than slice indexing is performed (depends on the index tensor dimensionality).
@@ -874,13 +874,13 @@ The result of the function is a sub-tensor extracted from the input tensor using
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[1, 1],\"data\":[1]}"^^tensor:NumericDataTensor)
+    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[1, 1],\"data\":[1]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:DataTensor
     ```
 
 - The index tensor is 2-dimensional, than slicing is performed firstly the first dimension, and then the second dimension, and the result is a tensor with the same number of dimensions as the input tensor, but with the first two dimensions reduced to the lengths of the _index tensor_.
@@ -890,13 +890,13 @@ The result of the function is a sub-tensor extracted from the input tensor using
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[0, 0, 1, 1]}"^^tensor:NumericDataTensor)
+    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[0, 0, 1, 1]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [2], \"data\": [3, 4, 3, 4]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [2], \"data\": [3, 4, 3, 4]}"^^tensor:DataTensor
     ```
 
 - When the index tensor is more than 3-dimensional, the function will raise an error, as it is not supported.
@@ -905,9 +905,9 @@ The result of the function is a sub-tensor extracted from the input tensor using
 
 #### `tensor:mask`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:mask** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _tensor_, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:mask** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:mask** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _tensor_, [tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _indexTensor_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:mask** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
 
 The result of the function is a sub-tensor extracted from the input tensor using the boolean mask tensor. The selection depends on the mask tensor.
 
@@ -918,22 +918,22 @@ The result of the function is a sub-tensor extracted from the input tensor using
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"bool\",\"shape\":[2, 2],\"data\":[true, false, true, true]}"^^tensor:BooleanDataTensor)
+    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\":\"bool\",\"shape\":[2, 2],\"data\":[true, false, true, true]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [3], \"data\": [3, 3, 4]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [3], \"data\": [3, 3, 4]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### tensor:index
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:index** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _tensor_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:index** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
 
-[tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) **tensor:index** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _tensor_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:index** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
 
 The result of the function is an element or sub-tensor extracted from the input tensor using numerical index tensor. The selection depends on the structure and values of the index tensor.
 
@@ -948,7 +948,7 @@ The result of the function is an element or sub-tensor extracted from the input 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:index("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[1, 0]}"^^tensor:NumericDataTensor)
+    tensor:index("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[1, 0]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -962,20 +962,20 @@ The result of the function is an element or sub-tensor extracted from the input 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:index("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:NumericDataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[1, 0]}"^^tensor:NumericDataTensor)
+    tensor:index("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[1, 0]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:DataTensor
     ```
 
 ### 4.4 Concatenating Functions
 
 #### `tensor:concat`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:concat** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:concat** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 This function returns a tensor that is the concatenation of the two input tensors along the specified axis. The other dimensions must match.
 
@@ -984,18 +984,18 @@ This function returns a tensor that is the concatenation of the two input tensor
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:concat(0, "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [1, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:NumericDataTensor)
+    tensor:concat(0, "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [1, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [4, 2], \"data\": [1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [4, 2], \"data\": [1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor
     ```
 
 #### `tensor:hstack`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:hstack** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:hstack** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 This function returns a tensor that is the result of horizontally stacking the two input tensors (i.e., concatenation along the last axis). The tensors must be broadcast-compatible along other dimensions.
 
@@ -1004,20 +1004,20 @@ This function returns a tensor that is the result of horizontally stacking the t
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:hstack("{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [1, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:NumericDataTensor)
+    tensor:hstack("{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [1, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [2, 4], \"data\": [1, 2, 5, 6, 3, 4, 7, 8]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [2, 4], \"data\": [1, 2, 5, 6, 3, 4, 7, 8]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:vstack`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:vstack** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:vstack** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 This function returns a tensor that is the result of vertically stacking the two input tensors (i.e., concatenation along the first axis). The tensors must be broadcast-compatible along other dimensions.
 
@@ -1026,22 +1026,22 @@ This function returns a tensor that is the result of vertically stacking the two
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:vstack("{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [1, 2, 3, 4]}"^^tensor:NumericDataTensor, "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:NumericDataTensor)
+    tensor:vstack("{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [1, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [4, 2], \"data\": [1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [4, 2], \"data\": [1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor
     ```
 
 ### 4.5. Reduction Functions
 
 #### `tensor:all`
 
-[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:all** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_1_)
+[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:all** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:all** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:all** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function checks if all elements in the boolean tensor are true. In case of numeric tensor, it checks if all elements are non-zero. Returns a single boolean value.
 
@@ -1050,7 +1050,7 @@ This function checks if all elements in the boolean tensor are true. In case of 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:all("{\"shape\": [2], \"data\": [true, true]}"^^tensor:BooleanDataTensor)
+    tensor:all("{\"shape\": [2], \"data\": [true, true]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1064,7 +1064,7 @@ This function checks if all elements in the boolean tensor are true. In case of 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:all("{\"shape\": [2], \"data\": [1, 2]}"^^tensor:NumericDataTensor)
+    tensor:all("{\"shape\": [2], \"data\": [1, 2]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1077,9 +1077,9 @@ This function checks if all elements in the boolean tensor are true. In case of 
 
 #### `tensor:any`
 
-[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:any** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_1_)
+[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:any** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:any** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:any** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function checks if any element in the boolean tensor is true. In case of numeric tensor, it checks if any element is non-zero. Returns a single boolean value.
 
@@ -1088,7 +1088,7 @@ This function checks if any element in the boolean tensor is true. In case of nu
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:any("{\"shape\": [2], \"data\": [false, true]}"^^tensor:BooleanDataTensor)
+    tensor:any("{\"shape\": [2], \"data\": [false, true]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1102,7 +1102,7 @@ This function checks if any element in the boolean tensor is true. In case of nu
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:any("{\"shape\": [2], \"data\": [1, 0]}"^^tensor:NumericDataTensor)
+    tensor:any("{\"shape\": [2], \"data\": [1, 0]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1115,9 +1115,9 @@ This function checks if any element in the boolean tensor is true. In case of nu
 
 #### `tensor:none`
 
-[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:none** ([tensor:BooleanDataTensor](https://w3id.org/rdf-tensor/vocab#BooleanDataTensor) _term_1_)
+[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:none** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:none** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:none** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function checks if no elements in the boolean tensor are true. In case of numeric tensor, it checks if all elements are zero. Returns a single boolean value.
 
@@ -1126,7 +1126,7 @@ This function checks if no elements in the boolean tensor are true. In case of n
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:none("{\"shape\": [2], \"data\": [false, false]}"^^tensor:BooleanDataTensor)
+    tensor:none("{\"shape\": [2], \"data\": [false, false]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1140,7 +1140,7 @@ This function checks if no elements in the boolean tensor are true. In case of n
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:none("{\"shape\": [2], \"data\": [0, 0]}"^^tensor:NumericDataTensor)
+    tensor:none("{\"shape\": [2], \"data\": [0, 0]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1153,8 +1153,8 @@ This function checks if no elements in the boolean tensor are true. In case of n
 
 #### `tensor:avg`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:avg** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:avg** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:avg** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:avg** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the average along the specified axis. If the axis is negative, the average is calculated over the entire tensor. It returns a reduced tensor or a scalar.
 
@@ -1163,21 +1163,21 @@ This function computes the average along the specified axis. If the axis is nega
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:avg(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [1, 2, 3, 4]}"^^tensor:NumericDataTensor)
+    tensor:avg(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [1, 2, 3, 4]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [2], \"data\": [1.5, 3.5]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [2], \"data\": [1.5, 3.5]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:sum`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:sum** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:sum** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:sum** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:sum** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the sum along the specified axis. If the axis is negative, the sum is calculated over the entire tensor. It returns a reduced tensor or a scalar.
 
@@ -1186,21 +1186,21 @@ This function computes the sum along the specified axis. If the axis is negative
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:sum(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [1, 2, 3, 4]}"^^tensor:NumericDataTensor)
+    tensor:sum(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [1, 2, 3, 4]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [2], \"data\": [3, 7]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [2], \"data\": [3, 7]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:prod`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:prod** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:prod** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:prod** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:prod** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the product along the specified axis. If the axis is negative, the product is calculated over the entire tensor. It returns a reduced tensor or a scalar.
 
@@ -1209,22 +1209,22 @@ This function computes the product along the specified axis. If the axis is nega
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:prod(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [1, 2, 3, 4]}"^^tensor:NumericDataTensor)
+    tensor:prod(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [1, 2, 3, 4]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [2], \"data\": [2, 12]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [2], \"data\": [2, 12]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:max`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:max** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:max** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:max** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:max** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the maximum along the specified axis. If the axis is negative, the maximum is calculated over the entire tensor. It returns a reduced tensor or a scalar.
 
@@ -1233,22 +1233,22 @@ This function computes the maximum along the specified axis. If the axis is nega
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:max(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [1, 5, 2, 4]}"^^tensor:NumericDataTensor)
+    tensor:max(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [1, 5, 2, 4]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [2], \"data\": [5, 4]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [2], \"data\": [5, 4]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:median`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:median** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:median** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:median** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:median** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the median along the specified axis. If the axis is negative, the median is calculated over the entire tensor. It returns a reduced tensor or a scalar.
 
@@ -1257,22 +1257,22 @@ This function computes the median along the specified axis. If the axis is negat
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:median(1, "{\"type\": \"float32\", \"shape\": [1, 3], \"data\": [7, 1, 3]}"^^tensor:NumericDataTensor)
+    tensor:median(1, "{\"type\": \"float32\", \"shape\": [1, 3], \"data\": [7, 1, 3]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1], \"data\": [3]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1], \"data\": [3]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:min`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:min** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:min** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:min** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:min** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the minimum along the specified axis. If the axis is negative, the minimum is calculated over the entire tensor. It returns a reduced tensor or a scalar.
 
@@ -1281,22 +1281,22 @@ This function computes the minimum along the specified axis. If the axis is nega
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:min(1, "{\"type\": \"float32\", \"shape\": [1,3], \"data\": [7, 1, 3]}"^^tensor:NumericDataTensor)
+    tensor:min(1, "{\"type\": \"float32\", \"shape\": [1,3], \"data\": [7, 1, 3]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1], \"data\": [1]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1], \"data\": [1]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:std`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:std** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:std** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:std** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:std** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the standard deviation along the specified axis. If the axis is negative, the standard deviation is calculated over the entire tensor. It returns a reduced tensor or a scalar.
 
@@ -1305,22 +1305,22 @@ This function computes the standard deviation along the specified axis. If the a
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:std(1, "{\"type\": \"float32\", \"shape\": [1,3], \"data\": [1, 2, 3]}"^^tensor:NumericDataTensor)
+    tensor:std(1, "{\"type\": \"float32\", \"shape\": [1,3], \"data\": [1, 2, 3]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1], \"data\": [0.8165]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1], \"data\": [0.8165]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:var`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:var** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:var** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:var** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:var** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the variance along the specified axis. If the axis is negative, the variance is calculated over the entire tensor. It returns a reduced tensor or a scalar.
 
@@ -1329,22 +1329,22 @@ This function computes the variance along the specified axis. If the axis is neg
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:var(1, "{\"type\": \"float32\", \"shape\": [1,3], \"data\": [1, 2, 3]}"^^tensor:NumericDataTensor)
+    tensor:var(1, "{\"type\": \"float32\", \"shape\": [1,3], \"data\": [1, 2, 3]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [1], \"data\": [0.6667]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [1], \"data\": [0.6667]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:norm1`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:norm1** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:norm1** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:norm1** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:norm1** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the L1 norm (sum of absolute values) along the specified axis. If the axis is negative, the L1 norm (sum of absolute values) is calculated over the entire tensor. It returns a reduced tensor or a scalar.
 
@@ -1353,22 +1353,22 @@ This function computes the L1 norm (sum of absolute values) along the specified 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:norm1(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [1, -1, -2, 2]}"^^tensor:NumericDataTensor)
+    tensor:norm1(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [1, -1, -2, 2]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [2], \"data\": [2, 4]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [2], \"data\": [2, 4]}"^^tensor:DataTensor
     ```
 
 ---
 
 #### `tensor:norm2`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:norm2** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:norm2** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:norm1** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:norm1** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the L2 norm (Euclidean norm) along the specified axis. If the axis is negative, the L2 norm (Euclidean norm) is calculated over the entire tensor. It returns a reduced tensor or a scalar.
 
@@ -1377,20 +1377,20 @@ This function computes the L2 norm (Euclidean norm) along the specified axis. If
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:norm2(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [3, 4, 6, 8]}"^^tensor:NumericDataTensor)
+    tensor:norm2(1, "{\"type\": \"float32\", \"shape\": [2,2], \"data\": [3, 4, 6, 8]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"float32\", \"shape\": [2], \"data\": [5, 10]}"^^tensor:NumericDataTensor
+    "{\"type\": \"float32\", \"shape\": [2], \"data\": [5, 10]}"^^tensor:DataTensor
     ```
 
 ### 4.6. Similarity Functions
 
 #### `tensor:cosineSimilarity`
 
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:cosineSimilarity** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:cosineSimilarity** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 This function computes the cosine similarity between two numerical tensors. Returns a numeric scalar value.
 
@@ -1399,7 +1399,7 @@ This function computes the cosine similarity between two numerical tensors. Retu
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:cosineSimilarity( "{\"type\": \"float32\", \"shape\": [3], \"data\": [1, 0, 1]}"^^tensor:NumericDataTensor, "{\"type\": \"float32\", \"shape\": [3], \"data\": [1, 1, 0]}"^^tensor:NumericDataTensor)
+    tensor:cosineSimilarity( "{\"type\": \"float32\", \"shape\": [3], \"data\": [1, 0, 1]}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [3], \"data\": [1, 1, 0]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1412,7 +1412,7 @@ This function computes the cosine similarity between two numerical tensors. Retu
 
 #### `tensor:euclideanDistance`
 
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:euclideanDistance** ([tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_1_, [tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) _term_2_)
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:euclideanDistance** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 This function computes the Euclidean distance between two numerical tensors. Returns a numeric scalar value.
 
@@ -1421,7 +1421,7 @@ This function computes the Euclidean distance between two numerical tensors. Ret
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:euclideanDistance("{\"type\": \"float32\", \"shape\": [2], \"data\": [3, 4]}"^^tensor:NumericDataTensor, "{\"type\": \"float32\", \"shape\": [2], \"data\": [0, 0]}"^^tensor:NumericDataTensor)
+    tensor:euclideanDistance("{\"type\": \"float32\", \"shape\": [2], \"data\": [3, 4]}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [2], \"data\": [0, 0]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1434,9 +1434,9 @@ This function computes the Euclidean distance between two numerical tensors. Ret
 
 #### `tensor:create`
 
-[tensor:NumericDataTensor](https://w3id.org/rdf-tensor/vocab#NumericDataTensor) **tensor:create** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) | [xsd:float](http://www.w3.org/2001/XMLSchema#float) | [xsd:double](http://www.w3.org/2001/XMLSchema#double) | [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) ... values)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:create** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) | [xsd:float](http://www.w3.org/2001/XMLSchema#float) | [xsd:double](http://www.w3.org/2001/XMLSchema#double) | [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) ... values)
 
-This function creates a `NumericDataTensor` or `BooleanDataTensor` from a list of scalar values of the specified type. The resulting tensor has a shape of 1xN, where N is the number of input values.
+This function creates a `DataTensor` or `DataTensor` from a list of scalar values of the specified type. The resulting tensor has a shape of 1xN, where N is the number of input values.
 
 !!! example "Example 1"
 
@@ -1449,7 +1449,7 @@ This function creates a `NumericDataTensor` or `BooleanDataTensor` from a list o
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [1, 4], \"data\": [1, 2, 3, 4]}"^^tensor:NumericDataTensor
+    "{\"type\": \"int32\", \"shape\": [1, 4], \"data\": [1, 2, 3, 4]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -1463,40 +1463,40 @@ This function creates a `NumericDataTensor` or `BooleanDataTensor` from a list o
     returns
 
     ```turtle
-    "{\"type\": \"bool\", \"shape\": [1, 3], \"data\": [true, false, true]}"^^tensor:BooleanDataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 3], \"data\": [true, false, true]}"^^tensor:DataTensor
     ```
 
 ## 5. SPARQL Aggregates
 
-The following aggregation functions are implemented as SPARQL extension aggregates. Each function operates over NumericDataTensor values and returns a NumericDataTensor with the most precise type used within each group. These functions do not support the DISTINCT modifier.
+The following aggregation functions are implemented as SPARQL extension aggregates. Each function operates over DataTensor values and returns a DataTensor with the most precise type used within each group. These functions do not support the DISTINCT modifier.
 
 ### `tensor:SUM`
 
 - **IRI:** `https://w3id.org/rdf-tensor/vocab#SUM`
 - **Description:** Sums grouped numeric tensors element-wise.
-- **Input:** A group of `NumericDataTensor` values.
-- **Output:** A `NumericDataTensor` representing the element-wise sum of all tensors in the group.
+- **Input:** A group of `DataTensor` values.
+- **Output:** A `DataTensor` representing the element-wise sum of all tensors in the group.
 
 ### `tensor:AVG`
 
 - **IRI:** `https://w3id.org/rdf-tensor/vocab#AVG`
 - **Description:** Computes the element-wise average of grouped tensors.
-- **Input:** A group of `NumericDataTensor` values.
-- **Output:** A `NumericDataTensor` representing the average tensor.
+- **Input:** A group of `DataTensor` values.
+- **Output:** A `DataTensor` representing the average tensor.
 
 ### `tensor:VAR`
 
 - **IRI:** `https://w3id.org/rdf-tensor/vocab#VAR`
 - **Description:** Calculates the element-wise variance across grouped tensors.
-- **Input:** A group of `NumericDataTensor` values.
-- **Output:** A `NumericDataTensor` representing the variance tensor.
+- **Input:** A group of `DataTensor` values.
+- **Output:** A `DataTensor` representing the variance tensor.
 
 ### `tensor:STD`
 
 - **IRI:** `https://w3id.org/rdf-tensor/vocab#STD`
 - **Description:** Computes the element-wise standard deviation across grouped tensors.
-- **Input:** A group of `NumericDataTensor` values.
-- **Output:** A `NumericDataTensor` representing the standard deviation tensor.
+- **Input:** A group of `DataTensor` values.
+- **Output:** A `DataTensor` representing the standard deviation tensor.
 
 ## A. References
 
