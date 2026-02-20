@@ -9,8 +9,8 @@ This is an extension to RDF and SPARQL that introduces 2 new datatypes, dozens o
 ## Features
 
 - **New datatypes:**
-  - `tensor:NumericDataTensor` – represents tensors containing numeric values.
-  - `tensor:BooleanDataTensor` – represents tensors containing boolean values.
+  - `tensor:DataTensor` – represents tensors containing numeric or boolean values
+  - `tensor:Range` – represents the range of numbers, either concrete (e.g., 0 to 1) or fully open (e.g., all numbers)
 - **New SPARQL functions:**
   - Tensor manipulations (addition, multiplication, reshaping, etc.)
   - Algebraic computations
@@ -34,7 +34,7 @@ This is an extension to RDF and SPARQL that introduces 2 new datatypes, dozens o
 
 The original SPARQL extension and implementation for Jena were done by **[Piotr Marciniak](https://github.com/cinekele)** – see the [original repository](https://github.com/RDF-tensor/jena-datatensor).
 
-The work is continued in this repository under the stewardship of [NeverBlink](https://neverblink.eu). The current maintainer is **[Piotr Sowiński (Ostrzyciel)](https://github.com/Ostrzyciel)**
+The work is continued in this repository under the stewardship of [NeverBlink](https://neverblink.eu). The current maintainers are **[Piotr Sowiński (Ostrzyciel)](https://github.com/Ostrzyciel)** and **[Nik Kozlov](https://github.com/nk2ishere)**.
 
 This repository is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
