@@ -1096,6 +1096,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#tensorrange" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tensor:range
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tensorshape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tensor:shape
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2271,6 +2293,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#tensorrange" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tensor:range
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tensorshape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tensor:shape
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3340,15 +3384,15 @@ After parsing, the JSON object is converted into a tensor structure.</p>
 </div>
 <h3 id="47-creation-functions">4.7 Creation Functions</h3>
 <h4 id="tensorcreate"><code>tensor:create</code></h4>
-<p><a href="https://w3id.org/rdf-tensor/vocab#DataTensor">tensor:DataTensor</a> <strong>tensor:create</strong> (<a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a> <em>type</em>, <a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> | <a href="http://www.w3.org/2001/XMLSchema#float">xsd:float</a> | <a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> | <a href="http://www.w3.org/2001/XMLSchema#boolean">xsd:boolean</a> ... values)</p>
-<p>This function creates a <code>DataTensor</code> or <code>DataTensor</code> from a list of scalar values of the specified type. The resulting tensor has a shape of 1xN, where N is the number of input values.</p>
+<p><a href="https://w3id.org/rdf-tensor/vocab#DataTensor">tensor:DataTensor</a> <strong>tensor:create</strong> (<a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a> <em>type</em>, <a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> | <a href="http://www.w3.org/2001/XMLSchema#float">xsd:float</a> | <a href="http://www.w3.org/2001/XMLSchema#double">xsd:double</a> | <a href="http://www.w3.org/2001/XMLSchema#boolean">xsd:boolean</a> ... <em>values</em>)</p>
+<p>This function creates a <code>DataTensor</code> from a list of scalar values of the specified type. The resulting tensor has a shape of <code>[N]</code>, where N is the number of input values.</p>
 <div class="admonition example">
 <p class="admonition-title">Example 1</p>
 <p>Evaluating the SPARQL expression</p>
 <div class="language-sparql highlight"><pre><span></span><code><span id="__span-130-1"><a id="__codelineno-130-1" name="__codelineno-130-1" href="#__codelineno-130-1"></a><span class="nn">tensor</span><span class="p">:</span><span class="nt">create</span><span class="p">(</span><span class="s">&quot;int32&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 </span></code></pre></div>
 <p>returns</p>
-<div class="language-turtle highlight"><pre><span></span><code><span id="__span-131-1"><a id="__codelineno-131-1" name="__codelineno-131-1" href="#__codelineno-131-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;int32\&quot;, \&quot;shape\&quot;: [1, 4], \&quot;data\&quot;: [1, 2, 3, 4]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-131-1"><a id="__codelineno-131-1" name="__codelineno-131-1" href="#__codelineno-131-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;int32\&quot;, \&quot;shape\&quot;: [4], \&quot;data\&quot;: [1, 2, 3, 4]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span>
 </span></code></pre></div>
 </div>
 <div class="admonition example">
@@ -3357,9 +3401,45 @@ After parsing, the JSON object is converted into a tensor structure.</p>
 <div class="language-sparql highlight"><pre><span></span><code><span id="__span-132-1"><a id="__codelineno-132-1" name="__codelineno-132-1" href="#__codelineno-132-1"></a><span class="nn">tensor</span><span class="p">:</span><span class="nt">create</span><span class="p">(</span><span class="s">&quot;bool&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
 </span></code></pre></div>
 <p>returns</p>
-<div class="language-turtle highlight"><pre><span></span><code><span id="__span-133-1"><a id="__codelineno-133-1" name="__codelineno-133-1" href="#__codelineno-133-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;bool\&quot;, \&quot;shape\&quot;: [1, 3], \&quot;data\&quot;: [true, false, true]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-133-1"><a id="__codelineno-133-1" name="__codelineno-133-1" href="#__codelineno-133-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;bool\&quot;, \&quot;shape\&quot;: [3], \&quot;data\&quot;: [true, false, true]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span>
 </span></code></pre></div>
 </div>
+<h4 id="tensorrange"><code>tensor:range</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/vocab#Range">tensor:Range</a> <strong>tensor:range</strong> (<a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>from</em>, <a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a> <em>to</em>)</p>
+<p><a href="https://w3id.org/rdf-tensor/vocab#Range">tensor:Range</a> <strong>tensor:range</strong> ()</p>
+<p>This function creates a <code>Range</code> object representing a sequence of indices from <code>from</code> to <code>to</code> (inclusive of <code>from</code>, exclusive of <code>to</code>). If no arguments are provided, it represents the full range.</p>
+<div class="admonition example">
+<p class="admonition-title">Example 1</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-134-1"><a id="__codelineno-134-1" name="__codelineno-134-1" href="#__codelineno-134-1"></a><span class="nn">tensor</span><span class="p">:</span><span class="nt">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns a <code>Range</code> object representing the indices from 0 to 4.</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-135-1"><a id="__codelineno-135-1" name="__codelineno-135-1" href="#__codelineno-135-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;concrete\&quot;, \&quot;from\&quot;: 0, \&quot;to\&quot;: 5}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">Range</span>
+</span></code></pre></div>
+</div>
+<div class="admonition example">
+<p class="admonition-title">Example 2</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-136-1"><a id="__codelineno-136-1" name="__codelineno-136-1" href="#__codelineno-136-1"></a><span class="nn">tensor</span><span class="p">:</span><span class="nt">range</span><span class="p">()</span>
+</span></code></pre></div>
+<p>returns a <code>Range</code> object representing the full range of indices for slicing tensors.</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-137-1"><a id="__codelineno-137-1" name="__codelineno-137-1" href="#__codelineno-137-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;full\&quot;}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">Range</span>
+</span></code></pre></div>
+</div>
+<hr />
+<h4 id="tensorshape"><code>tensor:shape</code></h4>
+<p><a href="https://w3id.org/rdf-tensor/vocab#DataTensor">tensor:DataTensor</a> <strong>tensor:shape</strong> (<a href="https://w3id.org/rdf-tensor/vocab#DataTensor">tensor:DataTensor</a> <em>term_1</em>)</p>
+<p>This function returns a 1-dimensional tensor of type <code>int64</code> containing the shape (dimensions) of the input tensor. For example, if the input tensor has shape <code>[2, 3, 4]</code>, the result is a 1-dimensional tensor <code>[2, 3, 4]</code> with shape <code>[3]</code>.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Evaluating the SPARQL expression</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-138-1"><a id="__codelineno-138-1" name="__codelineno-138-1" href="#__codelineno-138-1"></a><span class="nn">tensor</span><span class="p">:</span><span class="nt">shape</span><span class="p">(</span><span class="s">&quot;{\</span><span class="se">&quot;</span><span class="s">type\</span><span class="se">&quot;</span><span class="s">: \</span><span class="se">&quot;</span><span class="s">float32\</span><span class="se">&quot;</span><span class="s">, \</span><span class="se">&quot;</span><span class="s">shape\</span><span class="se">&quot;</span><span class="s">: [2, 3, 4], \</span><span class="se">&quot;</span><span class="s">data\</span><span class="se">&quot;</span><span class="s">: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]}&quot;</span><span class="o">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span><span class="p">)</span>
+</span></code></pre></div>
+<p>returns</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-139-1"><a id="__codelineno-139-1" name="__codelineno-139-1" href="#__codelineno-139-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;int64\&quot;, \&quot;shape\&quot;: [3], \&quot;data\&quot;: [2, 3, 4]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span>
+</span></code></pre></div>
+</div>
+<hr />
 <h2 id="5-sparql-aggregates">5. SPARQL Aggregates</h2>
 <p>The following aggregation functions are implemented as SPARQL extension aggregates. Each function operates over DataTensor values and returns a DataTensor with the most precise type used within each group. These functions do not support the DISTINCT modifier.</p>
 <h3 id="tensorsum_1"><code>tensor:SUM</code></h3>
@@ -3401,6 +3481,9 @@ After parsing, the JSON object is converted into a tensor structure.</p>
 <p><strong>[NumPy]</strong>
 <a name="numpy"></a>
 &nbsp; <a href="https://numpy.org/">NumPy</a>. NumPy Developers. NumPy. 2023. URL: https://numpy.org/</p>
+<p><strong>[ONNX (Open Neural Network Exchange)]</strong>
+<a name="onnx"></a>
+&nbsp; <a href="https://onnx.ai/">ONNX (Open Neural Network Exchange)</a>. ONNX. 2019. URL: https://onnx.ai/</p>
 
 
 
