@@ -1,0 +1,52 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor cosine function"
+graph {
+    node {
+        input: "input1"
+        output: "cast_input"
+        op_type: "Cast"
+        attribute {
+            name: "to"
+            i: 11
+            type: INT
+        }
+    }
+    node {
+        input: "cast_input"
+        input: "pi_over_2"
+        output: "shifted_input"
+        op_type: "Add"
+    }
+    node {
+        input: "shifted_input"
+        output: "output1"
+        op_type: "Sin"
+    }
+    initializer {
+        dims: 1
+        data_type: 11
+        name: "pi_over_2"
+        double_data: 1.5707963267948966
+    }
+    input {
+        name: "input1"
+        type {
+            tensor_type {
+                elem_type: <input_type>
+            }
+        }
+    }
+    output {
+        name: "output1"
+        type {
+            tensor_type {
+                elem_type: 11
+            }
+        }
+    }
+}
+opset_import {
+    version: 23
+}

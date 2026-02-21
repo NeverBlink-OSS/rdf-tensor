@@ -1,0 +1,41 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor reshape function"
+graph {
+  node {
+    input: "input1"
+    input: "shape"
+    output: "output1"
+    op_type: "Reshape"
+  }
+  initializer {
+    dims: <new_shape_length>
+    data_type: 7
+    int64_data: <new_shape_values[0]>
+    int64_data: <new_shape_values[1]>
+    int64_data: <new_shape_values[2]>
+    ...
+    int64_data: <new_shape_values[new_shape_length-1]>
+    name: "shape"
+  }
+  input {
+    name: "input1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+  output {
+    name: "output1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+}
+opset_import {
+  version: 23
+}
