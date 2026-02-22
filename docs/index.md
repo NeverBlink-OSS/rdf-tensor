@@ -1578,11 +1578,11 @@ Extracts an element or sub-tensor from the input tensor using a numerical index 
 
 ### 4.4 Concatenating Functions
 
-For concatenation functions, the input tensors must have compatible shapes according to the rules of broadcasting. The output tensor's shape is determined by the shapes of the input tensors and the specified axis of concatenation.
+For concatenation functions, the input tensors must have compatible shapes according to the rules of **[broadcasting](https://onnx.ai/onnx/repo-docs/Broadcasting.html)**. The output tensor's shape is determined by the shapes of the input tensors and the specified axis of concatenation.
 
 The rules of type resolution and precision hierarchy apply to these functions as well, meaning that the output tensor's data type is determined by the input tensors' data types according to the defined hierarchy.
 
-See both at the Operator Functions section above.
+See both at the [Operators section](#42-operators) above.
 
 #### `tensor:concat`
 
