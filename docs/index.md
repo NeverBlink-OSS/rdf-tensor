@@ -808,7 +808,7 @@ Casting of input tensors to a common type is performed according to the rules de
     
     1. If both tensors have the same type, the result is of that type.
     2. If both tensors are floating-point types, the result is the type with greater precision.
-    3. If both tensors are integer types, the result is the type with greater precision.
+    3. If both tensors are integer types of the same signedness, the result is the type with greater precision.
     4. If both tensors are integer types but one is signed and the other is unsigned, the result is the unsigned type.
     5. If one tensor is a floating-point type and the other is an integer type, the result is the floating-point type.
     6. If one tensor is of type `bool`, the result is the other tensor's type.
