@@ -790,7 +790,7 @@ The result of the function is a tensor of the same shape as the input tensor, wh
 
 ### 4.2 Operators
 
-When using the binary operators, the input tensors are broadcasted to a common shape. The broadcasting rules are the same as in ONNX **[[ONNX Broadcasting](https://onnx.ai/onnx/repo-docs/Broadcasting.html)]**. After broadcasting, the binary operator is applied element-wise to the input tensors.
+When using the binary operators, the input tensors are broadcasted to a common shape. The broadcasting rules are the same as in **[ONNX Broadcasting](https://onnx.ai/onnx/repo-docs/Broadcasting.html)**. After broadcasting, the binary operator is applied element-wise to the input tensors.
 
 Casting of input tensors to a common type is performed according to the rules defined in the ONNX model for each operator, which are based on the precision hierarchy of data types. The resulting tensor will have the more precise type of the two input tensors.
 
