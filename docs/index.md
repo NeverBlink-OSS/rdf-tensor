@@ -799,7 +799,7 @@ Casting of input tensors to a common type is performed according to the rules de
     When applying a binary operator to two tensors of different types, the resulting tensor will have the more precise type of the two input tensors. The precision hierarchy is as follows:
 
     - `float64` > `float32` > `float16`
-    - `int64` > `int32` > `int16`
+    - `uint64` >= `int64` > `uint32` >= `int32` > `uint16` >= `int16` > `uint8` >= `int8`
     - `bool` is considered less precise than any numeric type.
 
     For example, if one tensor is of type `float32` and the other is of type `int32`, the resulting tensor will be of type `float32`. If one tensor is of type `bool` and the other is of type `int16`, the resulting tensor will be of type `int16`.
@@ -809,8 +809,9 @@ Casting of input tensors to a common type is performed according to the rules de
     1. If both tensors have the same type, the result is of that type.
     2. If both tensors are floating-point types, the result is the type with greater precision.
     3. If both tensors are integer types, the result is the type with greater precision.
-    4. If one tensor is a floating-point type and the other is an integer type, the result is the floating-point type.
-    5. If one tensor is of type `bool`, the result is the other tensor's type.
+    4. If both tensors are integer types but one is signed and the other is unsigned, the result is the unsigned type.
+    5. If one tensor is a floating-point type and the other is an integer type, the result is the floating-point type.
+    6. If one tensor is of type `bool`, the result is the other tensor's type.
 
 ??? info "Optimizing casts for binary operators with identical input types"
 
