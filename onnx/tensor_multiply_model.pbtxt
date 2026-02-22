@@ -1,0 +1,59 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor multiplication function"
+graph {
+  node {
+    input: "input1"
+    output: "cast_input1"
+    op_type: "Cast"
+    attribute {
+      name: "to"
+      i: <resolved_type>
+      type: INT
+    }
+  }
+  node {
+    input: "input2"
+    output: "cast_input2"
+    op_type: "Cast"
+    attribute {
+      name: "to"
+      i: <resolved_type>
+      type: INT
+    }
+  }
+  node {
+    input: "cast_input1"
+    input: "cast_input2"
+    output: "output1"
+    op_type: "Mul"
+  }
+  input {
+    name: "input1"
+    type {
+      tensor_type {
+        elem_type: <input1_type>
+      }
+    }
+  }
+  input {
+    name: "input2"
+    type {
+      tensor_type {
+        elem_type: <input2_type>
+      }
+    }
+  }
+  output {
+    name: "output1"
+    type {
+      tensor_type {
+        elem_type: <resolved_type>
+      }
+    }
+  }
+}
+opset_import {
+  version: 23
+}
