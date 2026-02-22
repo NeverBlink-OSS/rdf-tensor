@@ -1,0 +1,51 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor p-base logarithm function"
+graph {
+  node {
+    input: "input1"
+    output: "cast_input"
+    op_type: "Cast"
+    attribute {
+      name: "to"
+      i: 11
+      type: INT
+    }
+  }
+  node {
+    input: "cast_input"
+    output: "log_input"
+    op_type: "Log"
+  }
+  node {
+    input: "log_input"
+    input: "log_base"
+    output: "output1"
+    op_type: "Div"
+  }
+  initializer {
+    data_type: 11
+    name: "log_base"
+    double_data: <log_base_value>
+  }
+  input {
+    name: "input1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+  output {
+    name: "output1"
+    type {
+      tensor_type {
+        elem_type: 11
+      }
+    }
+  }
+}
+opset_import {
+  version: 23
+}
