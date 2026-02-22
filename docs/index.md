@@ -1367,96 +1367,118 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
 
 #### `tensor:sub`
 
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:sub** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:sub** ([tensor:Range](https://w3id.org/rdf-tensor/vocab#Range) _range1_, ..., [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_)
 
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:sub** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
-
-The result of the function is a sub-tensor extracted from the input tensor using numerical index tensor. The selection depends on the structure and values of the index tensor.
-
-- When the _tensor_ is 1-dimensional, the _index tensor_ is a 1-dimensional tensor of indices, and the result is a 1-dimensional tensor containing the elements at those indices.
+Extracts a sub-tensor from the input tensor using range-based slicing, similar to NumPy array slicing. Each range argument specifies how to slice along the corresponding dimension of the tensor. The number of range arguments must match the number of dimensions in the input tensor.
 
 !!! example
 
-    Evaluating the SPARQL expression
+    Evaluating the SPARQL expression (equivalent to NumPy `tensor[1:3]`)
     ```sparql
-    tensor:sub("{\"type\":\"int32\",\"shape\":[8],\"data\":[3, 2, 3, 4, 3, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[0, 1]}"^^tensor:DataTensor)
+    tensor:sub(
+        tensor:range(1, 3),
+        "{\"type\":\"int32\",\"shape\":[5],\"data\":[10, 20, 30, 40, 50]}"^^tensor:DataTensor
+    )
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [1, 3]}"^^tensor:DataTensor
+    "{\"type\": \"int32\", \"shape\": [2], \"data\": [20, 30]}"^^tensor:DataTensor
     ```
-
-- When the tensor is multi-dimensional, and the number of rows in the _index tensor_ is equal to the number of dimensions in the tensor, the index tensor is a 2-dimensional tensor where each row contains indices for each dimension. The result is a 1-dimensional tensor containing the elements at those indices.
 
 !!! example
 
-    Evaluating the SPARQL expression
-
+    Evaluating the SPARQL expression (equivalent to NumPy `tensor[:, 1:2]`)
     ```sparql
-    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[0, 1, 1, 0]}"^^tensor:DataTensor)
+    tensor:sub(
+        tensor:range(),
+        tensor:range(1, 2),
+        "{\"type\":\"int32\",\"shape\":[2, 3],\"data\":[1, 2, 3, 4, 5, 6]}"^^tensor:DataTensor
+    )
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [2], \"data\": [3, 4]}"^^tensor:DataTensor
+    "{\"type\": \"int32\", \"shape\": [2, 1], \"data\": [2, 5]}"^^tensor:DataTensor
     ```
-
-- When the tensor is multi-dimensional, and the number of rows in the _index tensor_ is not equal to the number of dimensions in the tensor, than slice indexing is performed (depends on the index tensor dimensionality).
-  - The index tensor is 1-dimensional (it has to be row vector), than slicing is performed along the first dimension, and the result is a tensor with the same number of dimensions as the input tensor, but with the first dimension reduced to the length of the _index tensor_.
 
 !!! example
 
-    Evaluating the SPARQL expression
-
+    Evaluating the SPARQL expression (equivalent to NumPy `tensor[:, 0:1, 1:2]`)
     ```sparql
-    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[1, 1],\"data\":[1]}"^^tensor:DataTensor)
+    tensor:sub(
+        tensor:range(),
+        tensor:range(0, 1),
+        tensor:range(1, 2),
+        "{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor
+    )
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:DataTensor
+    "{\"type\": \"int32\", \"shape\": [2, 1, 1], \"data\": [2, 6]}"^^tensor:DataTensor
     ```
-
-- The index tensor is 2-dimensional, than slicing is performed firstly the first dimension, and then the second dimension, and the result is a tensor with the same number of dimensions as the input tensor, but with the first two dimensions reduced to the lengths of the _index tensor_.
 
 !!! example
 
-    Evaluating the SPARQL expression
-
+    Evaluating the SPARQL expression (equivalent to NumPy `tensor[1:2, :]`)
     ```sparql
-    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[0, 0, 1, 1]}"^^tensor:DataTensor)
+    tensor:sub(
+        tensor:range(1, 2),
+        tensor:range(),
+        "{\"type\":\"int32\",\"shape\":[3, 2],\"data\":[1, 2, 3, 4, 5, 6]}"^^tensor:DataTensor
+    )
     ```
 
     returns
 
     ```turtle
-    "{\"type\": \"int32\", \"shape\": [2], \"data\": [3, 4, 3, 4]}"^^tensor:DataTensor
+    "{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [3, 4]}"^^tensor:DataTensor
     ```
 
-- When the index tensor is more than 3-dimensional, the function will raise an error, as it is not supported.
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the same type as `input1`, where the shape is determined by the specified ranges along each dimension.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `axes_length`: The number of dimensions in the input tensor, which must match the number of range arguments.
+        - `axes_values`, `starts_values`, `ends_values`: The values of the range arguments, which determine how to slice along each dimension. For each dimension, the range is deconstructed into its corresponding `axis`, `start`, and `end` values. For full slices, the `start` is set to 0 and the `end` is set to the size of the dimension.
+
+     === "Model definition"
+
+        ```pbtxt title="tensor_sub_model.pbtxt"
+        {% include "./onnx/tensor_sub_model.pbtxt" %}
+        ```
 
 ---
 
 #### `tensor:mask`
 
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:mask** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:mask** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _maskTensor_)
 
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:mask** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
+Extracts elements from the input tensor using a boolean mask tensor. The mask tensor must have the same shape as the input tensor or be broadcastable to it.
 
-The result of the function is a sub-tensor extracted from the input tensor using the boolean mask tensor. The selection depends on the mask tensor.
-
-- The mask tensor is used to select elements from the input tensor based on the `true` values in the index tensor. The result is a 1-dimensional tensor containing the selected elements from the flattened tensor.
+The function selects elements from the input tensor where the corresponding value in the mask tensor is `true`. The result is always a 1-dimensional tensor containing the selected elements in row-major (C-style) order.
 
 !!! example
 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:sub("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\":\"bool\",\"shape\":[2, 2],\"data\":[true, false, true, true]}"^^tensor:DataTensor)
+    tensor:mask(
+        "{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:DataTensor,
+        "{\"shape\":[2, 2],\"data\":[true, false, true, true]}"^^tensor:DataTensor
+    )
     ```
 
     returns
@@ -1465,42 +1487,67 @@ The result of the function is a sub-tensor extracted from the input tensor using
     "{\"type\": \"int32\", \"shape\": [3], \"data\": [3, 3, 4]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A boolean tensor of the same shape as `input1` or broadcastable to it, where `true` values indicate which elements to select from `input1`.
+        - `output1`: A 1-dimensional tensor containing the selected elements from `input1` in row-major (C-style) order.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `mask_length`: The count of true values in the mask tensor, which determines the length of the output tensor.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_mask_model.pbtxt"
+        {% include "./onnx/tensor_mask_model.pbtxt" %}
+        ```
+
 ---
 
-#### tensor:index
+#### `tensor:index`
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:index** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
 
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:index** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _tensor_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _indexTensor_)
+Extracts an element or sub-tensor from the input tensor using a numerical index tensor. The behavior depends on the structure of the index tensor.
 
-The result of the function is an element or sub-tensor extracted from the input tensor using numerical index tensor. The selection depends on the structure and values of the index tensor.
+**Behavior:**
 
-- When the _index tensor_ size matches the number of dimensions in the input tensor, the _index tensor_ is a 1-dimensional tensor where each element corresponds to an index for each dimension. The result is a scalar value at that index.
-
-- When the _index tensor_ size is less than the number of dimensions in the input tensor, the _index tensor_ is a 1-dimensional tensor where each element corresponds to an index for the first dimensions. The result is a sub-tensor with the remaining dimensions.
-
+- When the _index tensor_ size matches the number of dimensions in the input tensor, each element corresponds to an index for each dimension. The result is a scalar value at that index.
+- When the _index tensor_ size is less than the number of dimensions in the input tensor, each element corresponds to an index for the first N dimensions. The result is a sub-tensor with the remaining dimensions.
 - When the _index tensor_ size is greater than the number of dimensions in the input tensor, an error is raised.
 
-!!! example "Example 1"
+!!! example
 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:index("{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[1, 0]}"^^tensor:DataTensor)
+    tensor:index(
+        "{\"type\":\"int32\",\"shape\":[2, 2],\"data\":[3, 2, 3, 4]}"^^tensor:DataTensor,
+        "{\"type\":\"int32\",\"shape\":[2],\"data\":[1, 0]}"^^tensor:DataTensor
+    )
     ```
 
     returns
 
     ```turtle
-    "4"^^xsd:int
+    "3"^^xsd:int
     ```
 
-!!! example "Example 2"
+!!! example
 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:index("{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor, "{\"type\":\"int32\",\"shape\":[2],\"data\":[1, 0]}"^^tensor:DataTensor)
+    tensor:index(
+        "{\"type\":\"int32\",\"shape\":[2, 2, 2],\"data\":[1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor,
+        "{\"type\":\"int32\",\"shape\":[1],\"data\":[1]}"^^tensor:DataTensor
+    )
     ```
 
     returns
@@ -1509,7 +1556,33 @@ The result of the function is an element or sub-tensor extracted from the input 
     "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [5, 6, 7, 8]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: An integer tensor where each element is an index for the corresponding dimension of `input1`. The shape of `input2` must be 1D and its size must be less than or equal to the number of dimensions in `input1`.
+        - `output1`: A scalar value if the size of `input2` matches the number of dimensions in `input1`, or a sub-tensor containing the remaining dimensions if the size of `input2` is less than the number of dimensions in `input1`.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_index_model.pbtxt"
+        {% include "./onnx/tensor_index_model.pbtxt" %}
+        ```
+
 ### 4.4 Concatenating Functions
+
+For concatenation functions, the input tensors must have compatible shapes according to the rules of **[broadcasting](https://onnx.ai/onnx/repo-docs/Broadcasting.html)**. The output tensor's shape is determined by the shapes of the input tensors and the specified axis of concatenation.
+
+The rules of type resolution and precision hierarchy apply to these functions as well, meaning that the output tensor's data type is determined by the input tensors' data types according to the defined hierarchy.
+
+See both at the [Operators section](#42-operators) above.
 
 #### `tensor:concat`
 
@@ -1531,6 +1604,29 @@ This function returns a tensor that is the concatenation of the two input tensor
     "{\"type\": \"float32\", \"shape\": [4, 2], \"data\": [1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input1_type> type.
+        - `input2`: A tensor that can be concatenated with `input1` along the specified axis, and has <input2_type> type.
+        - `output1`: A tensor of <resolved_type> type, where the shape is determined by concatenating the shapes of `input1` and `input2` along the specified axis.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the output tensor, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details)
+        - `axis_value`: The axis along which to concatenate the input tensors, which can be any integer value from `-rank` to `rank-1`, where `rank` is the number of dimensions in the input tensors.
+
+     === "Model definition"
+
+        ```pbtxt title="tensor_concat_model.pbtxt"
+        {% include "./onnx/tensor_concat_model.pbtxt" %}
+        ```
+
 #### `tensor:hstack`
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:hstack** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
@@ -1550,6 +1646,29 @@ This function returns a tensor that is the result of horizontally stacking the t
     ```turtle
     "{\"type\": \"float32\", \"shape\": [2, 4], \"data\": [1, 2, 5, 6, 3, 4, 7, 8]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input1_type> type.
+        - `input2`: A tensor that can be concatenated with `input1` along the last axis, and has <input2_type> type.
+        - `output1`: A tensor of <resolved_type> type, where the shape is determined by concatenating the shapes of `input1` and `input2` along the last axis.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the output tensor, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details)
+        - `axis_value`: The last axis along which to concatenate the input tensors, which is determined by the rank of the input tensors. For 1D tensors, the axis is 0; for higher-dimensional tensors, the axis is the last one (i.e., `rank-1`).
+
+     === "Model definition"
+
+        ```pbtxt title="tensor_hstack_model.pbtxt"
+        {% include "./onnx/tensor_hstack_model.pbtxt" %}
+        ```
 
 ---
 
@@ -1572,6 +1691,39 @@ This function returns a tensor that is the result of vertically stacking the two
     ```turtle
     "{\"type\": \"float32\", \"shape\": [4, 2], \"data\": [1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input1_type> type.
+        - `input2`: A tensor that can be concatenated with `input1` along the first axis, and has <input2_type> type.
+        - `output1`: A tensor of <resolved_type> type, where the shape is determined by concatenating the shapes of `input1` and `input2` along the first axis.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the output tensor, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details)
+
+        **Definition dispatch**:
+
+        - If the input tensors are 1D, then the implementation is expected to use **model definition for 1D tensors**.
+        - If the input tensors are ND (N > 1), then the implementation is expected to use **model definition for ND tensors**.
+    
+    === "Model definition for 1D tensors"
+
+        ```pbtxt title="tensor_vstack_1d_model.pbtxt"
+        {% include "./onnx/tensor_vstack_1d_model.pbtxt" %}
+        ```
+
+    === "Model definition for ND tensors"
+
+        ```pbtxt title="tensor_vstack_nd_model.pbtxt"
+        {% include "./onnx/tensor_vstack_nd_model.pbtxt" %}
+        ```
 
 ### 4.5. Reduction Functions
 
