@@ -1,0 +1,42 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor max function for axis reduction"
+graph {
+  node {
+    input: "input1"
+    input: "axes"
+    output: "output1"
+    op_type: "ReduceMax"
+    attribute {
+      name: "keepdims"
+      i: 0
+      type: INT
+    }
+  }
+  initializer {
+    dims: 1
+    data_type: 7
+    int64_data: <axis_value>
+    name: "axes"
+  }
+  input {
+    name: "input1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+  output {
+    name: "output1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+}
+opset_import {
+  version: 23
+}

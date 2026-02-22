@@ -1095,7 +1095,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
         - `input2_type`: The data type of the second input tensor, which can be any supported type.
         - `resolved_type`: The data type of the resolved input tensors, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details).
 
-     === "Model definition"
+    === "Model definition"
 
         ```pbtxt title="tensor_eq_model.pbtxt"
         {% include "./onnx/tensor_eq_model.pbtxt" %}
@@ -1155,7 +1155,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
         - `input2_type`: The data type of the second input tensor, which can be any supported type.
         - `resolved_type`: The data type of the resolved input tensors, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details).
 
-     === "Model definition"
+    === "Model definition"
 
         ```pbtxt title="tensor_neq_model.pbtxt"
         {% include "./onnx/tensor_neq_model.pbtxt" %}
@@ -1212,7 +1212,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
         - `input1_type`: The data type of the first input tensor, which can be any supported type.
         - `input2_type`: The data type of the second input tensor, which can be any supported type.
 
-     === "Model definition"
+    === "Model definition"
 
         ```pbtxt title="tensor_and_model.pbtxt"
         {% include "./onnx/tensor_and_model.pbtxt" %}
@@ -1269,7 +1269,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
         - `input1_type`: The data type of the first input tensor, which can be any supported type.
         - `input2_type`: The data type of the second input tensor, which can be any supported type.
 
-     === "Model definition"
+    === "Model definition"
 
         ```pbtxt title="tensor_or_model.pbtxt"
         {% include "./onnx/tensor_or_model.pbtxt" %}
@@ -1313,7 +1313,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
         - `input2_type`: The data type of the second input tensor, which can be any supported type.
         - `resolved_type`: The data type of the resolved input tensors, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details).
 
-     === "Model definition"
+    === "Model definition"
 
         ```pbtxt title="tensor_gt_model.pbtxt"
         {% include "./onnx/tensor_gt_model.pbtxt" %}
@@ -1357,7 +1357,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
         - `input2_type`: The data type of the second input tensor, which can be any supported type.
         - `resolved_type`: The data type of the resolved input tensors, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details).
 
-     === "Model definition"
+    === "Model definition"
 
         ```pbtxt title="tensor_lt_model.pbtxt"
         {% include "./onnx/tensor_lt_model.pbtxt" %}
@@ -1454,7 +1454,7 @@ Extracts a sub-tensor from the input tensor using range-based slicing, similar t
         - `axes_length`: The number of dimensions in the input tensor, which must match the number of range arguments.
         - `axes_values`, `starts_values`, `ends_values`: The values of the range arguments, which determine how to slice along each dimension. For each dimension, the range is deconstructed into its corresponding `axis`, `start`, and `end` values. For full slices, the `start` is set to 0 and the `end` is set to the size of the dimension.
 
-     === "Model definition"
+    === "Model definition"
 
         ```pbtxt title="tensor_sub_model.pbtxt"
         {% include "./onnx/tensor_sub_model.pbtxt" %}
@@ -1621,7 +1621,7 @@ This function returns a tensor that is the concatenation of the two input tensor
         - `resolved_type`: The data type of the output tensor, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details)
         - `axis_value`: The axis along which to concatenate the input tensors, which can be any integer value from `-rank` to `rank-1`, where `rank` is the number of dimensions in the input tensors.
 
-     === "Model definition"
+    === "Model definition"
 
         ```pbtxt title="tensor_concat_model.pbtxt"
         {% include "./onnx/tensor_concat_model.pbtxt" %}
@@ -1664,7 +1664,7 @@ This function returns a tensor that is the result of horizontally stacking the t
         - `resolved_type`: The data type of the output tensor, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details)
         - `axis_value`: The last axis along which to concatenate the input tensors, which is determined by the rank of the input tensors. For 1D tensors, the axis is 0; for higher-dimensional tensors, the axis is the last one (i.e., `rank-1`).
 
-     === "Model definition"
+    === "Model definition"
 
         ```pbtxt title="tensor_hstack_model.pbtxt"
         {% include "./onnx/tensor_hstack_model.pbtxt" %}
@@ -1731,8 +1731,6 @@ This function returns a tensor that is the result of vertically stacking the two
 
 [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:all** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:all** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
-
 This function checks if all elements in the boolean tensor are true. In case of numeric tensor, it checks if all elements are non-zero. Returns a single boolean value.
 
 !!! example "Example 1"
@@ -1763,11 +1761,28 @@ This function checks if all elements in the boolean tensor are true. In case of 
     "true"^^xsd:boolean
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A single boolean value that is `true` if all elements in the input tensor are true (for boolean tensors) or non-zero (for numeric tensors), and `false` otherwise.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_all_model.pbtxt"
+        {% include "./onnx/tensor_all_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:any`
-
-[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:any** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:any** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
@@ -1801,11 +1816,28 @@ This function checks if any element in the boolean tensor is true. In case of nu
     "true"^^xsd:boolean
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A single boolean value that is `true` if any element in the input tensor is true (for boolean tensors) or non-zero (for numeric tensors), and `false` otherwise.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_any_model.pbtxt"
+        {% include "./onnx/tensor_any_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:none`
-
-[xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:none** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) **tensor:none** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
@@ -1839,11 +1871,31 @@ This function checks if no elements in the boolean tensor are true. In case of n
     "true"^^xsd:boolean
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A single boolean value that is `true` if no elements in the input tensor are true (for boolean tensors) or all elements are zero (for numeric tensors), and `false` otherwise.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_none_model.pbtxt"
+        {% include "./onnx/tensor_none_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:avg`
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:avg** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+
 [xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:avg** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the average along the specified axis. If the axis is negative, the average is calculated over the entire tensor. It returns a reduced tensor or a scalar.
@@ -1862,11 +1914,43 @@ This function computes the average along the specified axis. If the axis is nega
     "{\"type\": \"float32\", \"shape\": [2], \"data\": [1.5, 3.5]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of <input_type> type, where the shape is determined by reducing the input tensor along the specified axis.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `axis_value`: The axis along which to compute the average, which can be any integer value from `-1` to `rank-1`, where `rank` is the number of dimensions in the input tensor.
+
+        Model definition dispatch:
+        
+        - if `axis_value` is negative, then the implementation is expected to use **model definition for full reduction**.
+        - if `axis_value` is non-negative, then the implementation is expected to use **model definition for axis reduction**.
+
+    === "Model definition for full reduction"
+
+        ```pbtxt title="tensor_avg_full_model.pbtxt"
+        {% include "./onnx/tensor_avg_full_reduction_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction"
+
+        ```pbtxt title="tensor_avg_axis_model.pbtxt"
+        {% include "./onnx/tensor_avg_axis_reduction_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:sum`
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:sum** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+
 [xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:sum** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the sum along the specified axis. If the axis is negative, the sum is calculated over the entire tensor. It returns a reduced tensor or a scalar.
@@ -1885,11 +1969,56 @@ This function computes the sum along the specified axis. If the axis is negative
     "{\"type\": \"float32\", \"shape\": [2], \"data\": [3, 7]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of <input_type> type, where the shape is determined by reducing the input tensor along the specified axis.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `axis_value`: The axis along which to compute the sum, which can be any integer value from `-1` to `rank-1`, where `rank` is the number of dimensions in the input tensor.
+
+        Model definition dispatch:
+        
+        - if `axis_value` is negative, then the implementation is expected to use **model definition for full reduction**.
+        - if `axis_value` is non-negative, then the implementation is expected to use **model definition for axis reduction**.
+        - For int16 tensors, the implementation is expected to use a different model definition that handles the ONNX limitation of not supporting int16 reduction operations.
+
+    === "Model definition for full reduction for int16 tensors"
+
+        ```pbtxt title="tensor_sum_full_model.pbtxt"
+        {% include "./onnx/tensor_sum_full_reduction_int16_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction for int16 tensors"
+
+        ```pbtxt title="tensor_sum_axis_model.pbtxt"
+        {% include "./onnx/tensor_sum_axis_reduction_int16_model.pbtxt" %}
+        ```
+
+    === "Model definition for full reduction for non-int16 tensors"
+
+        ```pbtxt title="tensor_sum_full_model.pbtxt"
+        {% include "./onnx/tensor_sum_full_reduction_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction for non-int16 tensors"
+
+        ```pbtxt title="tensor_sum_axis_model.pbtxt"
+        {% include "./onnx/tensor_sum_axis_reduction_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:prod`
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:prod** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+
 [xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:prod** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 This function computes the product along the specified axis. If the axis is negative, the product is calculated over the entire tensor. It returns a reduced tensor or a scalar.
@@ -1907,6 +2036,50 @@ This function computes the product along the specified axis. If the axis is nega
     ```turtle
     "{\"type\": \"float32\", \"shape\": [2], \"data\": [2, 12]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of <input_type> type, where the shape is determined by reducing the input tensor along the specified axis.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `axis_value`: The axis along which to compute the product, which can be any integer value from `-1` to `rank-1`, where `rank` is the number of dimensions in the input tensor.
+
+        Model definition dispatch:
+        
+        - if `axis_value` is negative, then the implementation is expected to use **model definition for full reduction**.
+        - if `axis_value` is non-negative, then the implementation is expected to use **model definition for axis reduction**.
+        - For int16 tensors, the implementation is expected to use a different model definition that handles the ONNX limitation of not supporting int16 reduction operations.
+
+    === "Model definition for full reduction for int16 tensors"
+
+        ```pbtxt title="tensor_prod_full_model.pbtxt"
+        {% include "./onnx/tensor_prod_full_reduction_int16_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction for int16 tensors"
+
+        ```pbtxt title="tensor_prod_axis_model.pbtxt"
+        {% include "./onnx/tensor_prod_axis_reduction_int16_model.pbtxt" %}
+        ```
+
+    === "Model definition for full reduction for non-int16 tensors"
+
+        ```pbtxt title="tensor_prod_full_model.pbtxt"
+        {% include "./onnx/tensor_prod_full_reduction_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction for non-int16 tensors"
+
+        ```pbtxt title="tensor_prod_axis_model.pbtxt"
+        {% include "./onnx/tensor_prod_axis_reduction_model.pbtxt" %}
+        ```
 
 ---
 
@@ -1932,29 +2105,49 @@ This function computes the maximum along the specified axis. If the axis is nega
     "{\"type\": \"float32\", \"shape\": [2], \"data\": [5, 4]}"^^tensor:DataTensor
     ```
 
----
+??? note "ONNX definition of this function"
 
-#### `tensor:median`
+    === "Model description"
 
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:median** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+        Model inputs and outputs:
 
-[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:median** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of <input_type> type, where the shape is determined by reducing the input tensor along the specified axis.
 
-This function computes the median along the specified axis. If the axis is negative, the median is calculated over the entire tensor. It returns a reduced tensor or a scalar.
+        Model variables:
 
-!!! example
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `axis_value`: The axis along which to compute the maximum, which can be any integer value from `-1` to `rank-1`, where `rank` is the number of dimensions in the input tensor.
 
-    Evaluating the SPARQL expression
+        Model definition dispatch:
+        
+        - if `axis_value` is negative, then the implementation is expected to use **model definition for full reduction**.
+        - if `axis_value` is non-negative, then the implementation is expected to use **model definition for axis reduction**.
+        - For int16 tensors, the implementation is expected to use a different model definition that handles the ONNX limitation of not supporting int16 reduction operations.
 
-    ```sparql
-    tensor:median(1, "{\"type\": \"float32\", \"shape\": [1, 3], \"data\": [7, 1, 3]}"^^tensor:DataTensor)
-    ```
+    === "Model definition for full reduction for int16 tensors"
 
-    returns
+        ```pbtxt title="tensor_max_full_model.pbtxt"
+        {% include "./onnx/tensor_max_full_reduction_int16_model.pbtxt" %}
+        ```
 
-    ```turtle
-    "{\"type\": \"float32\", \"shape\": [1], \"data\": [3]}"^^tensor:DataTensor
-    ```
+    === "Model definition for axis reduction for int16 tensors"
+
+        ```pbtxt title="tensor_max_axis_model.pbtxt"
+        {% include "./onnx/tensor_max_axis_reduction_int16_model.pbtxt" %}
+        ```
+
+    === "Model definition for full reduction for non-int16 tensors"
+
+        ```pbtxt title="tensor_max_full_model.pbtxt"
+        {% include "./onnx/tensor_max_full_reduction_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction for non-int16 tensors"
+
+        ```pbtxt title="tensor_max_axis_model.pbtxt"
+        {% include "./onnx/tensor_max_axis_reduction_model.pbtxt" %}
+        ```
 
 ---
 
@@ -1980,6 +2173,50 @@ This function computes the minimum along the specified axis. If the axis is nega
     "{\"type\": \"float32\", \"shape\": [1], \"data\": [1]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of <input_type> type, where the shape is determined by reducing the input tensor along the specified axis.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `axis_value`: The axis along which to compute the minimum, which can be any integer value from `-1` to `rank-1`, where `rank` is the number of dimensions in the input tensor.
+
+        Model definition dispatch:
+        
+        - if `axis_value` is negative, then the implementation is expected to use **model definition for full reduction**.
+        - if `axis_value` is non-negative, then the implementation is expected to use **model definition for axis reduction**.
+        - For int16 tensors, the implementation is expected to use a different model definition that handles the ONNX limitation of not supporting int16 reduction operations.
+
+    === "Model definition for full reduction for int16 tensors"
+
+        ```pbtxt title="tensor_min_full_model.pbtxt"
+        {% include "./onnx/tensor_min_full_reduction_int16_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction for int16 tensors"
+
+        ```pbtxt title="tensor_min_axis_model.pbtxt"
+        {% include "./onnx/tensor_min_axis_reduction_int16_model.pbtxt" %}
+        ```
+
+    === "Model definition for full reduction for non-int16 tensors"
+
+        ```pbtxt title="tensor_min_full_model.pbtxt"
+        {% include "./onnx/tensor_min_full_reduction_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction for non-int16 tensors"
+
+        ```pbtxt title="tensor_min_axis_model.pbtxt"
+        {% include "./onnx/tensor_min_axis_reduction_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:std`
@@ -2003,6 +2240,38 @@ This function computes the standard deviation along the specified axis. If the a
     ```turtle
     "{\"type\": \"float32\", \"shape\": [1], \"data\": [0.8165]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of <input_type> type, where the shape is determined by reducing the input tensor along the specified axis.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `axis_value`: The axis along which to compute the standard deviation, which can be any integer value from `-1` to `rank-1`, where `rank` is the number of dimensions in the input tensor.
+        - `bessel_factor_value`: The Bessel's correction factor, which is used to determine the divisor for calculating the standard deviation. Calculated as n / (n-1), where n is the number of elements along the specified axis.
+
+        Model definition dispatch:
+        
+        - if `axis_value` is negative, then the implementation is expected to use **model definition for full reduction**.
+        - if `axis_value` is non-negative, then the implementation is expected to use **model definition for axis reduction**.
+
+    === "Model definition for full reduction"
+
+        ```pbtxt title="tensor_std_full_model.pbtxt"
+        {% include "./onnx/tensor_std_full_reduction_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction"
+
+        ```pbtxt title="tensor_std_axis_model.pbtxt"
+        {% include "./onnx/tensor_std_axis_reduction_model.pbtxt" %}
+        ```
 
 ---
 
@@ -2028,6 +2297,38 @@ This function computes the variance along the specified axis. If the axis is neg
     "{\"type\": \"float32\", \"shape\": [1], \"data\": [0.6667]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of <input_type> type, where the shape is determined by reducing the input tensor along the specified axis.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `axis_value`: The axis along which to compute the variance, which can be any integer value from `-1` to `rank-1`, where `rank` is the number of dimensions in the input tensor.
+        - `bessel_factor_value`: The Bessel's correction factor, which is used to determine the divisor for calculating the variance. Calculated as n / (n-1), where n is the number of elements along the specified axis.
+
+        Model definition dispatch:
+        
+        - if `axis_value` is negative, then the implementation is expected to use **model definition for full reduction**.
+        - if `axis_value` is non-negative, then the implementation is expected to use **model definition for axis reduction**.
+
+    === "Model definition for full reduction"
+
+        ```pbtxt title="tensor_var_full_model.pbtxt"
+        {% include "./onnx/tensor_var_full_reduction_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction"
+
+        ```pbtxt title="tensor_var_axis_model.pbtxt"
+        {% include "./onnx/tensor_var_axis_reduction_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:norm1`
@@ -2052,6 +2353,50 @@ This function computes the L1 norm (sum of absolute values) along the specified 
     "{\"type\": \"float32\", \"shape\": [2], \"data\": [2, 4]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of <input_type> type, where the shape is determined by reducing the input tensor along the specified axis.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `axis_value`: The axis along which to compute the L1 norm, which can be any integer value from `-1` to `rank-1`, where `rank` is the number of dimensions in the input tensor.
+
+        Model definition dispatch:
+        
+        - if `axis_value` is negative, then the implementation is expected to use **model definition for full reduction**.
+        - if `axis_value` is non-negative, then the implementation is expected to use **model definition for axis reduction**.
+        - For int16 tensors, the implementation is expected to use a different model definition that handles the ONNX limitation of not supporting int16 reduction operations.
+
+    === "Model definition for full reduction for int16 tensors"
+
+        ```pbtxt title="tensor_norm1_full_model.pbtxt"
+        {% include "./onnx/tensor_norm1_full_reduction_int16_model.pbtxt" %}
+        ```
+    
+    === "Model definition for axis reduction for int16 tensors"
+
+        ```pbtxt title="tensor_norm1_axis_model.pbtxt"
+        {% include "./onnx/tensor_norm1_axis_reduction_int16_model.pbtxt" %}
+        ```
+    
+    === "Model definition for full reduction for non-int16 tensors"
+
+        ```pbtxt title="tensor_norm1_full_model.pbtxt"
+        {% include "./onnx/tensor_norm1_full_reduction_model.pbtxt" %}
+        ```
+    
+    === "Model definition for axis reduction for non-int16 tensors"
+
+        ```pbtxt title="tensor_norm1_axis_model.pbtxt"
+        {% include "./onnx/tensor_norm1_axis_reduction_model.pbtxt" %}
+        ```
+    
 ---
 
 #### `tensor:norm2`
@@ -2075,6 +2420,39 @@ This function computes the L2 norm (Euclidean norm) along the specified axis. If
     ```turtle
     "{\"type\": \"float32\", \"shape\": [2], \"data\": [5, 10]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of <input_type> type, where the shape is determined by reducing the input tensor along the specified axis.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `axis_value`: The axis along which to compute the L2 norm, which can be any integer value from `-1` to `rank-1`, where `rank` is the number of dimensions in the input tensor.
+
+        Model definition dispatch:
+        
+        - if `axis_value` is negative, then the implementation is expected to use **model definition for full reduction**.
+        - if `axis_value` is non-negative, then the implementation is expected to use **model definition for axis reduction**.
+    
+    === "Model definition for full reduction"
+
+        ```pbtxt title="tensor_norm2_full_model.pbtxt"
+        {% include "./onnx/tensor_norm2_full_reduction_model.pbtxt" %}
+        ```
+    
+    === "Model definition for axis reduction"
+
+        ```pbtxt title="tensor_norm2_axis_model.pbtxt"
+        {% include "./onnx/tensor_norm2_axis_reduction_model.pbtxt" %}
+        ```
+    
+---
 
 ### 4.6. Similarity Functions
 
