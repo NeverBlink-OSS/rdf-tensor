@@ -1578,6 +1578,12 @@ Extracts an element or sub-tensor from the input tensor using a numerical index 
 
 ### 4.4 Concatenating Functions
 
+For concatenation functions, the input tensors must have compatible shapes according to the rules of broadcasting. The output tensor's shape is determined by the shapes of the input tensors and the specified axis of concatenation.
+
+The rules of type resolution and precision hierarchy apply to these functions as well, meaning that the output tensor's data type is determined by the input tensors' data types according to the defined hierarchy.
+
+See both at the Operator Functions section above.
+
 #### `tensor:concat`
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:concat** ([xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
@@ -1598,6 +1604,29 @@ This function returns a tensor that is the concatenation of the two input tensor
     "{\"type\": \"float32\", \"shape\": [4, 2], \"data\": [1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input1_type> type.
+        - `input2`: A tensor that can be concatenated with `input1` along the specified axis, and has <input2_type> type.
+        - `output1`: A tensor of <resolved_type> type, where the shape is determined by concatenating the shapes of `input1` and `input2` along the specified axis.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the output tensor, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details)
+        - `axis_value`: The axis along which to concatenate the input tensors, which can be any integer value from `-rank` to `rank-1`, where `rank` is the number of dimensions in the input tensors.
+
+     === "Model definition"
+
+        ```pbtxt title="tensor_concat_model.pbtxt"
+        {% include "./onnx/tensor_concat_model.pbtxt" %}
+        ```
+
 #### `tensor:hstack`
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:hstack** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
@@ -1617,6 +1646,29 @@ This function returns a tensor that is the result of horizontally stacking the t
     ```turtle
     "{\"type\": \"float32\", \"shape\": [2, 4], \"data\": [1, 2, 5, 6, 3, 4, 7, 8]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input1_type> type.
+        - `input2`: A tensor that can be concatenated with `input1` along the last axis, and has <input2_type> type.
+        - `output1`: A tensor of <resolved_type> type, where the shape is determined by concatenating the shapes of `input1` and `input2` along the last axis.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the output tensor, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details)
+        - `axis_value`: The last axis along which to concatenate the input tensors, which is determined by the rank of the input tensors. For 1D tensors, the axis is 0; for higher-dimensional tensors, the axis is the last one (i.e., `rank-1`).
+
+     === "Model definition"
+
+        ```pbtxt title="tensor_hstack_model.pbtxt"
+        {% include "./onnx/tensor_hstack_model.pbtxt" %}
+        ```
 
 ---
 
@@ -1639,6 +1691,39 @@ This function returns a tensor that is the result of vertically stacking the two
     ```turtle
     "{\"type\": \"float32\", \"shape\": [4, 2], \"data\": [1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input1_type> type.
+        - `input2`: A tensor that can be concatenated with `input1` along the first axis, and has <input2_type> type.
+        - `output1`: A tensor of <resolved_type> type, where the shape is determined by concatenating the shapes of `input1` and `input2` along the first axis.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the output tensor, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details)
+
+        **Definition dispatch**:
+
+        - If the input tensors are 1D, then the implementation is expected to use **model definition for 1D tensors**.
+        - If the input tensors are ND (N > 1), then the implementation is expected to use **model definition for ND tensors**.
+    
+    === "Model definition for 1D tensors"
+
+        ```pbtxt title="tensor_vstack_1d_model.pbtxt"
+        {% include "./onnx/tensor_vstack_1d_model.pbtxt" %}
+        ```
+
+    === "Model definition for ND tensors"
+
+        ```pbtxt title="tensor_vstack_nd_model.pbtxt"
+        {% include "./onnx/tensor_vstack_nd_model.pbtxt" %}
+        ```
 
 ### 4.5. Reduction Functions
 
