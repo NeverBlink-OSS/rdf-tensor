@@ -2460,7 +2460,7 @@ This function computes the L2 norm (Euclidean norm) along the specified axis. If
 
 [xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:cosineSimilarity** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
-This function computes the cosine similarity between two numerical tensors. Returns a numeric scalar value.
+This function computes the cosine similarity between two tensors. Returns a numeric scalar value.
 
 !!! example
 
@@ -2476,13 +2476,34 @@ This function computes the cosine similarity between two numerical tensors. Retu
     "0.5"^^xsd:float
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input1_type> type.
+        - `input2`: A tensor of the same shape and <input2_type> type.
+        - `output1`: A single numeric value representing the cosine similarity between the two input tensors.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_cosine_similarity_model.pbtxt"
+        {% include "./onnx/tensor_cosine_similarity_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:euclideanDistance`
 
 [xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:euclideanDistance** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
-This function computes the Euclidean distance between two numerical tensors. Returns a numeric scalar value.
+This function computes the Euclidean distance between two tensors. Returns a numeric scalar value.
 
 !!! example
 
@@ -2497,6 +2518,27 @@ This function computes the Euclidean distance between two numerical tensors. Ret
     ```turtle
     `"5.0"^^xsd:float
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input1_type> type.
+        - `input2`: A tensor of the same shape and <input2_type> type.
+        - `output1`: A single numeric value representing the Euclidean distance between the two input tensors.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_euclidean_distance_model.pbtxt"
+        {% include "./onnx/tensor_euclidean_distance_model.pbtxt" %}
+        ```
 
 ### 4.7 Creation Functions
 
