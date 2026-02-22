@@ -1,0 +1,61 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor index function"
+graph {
+  node {
+    input: "input2"
+    input: "unsqueeze_axes"
+    output: "index_reshaped"
+    op_type: "Unsqueeze"
+  }
+  node {
+    input: "input1"
+    input: "index_reshaped"
+    output: "gathered"
+    op_type: "GatherND"
+    attribute {
+      name: "batch_dims"
+      i: 0
+      type: INT
+    }
+  }
+  node {
+    input: "gathered"
+    output: "output1"
+    op_type: "Squeeze"
+  }
+  initializer {
+    dims: 1
+    data_type: 7
+    int64_data: 0
+    name: "unsqueeze_axes"
+  }
+  input {
+    name: "input1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+  input {
+    name: "input2"
+    type {
+      tensor_type {
+        elem_type: 7
+      }
+    }
+  }
+  output {
+    name: "output1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+}
+opset_import {
+  version: 23
+}

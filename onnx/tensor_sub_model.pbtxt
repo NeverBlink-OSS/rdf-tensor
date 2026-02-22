@@ -1,0 +1,60 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor slice function"
+graph {
+  node {
+    input: "input1"
+    input: "starts"
+    input: "ends"
+    input: "axes"
+    output: "output1"
+    op_type: "Slice"
+  }
+  initializer {
+    dims: <axes_length>
+    data_type: 7
+    int64_data: <starts_values[0]>
+    int64_data: <starts_values[1]>
+    ...
+    int64_data: <starts_values[starts_length-1]>
+    name: "starts"
+  }
+  initializer {
+    dims: <axes_length>
+    data_type: 7
+    int64_data: <ends_values[0]>
+    int64_data: <ends_values[1]>
+    ...
+    int64_data: <ends_values[ends_length-1]>
+    name: "ends"
+  }
+  initializer {
+    dims: <axes_length>
+    data_type: 7
+    int64_data: <axes_values[0]>
+    int64_data: <axes_values[1]>
+    ...
+    int64_data: <axes_values[axes_length-1]>
+    name: "axes"
+  }
+  input {
+    name: "input1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+  output {
+    name: "output1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+}
+opset_import {
+  version: 23
+}
