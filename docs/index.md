@@ -731,13 +731,9 @@ The result of the function is a one-dimensional tensor containing all the elemen
         {% include "./onnx/tensor_flatten_model.pbtxt" %}
         ```
 
-### 4.2 Operators
-
-When using the binary operators, the input tensors are broadcasted to a common shape. The broadcasting rules are the same as in NumPy**[[NumPy 8259](#numpy)]**. In the case of numeric tensors, the result of the mathematical operation is a tensor with the more precise type of the two input tensors. For example, if one tensor is `float32` and the other is `int32`, the result will be `float32`.
+---
 
 #### `tensor:not`
-
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:not** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:not** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
@@ -771,8 +767,57 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the same shape as `input1` and BOOL type, where each element is the logical negation of the corresponding element in `input1`.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_not_model.pbtxt"
+        {% include "./onnx/tensor_not_model.pbtxt" %}
+        ```
+
 ---
 
+### 4.2 Operators
+
+When using the binary operators, the input tensors are broadcasted to a common shape. The broadcasting rules are the same as in ONNX **[[ONNX Broadcasting](https://onnx.ai/onnx/repo-docs/Broadcasting.html)]**. After broadcasting, the binary operator is applied element-wise to the input tensors.
+
+Casting of input tensors to a common type is performed according to the rules defined in the ONNX model for each operator, which are based on the precision hierarchy of data types. The resulting tensor will have the more precise type of the two input tensors.
+
+??? info "Type casting rules for binary operators"
+
+    When applying a binary operator to two tensors of different types, the resulting tensor will have the more precise type of the two input tensors. The precision hierarchy is as follows:
+
+    - `float64` > `float32` > `float16`
+    - `int64` > `int32` > `int16`
+    - `bool` is considered less precise than any numeric type.
+
+    For example, if one tensor is of type `float32` and the other is of type `int32`, the resulting tensor will be of type `float32`. If one tensor is of type `bool` and the other is of type `int16`, the resulting tensor will be of type `int16`.
+
+    In general, follow this algorithm for determining the resulting type:
+    
+    1. If both tensors have the same type, the result is of that type.
+    2. If both tensors are floating-point types, the result is the type with greater precision.
+    3. If both tensors are integer types, the result is the type with greater precision.
+    4. If one tensor is a floating-point type and the other is an integer type, the result is the floating-point type.
+    5. If one tensor is of type `bool`, the result is the other tensor's type.
+
+??? info "Optimizing casts for binary operators with identical input types"
+
+    If the input tensors of a binary operator have identical types, it is allowed to skip the type casting step (usually first two `Cast` nodes in the ONNX model definition) and directly apply the operator to the input tensors. This optimization can improve performance by avoiding unnecessary type conversions. However, it is crucial to ensure that the semantics of the function remain unchanged, and the result is the same as if the casts were applied. 
+    
+    Implementations may verify that the input tensors have the same type before applying this optimization. If the types are different, the implementation must follow the type casting rules as defined in the ONNX model to ensure correct results.
+    
 #### `tensor:add`
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:add** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
@@ -806,6 +851,28 @@ The result of the function is a tensor of broadcasted shape, where each element 
     ```turtle
     "{\"type\": \"float32\", \"shape\": [1, 2, 2], \"data\": [4, 4, 4, 6]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A tensor of any shape and <input_type> type, which can be broadcasted to the shape of `input1`.
+        - `output1`: A tensor of the broadcasted shape and the more precise type of the two input tensors, where each element is the sum of corresponding elements in `input1` and `input2`.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the output tensor, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details)
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_add_model.pbtxt"
+        {% include "./onnx/tensor_add_model.pbtxt" %}
+        ```
 
 ---
 
@@ -843,6 +910,28 @@ The result of the function is a tensor of broadcasted shape, where each element 
     "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [1, 1, 1, 3]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A tensor of any shape and <input_type> type, which can be broadcasted to the shape of `input1`.
+        - `output1`: A tensor of the broadcasted shape and the more precise type of the two input tensors, where each element is the difference between corresponding elements in `input1` and `input2`.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the output tensor, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details)
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_subtract_model.pbtxt"
+        {% include "./onnx/tensor_subtract_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:multiply`
@@ -878,6 +967,28 @@ The result of the function is a tensor of broadcasted shape, where each element 
     ```turtle
     "{\"type\": \"float32\", \"shape\": [2, 2], \"data\": [6, 2, 6, 4]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A tensor of any shape and <input_type> type, which can be broadcasted to the shape of `input1`.
+        - `output1`: A tensor of the broadcasted shape and the more precise type of the two input tensors, where each element is the product of corresponding elements in `input1` and `input2`.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the output tensor, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details)
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_multiply_model.pbtxt"
+        {% include "./onnx/tensor_multiply_model.pbtxt" %}
+        ```
 
 ---
 
@@ -915,11 +1026,25 @@ The result of the function is a tensor of broadcasted shape, where each element 
     "{\"type\": \"int32\", \"shape\": [2, 2], \"data\": [1, 2, 1, 2]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A tensor of any shape and <input_type> type, which can be broadcasted to the shape of `input1`.
+        - `output1`: A tensor of the broadcasted shape and the more precise type of the two input tensors, where each element is the quotient of corresponding elements in `input1` and `input2`.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the output tensor, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details)
+
 ---
 
 #### `tensor:eq`
-
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:eq** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:eq** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
 
@@ -953,6 +1078,28 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A tensor of any shape and <input_type> type, which can be broadcasted to the shape of `input1`.
+        - `output1`: A boolean tensor of the broadcasted shape, where each element is `true` if the corresponding elements in `input1` and `input2` are equal, and `false` otherwise.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the resolved input tensors, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details).
+
+     === "Model definition"
+
+        ```pbtxt title="tensor_eq_model.pbtxt"
+        {% include "./onnx/tensor_eq_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:neq`
@@ -982,7 +1129,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:neq("\"shape\": [1, 2], \"data\": [true, false]}", "{\"type\": \"bool\", \"shape\": [1], \"data\": [true]}")
+    tensor:neq("{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}", "{\"type\": \"bool\", \"shape\": [1], \"data\": [true]}")
     ```
 
     returns
@@ -990,6 +1137,28 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     ```turtle
     "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A tensor of any shape and <input_type> type, which can be broadcasted to the shape of `input1`.
+        - `output1`: A boolean tensor of the broadcasted shape, where each element is `true` if the corresponding elements in `input1` and `input2` are not equal, and `false` otherwise.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the resolved input tensors, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details).
+
+     === "Model definition"
+
+        ```pbtxt title="tensor_neq_model.pbtxt"
+        {% include "./onnx/tensor_neq_model.pbtxt" %}
+        ```
 
 ---
 
@@ -1013,6 +1182,41 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:and("{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [0, 5]}", "{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [2, 0]}")
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [false, false]}"^^tensor:DataTensor
+    ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A tensor of any shape and <input_type> type, which can be broadcasted to the shape of `input1`.
+        - `output1`: A boolean tensor of the broadcasted shape, where each element is the logical AND of the corresponding elements in `input1` and `input2`.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+
+     === "Model definition"
+
+        ```pbtxt title="tensor_and_model.pbtxt"
+        {% include "./onnx/tensor_and_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:or`
@@ -1034,6 +1238,41 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     ```turtle
     "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, true]}"^^tensor:DataTensor
     ```
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:or("{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [0, 5]}", "{\"type\": \"int32\", \"shape\": [1, 2], \"data\": [2, 0]}")
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, true]}"^^tensor:DataTensor
+    ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A tensor of any shape and <input_type> type, which can be broadcasted to the shape of `input1`.
+        - `output1`: A boolean tensor of the broadcasted shape, where each element is the logical OR of the corresponding elements in `input1` and `input2`.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+
+     === "Model definition"
+
+        ```pbtxt title="tensor_or_model.pbtxt"
+        {% include "./onnx/tensor_or_model.pbtxt" %}
+        ```
 
 ---
 
@@ -1057,6 +1296,28 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A tensor of any shape and <input_type> type, which can be broadcasted to the shape of `input1`.
+        - `output1`: A boolean tensor of the broadcasted shape, where each element is `true` if the corresponding element in `input1` is greater than the corresponding element in `input2`, and `false` otherwise.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the resolved input tensors, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details).
+
+     === "Model definition"
+
+        ```pbtxt title="tensor_gt_model.pbtxt"
+        {% include "./onnx/tensor_gt_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:lt`
@@ -1078,6 +1339,28 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     ```turtle
     "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A tensor of any shape and <input_type> type, which can be broadcasted to the shape of `input1`.
+        - `output1`: A boolean tensor of the broadcasted shape, where each element is `true` if the corresponding element in `input1` is lesser than the corresponding element in `input2`, and `false` otherwise.
+
+        Model variables:
+
+        - `input1_type`: The data type of the first input tensor, which can be any supported type.
+        - `input2_type`: The data type of the second input tensor, which can be any supported type.
+        - `resolved_type`: The data type of the resolved input tensors, determined by the resolution of the input types according to the precision hierarchy. (see the info box above for more details).
+
+     === "Model definition"
+
+        ```pbtxt title="tensor_lt_model.pbtxt"
+        {% include "./onnx/tensor_lt_model.pbtxt" %}
+        ```
 
 ### 4.3. Indexing Functions
 
