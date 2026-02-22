@@ -54,7 +54,7 @@ A valid JSON object **[[RFC-8259](#rfc-8259)]** with the following structure:
 
 | Key     | Type                        | Description                                                                                                                                                        |
 | ------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `type`  | `string`                    | Must be one of: `float16`, `float32`, `float64`, `int16`, `int32`, `int64`, `bool`, `uint8`, `uint16`, `uint32`, `uint64`. Defines the type of elements.            |
+| `type`  | `string`                    | Must be one of: `float16`, `float32`, `float64`, `int16`, `int32`, `int64`, `bool`, `uint8`, `uint16`, `uint32`, `uint64`. Defines the type of elements.           |
 | `shape` | `array of integers`         | Specifies the size of each dimension. The product of the integers must equal the length of the `data` array.                                                       |
 | `data`  | `array of numbers or bools` | A flat array of numbers or booleans in row-major (C-style) order. Numbers must use decimal or exponential notation. Booleans are represented as `true` or `false`. |
 
@@ -121,6 +121,32 @@ After parsing, the JSON object is converted into a tensor structure.
 
 ## 4. SPARQL Functions
 
+Each SPARQL function in this specification is defined as an [ONNX](https://onnx.ai/) model template. These templates contain **model variables** that depend on the actual input (i.e., the data type or shape of an input tensor, axis value). The model variables are denoted in the ONNX model definition using angle brackets, e.g., `<input_type>`, and are described in the "Model description" section for each function. Implementations are expected to resolve these variables at query evaluation time, generate a concrete ONNX model from the template, and execute it using an ONNX runtime.
+
+With this approach it is ensured that the semantics of each function are precisely and unambiguously defined by a machine-readable model, while remaining portable across any ONNX-compatible execution environment.
+
+Examples and description are provided for users to understand the expected behavior of each function, but the actual implementation **must** follow the ONNX model definition.
+
+??? info "RDF tensor type to ONNX data type mapping"
+
+    The mapping from RDF tensor types to ONNX data types is as follows:
+
+    | RDF Tensor Type | ONNX Data Type |
+    | --------------- | -------------- |
+    | `float16`       | FLOAT16        |
+    | `float32`       | FLOAT          |
+    | `float64`       | DOUBLE         |
+    | `int16`         | INT16          |
+    | `int32`         | INT32          |
+    | `int64`         | INT64          |
+    | `bool`          | BOOL           |
+    | `uint8`         | UINT8          |
+    | `uint16`        | UINT16         |
+    | `uint32`        | UINT32         |
+    | `uint64`        | UINT64         |
+
+    Any other types are not supported and will result in an error during query evaluation.
+
 ### 4.1. Transforming Functions
 
 #### `tensor:cos`
@@ -142,6 +168,25 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     ```turtle
     "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, -1]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the same shape as `input1` and DOUBLE type, where each element is the cosine of the corresponding element in `input1`.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_cos_model.pbtxt"
+        {% include "./onnx/tensor_cos_model.pbtxt" %}
+        ```
 
 ---
 
@@ -165,6 +210,25 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, 2.7183]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the same shape as `input1` and DOUBLE type, where each element is the exponential of the corresponding element in `input1`.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_exp_model.pbtxt"
+        {% include "./onnx/tensor_exp_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:log`
@@ -186,6 +250,25 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     ```turtle
     "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 1]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the same shape as `input1` and DOUBLE type, where each element is the natural logarithm of the corresponding element in `input1`.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_log_model.pbtxt"
+        {% include "./onnx/tensor_log_model.pbtxt" %}
+        ```
 
 ---
 
@@ -209,6 +292,26 @@ The result is a tensor of the same shape, where each element is replaced by its 
     "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 1]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the same shape as `input1` and DOUBLE type, where each element is the logarithm with base _p_ of the corresponding element in `input1`.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `log_base_value`: The logarithm base `log(p)`, where _p_ is the value of the first argument of the function.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_logp_model.pbtxt"
+        {% include "./onnx/tensor_logp_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:poly`
@@ -230,6 +333,26 @@ The result is a tensor where each element is raised to the power _n_.
     ```turtle
     "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [4, 9]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the same shape as `input1` and DOUBLE type, where each element is the corresponding element in `input1` raised to the power _n_.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `exponent_value`: The exponent value _n_ of type DOUBLE, which is the value of the first argument of the function.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_poly_model.pbtxt"
+        {% include "./onnx/tensor_poly_model.pbtxt" %}
+        ```
 
 ---
 
@@ -253,6 +376,26 @@ The result is a tensor of the same shape, where each element is multiplied by th
     "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [6, 9]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the same shape as `input1` and DOUBLE type, where each element is the corresponding element in `input1` multiplied by the scalar factor.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `factor_value`: The scaling factor of type DOUBLE, which is the value of the first argument of the function.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_scale_model.pbtxt"
+        {% include "./onnx/tensor_scale_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:sin`
@@ -274,6 +417,25 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     ```turtle
     "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [0, 0]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the same shape as `input1` and DOUBLE type, where each element is the sine of the corresponding element in `input1`.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_sin_model.pbtxt"
+        {% include "./onnx/tensor_sin_model.pbtxt" %}
+        ```
 
 ---
 
@@ -297,13 +459,32 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1, 2]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the same shape as `input1` and <input_type> type, where each element is the absolute value of the corresponding element in `input1`.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_abs_model.pbtxt"
+        {% include "./onnx/tensor_abs_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:cast`
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:cast** (xsd:string _type_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
-The result of the function is a tensor of the same shape as the input tensor, where each element is cast to the specified type. The supported types are: `float16`, `float32`, `float64`, `int16`, `int32`, `int64` and `bool`. `Bool` type is special - all non-zero values are cast to `true`, and zero values are cast to `false`, and the tensor becomes a `tensor:DataTensor` literal. If a `tensor:DataTensor` literal is cast to a numeric type, `true` values become `1`, and `false` values become `0` and datatype becomes `tensor:DataTensor`.
+The result of the function is a tensor of the same shape as the input tensor, where each element is cast to the specified type. The supported types are: `float16`, `float32`, `float64`, `int16`, `int32`, `int64` and `bool`. `Bool` type is special - all non-zero values are cast to `true`, and zero values are cast to `false`. If a bool DataTensor is cast to a numeric type, `true` values become `1`, and `false` values become `0`.
 
 !!! example "Example 1"
 
@@ -330,7 +511,7 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 3"
@@ -338,7 +519,7 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:cast("float32", "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor)
+    tensor:cast("float32", "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -347,11 +528,29 @@ The result of the function is a tensor of the same shape as the input tensor, wh
     "{\"type\": \"float32\", \"shape\": [1, 2], \"data\": [1.0, 0.0]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the same shape as `input1` and <output_type> type, where each element is the corresponding element in `input1` cast to the specified type.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `output_type`: The data type to which the elements of the input tensor will be cast, determined by the value of the first argument of the function.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_cast_model.pbtxt"
+        {% include "./onnx/tensor_cast_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:reshape`
-
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:reshape** (xsd:integer ... _newShape_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:reshape** (xsd:integer ... _newShape_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
@@ -401,11 +600,30 @@ If one of the dimensions in the new shape is specified as -1, its size will be i
     "{\"type\": \"int32\", \"shape\": [2, 3], \"data\": [1, 2, 3, 4, 5, 6]}"^^tensor:DataTensor
     ```
 
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the new shape specified by the first argument and the same <input_type> type, containing the same data as `input1` but reshaped.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `new_shape_length`: The number of dimensions in the new shape, determined by the number of integer arguments before the tensor argument.
+        - `new_shape_values`: The values of the new shape dimensions, determined by the integer arguments before the tensor argument.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_reshape_model.pbtxt"
+        {% include "./onnx/tensor_reshape_model.pbtxt" %}
+        ```
+
 ---
 
 #### `tensor:transpose`
-
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:transpose** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:transpose** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
@@ -430,20 +648,37 @@ The result of the function is a tensor where the dimensions are reversed. For ex
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:transpose("{\"shape\":[2, 2],\"data\":[true, false, false, true]}"^^tensor:DataTensor)
+    tensor:transpose("{\"type\": \"bool\", \"shape\":[2, 2],\"data\":[true, false, false, true]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"shape\": [2, 2], \"data\": [true, false, false, true]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [2, 2], \"data\": [true, false, false, true]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor where the dimensions are reversed compared to `input1`, and the data is transposed accordingly.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_transpose_model.pbtxt"
+        {% include "./onnx/tensor_transpose_model.pbtxt" %}
+        ```
 
 ---
 
 #### `tensor:flatten`
-
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:flatten** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:flatten** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
 
@@ -468,14 +703,33 @@ The result of the function is a one-dimensional tensor containing all the elemen
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:flatten("{\"shape\":[2, 2],\"data\":[true, false, false, true]}"^^tensor:DataTensor)
+    tensor:flatten("{\"type\": \"bool\", \"shape\":[2, 2],\"data\":[true, false, false, true]}"^^tensor:DataTensor)
     ```
 
     returns
 
     ```turtle
-    "{\"shape\": [4], \"data\": [true, false, false, true]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [4], \"data\": [true, false, false, true]}"^^tensor:DataTensor
     ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A one-dimensional tensor containing all the elements of `input1` in row-major order, with the same <input_type> type.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_flatten_model.pbtxt"
+        {% include "./onnx/tensor_flatten_model.pbtxt" %}
+        ```
 
 ### 4.2 Operators
 
@@ -682,7 +936,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -690,13 +944,13 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:eq("\"shape\": [1, 2], \"data\": [true, false]}", "{\"shape\": [1], \"data\": [true]}")
+    tensor:eq("\"shape\": [1, 2], \"data\": [true, false]}", "{\"type\": \"bool\", \"shape\": [1], \"data\": [true]}")
     ```
 
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
 ---
@@ -720,7 +974,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
     ```
 
 !!! example "Example 2"
@@ -728,13 +982,13 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:neq("\"shape\": [1, 2], \"data\": [true, false]}", "{\"shape\": [1], \"data\": [true]}")
+    tensor:neq("\"shape\": [1, 2], \"data\": [true, false]}", "{\"type\": \"bool\", \"shape\": [1], \"data\": [true]}")
     ```
 
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
     ```
 
 ---
@@ -750,13 +1004,13 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:and("{\"shape\": [1, 2], \"data\": [true, false]}", "{\"shape\": [1, 2], \"data\": [true, true]}")
+    tensor:and("{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}", "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, true]}")
     ```
 
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
 ---
@@ -772,13 +1026,13 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:or("{\"shape\": [1, 2], \"data\": [true, false]}", "{\"shape\": [1, 2], \"data\": [false, true]}")
+    tensor:or("{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}", "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [false, true]}")
     ```
 
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [true, true]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, true]}"^^tensor:DataTensor
     ```
 
 ---
@@ -800,7 +1054,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [true, false]}"^^tensor:DataTensor
     ```
 
 ---
@@ -822,7 +1076,7 @@ The function returns a boolean tensor with a broadcasted shape, where each eleme
     returns
 
     ```turtle
-    "{\"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
+    "{\"type\": \"bool\", \"shape\": [1, 2], \"data\": [false, true]}"^^tensor:DataTensor
     ```
 
 ### 4.3. Indexing Functions
@@ -1050,7 +1304,7 @@ This function checks if all elements in the boolean tensor are true. In case of 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:all("{\"shape\": [2], \"data\": [true, true]}"^^tensor:DataTensor)
+    tensor:all("{\"type\": \"bool\", \"shape\": [2], \"data\": [true, true]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1064,7 +1318,7 @@ This function checks if all elements in the boolean tensor are true. In case of 
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:all("{\"shape\": [2], \"data\": [1, 2]}"^^tensor:DataTensor)
+    tensor:all("{\"type\": \"bool\", \"shape\": [2], \"data\": [1, 2]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1088,7 +1342,7 @@ This function checks if any element in the boolean tensor is true. In case of nu
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:any("{\"shape\": [2], \"data\": [false, true]}"^^tensor:DataTensor)
+    tensor:any("{\"type\": \"bool\", \"shape\": [2], \"data\": [false, true]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1102,7 +1356,7 @@ This function checks if any element in the boolean tensor is true. In case of nu
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:any("{\"shape\": [2], \"data\": [1, 0]}"^^tensor:DataTensor)
+    tensor:any("{\"type\": \"bool\", \"shape\": [2], \"data\": [1, 0]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1126,7 +1380,7 @@ This function checks if no elements in the boolean tensor are true. In case of n
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:none("{\"shape\": [2], \"data\": [false, false]}"^^tensor:DataTensor)
+    tensor:none("{\"type\": \"bool\", \"shape\": [2], \"data\": [false, false]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1140,7 +1394,7 @@ This function checks if no elements in the boolean tensor are true. In case of n
     Evaluating the SPARQL expression
 
     ```sparql
-    tensor:none("{\"shape\": [2], \"data\": [0, 0]}"^^tensor:DataTensor)
+    tensor:none("{\"type\": \"bool\", \"shape\": [2], \"data\": [0, 0]}"^^tensor:DataTensor)
     ```
 
     returns
@@ -1483,7 +1737,7 @@ This function creates a `Range` object representing a sequence of indices from `
     ```
 
     returns a `Range` object representing the indices from 0 to 4.
-    
+
     ```turtle
     "{\"type\": \"concrete\", \"from\": 0, \"to\": 5}"^^tensor:Range
     ```
