@@ -1,0 +1,34 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor L1 norm function for full reduction"
+graph {
+  node {
+    input: "input1"
+    output: "output1"
+    op_type: "ReduceL1"
+    attribute {
+      name: "keepdims"
+      i: 1
+      type: INT
+    }
+  }
+  input {
+    name: "input1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+    }
+  }
+  output {
+    name: "output1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+}
+opset_import {
+  version: 23
+}
