@@ -2419,7 +2419,7 @@
 
 <h1 id="data-tensors-in-rdf">Data tensors in RDF</h1>
 <p><strong>Unofficial Draft</strong><br />
-<em>Date: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 22, 2026</span></em></p>
+<em>Date: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 23, 2026</span></em></p>
 <p><strong>Editors:</strong> <br>
 &nbsp;Piotr Marciniak (Warsaw University of Technology)<br>
 &nbsp;<a href="https://ostrzyciel.eu">Piotr Sowiński</a> (<a href="https://neverblink.eu">NeverBlink</a>)<br>
@@ -7923,35 +7923,827 @@ After parsing, the JSON object is converted into a tensor structure.</p>
 </div>
 <hr />
 <h2 id="5-sparql-aggregates">5. SPARQL Aggregates</h2>
-<p>The following aggregation functions are implemented as SPARQL extension aggregates. Each function operates over DataTensor values and returns a DataTensor with the most precise type used within each group. These functions do not support the DISTINCT modifier.</p>
+<p>The following aggregation functions are implemented as SPARQL extension aggregates. Each aggregate operates over a group of <code>tensor:DataTensor</code> values bound during SPARQL <code>GROUP BY</code> evaluation and returns a single <code>tensor:DataTensor</code>. All tensors within a group must have the same shape. When tensors have different numeric data types, automatic type casting is performed to a common type. These aggregates do not support the <code>DISTINCT</code> modifier.</p>
+<p>Each aggregate is defined by up to three ONNX model templates, corresponding to the three phases of aggregation:</p>
+<ul>
+<li>Initial model – processes the first value in a group to set up internal accumulators.</li>
+<li>Reduce model – incorporates each subsequent value into the accumulators.</li>
+<li>Complete model – produces the final aggregated result from the accumulators.</li>
+</ul>
+<p>Simple aggregates (e.g., <code>tensor:SUM</code>) may not require a separate initial model if the first value can be used directly as the accumulator.</p>
 <h3 id="tensorsum_1"><code>tensor:SUM</code></h3>
+<p><a href="https://w3id.org/rdf-tensor/vocab#DataTensor">tensor:DataTensor</a> <strong>tensor:SUM</strong> (<a href="https://w3id.org/rdf-tensor/vocab#DataTensor">tensor:DataTensor</a> <em>?expr</em>)</p>
+<p>Computes the element-wise sum of all tensors in a group. The result is a tensor of the same shape as the input tensors, where each element is the sum of the corresponding elements across all tensors in the group. When input tensors have different numeric data types, they are cast to a common type before summation.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Given the following RDF data:</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-204-1"><a id="__codelineno-204-1" name="__codelineno-204-1" href="#__codelineno-204-1"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p1</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;int32\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[10, 20, 30]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-204-2"><a id="__codelineno-204-2" name="__codelineno-204-2" href="#__codelineno-204-2"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p2</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;float64\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[15.5, 25.5, 30.5]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-204-3"><a id="__codelineno-204-3" name="__codelineno-204-3" href="#__codelineno-204-3"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p3</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;float64\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[15.5, 25.5, 30.5]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span></code></pre></div>
+<p>Evaluating the SPARQL query</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-205-1"><a id="__codelineno-205-1" name="__codelineno-205-1" href="#__codelineno-205-1"></a><span class="k">SELECT</span> <span class="p">(</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">SUM</span><span class="p">(</span><span class="nv">?val</span><span class="p">)</span> <span class="k">AS</span> <span class="nv">?sum</span><span class="p">)</span>
+</span><span id="__span-205-2"><a id="__codelineno-205-2" name="__codelineno-205-2" href="#__codelineno-205-2"></a><span class="k">WHERE</span> <span class="p">{</span> <span class="nv">?s</span> <span class="nv">?p</span> <span class="nv">?val</span> <span class="p">}</span>
+</span><span id="__span-205-3"><a id="__codelineno-205-3" name="__codelineno-205-3" href="#__codelineno-205-3"></a><span class="k">GROUP BY</span> <span class="nv">?s</span>
+</span></code></pre></div>
+<p>returns a binding where <code>?sum</code> is</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-206-1"><a id="__codelineno-206-1" name="__codelineno-206-1" href="#__codelineno-206-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float64\&quot;, \&quot;shape\&quot;: [3], \&quot;data\&quot;: [41.0, 71.0, 91.0]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span>
+</span></code></pre></div>
+</div>
+<details class="note">
+<summary>ONNX definition of this aggregate</summary>
+<div class="tabbed-set tabbed-alternate" data-tabs="44:2"><input checked="checked" id="__tabbed_44_1" name="__tabbed_44" type="radio" /><input id="__tabbed_44_2" name="__tabbed_44" type="radio" /><div class="tabbed-labels"><label for="__tabbed_44_1">Model description</label><label for="__tabbed_44_2">Reduce model definition</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Aggregation phases:</p>
 <ul>
-<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/vocab#SUM</code></li>
-<li><strong>Description:</strong> Sums grouped numeric tensors element-wise.</li>
-<li><strong>Input:</strong> A group of <code>DataTensor</code> values.</li>
-<li><strong>Output:</strong> A <code>DataTensor</code> representing the element-wise sum of all tensors in the group.</li>
+<li>Initial: The first tensor value is used directly as the accumulator. No ONNX model is needed.</li>
+<li>Reduce: Each subsequent tensor is added element-wise to the accumulator using an ONNX <code>Add</code> operation.</li>
+<li>Complete: The accumulator is returned directly as the result. No ONNX model is needed.</li>
 </ul>
+<p>Reduce model inputs and outputs:</p>
+<ul>
+<li><code>input1</code>: The current accumulator tensor of <accumulator_type> type.</li>
+<li><code>input2</code>: The next tensor to add, of <input_type> type.</li>
+<li><code>output1</code>: The updated accumulator tensor after element-wise addition of <resolved_type> type.</li>
+</ul>
+<p>Model variables:</p>
+<ul>
+<li><code>accumulator_type</code>: The data type of the current accumulator tensor.</li>
+<li><code>input_type</code>: The data type of the incoming tensor, which can be any supported numeric type.</li>
+<li><code>resolved_type</code>: The common data type to which both the accumulator and input tensor are cast for addition, determined by type hierarchy and casting rules.</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><span class="filename">tensor_SUM_reduce_model.pbtxt</span><pre><span></span><code><span id="__span-207-1"><a id="__codelineno-207-1" name="__codelineno-207-1" href="#__codelineno-207-1"></a>ir_version: 11
+</span><span id="__span-207-2"><a id="__codelineno-207-2" name="__codelineno-207-2" href="#__codelineno-207-2"></a>domain: &quot;eu.neverblink.rdf&quot;
+</span><span id="__span-207-3"><a id="__codelineno-207-3" name="__codelineno-207-3" href="#__codelineno-207-3"></a>model_version: 1
+</span><span id="__span-207-4"><a id="__codelineno-207-4" name="__codelineno-207-4" href="#__codelineno-207-4"></a>doc_string: &quot;RDF tensor SUM aggregation function reduction step&quot;
+</span><span id="__span-207-5"><a id="__codelineno-207-5" name="__codelineno-207-5" href="#__codelineno-207-5"></a>graph {
+</span><span id="__span-207-6"><a id="__codelineno-207-6" name="__codelineno-207-6" href="#__codelineno-207-6"></a>  node {
+</span><span id="__span-207-7"><a id="__codelineno-207-7" name="__codelineno-207-7" href="#__codelineno-207-7"></a>    input: &quot;input1&quot;
+</span><span id="__span-207-8"><a id="__codelineno-207-8" name="__codelineno-207-8" href="#__codelineno-207-8"></a>    output: &quot;cast_input1&quot;
+</span><span id="__span-207-9"><a id="__codelineno-207-9" name="__codelineno-207-9" href="#__codelineno-207-9"></a>    op_type: &quot;Cast&quot;
+</span><span id="__span-207-10"><a id="__codelineno-207-10" name="__codelineno-207-10" href="#__codelineno-207-10"></a>    attribute {
+</span><span id="__span-207-11"><a id="__codelineno-207-11" name="__codelineno-207-11" href="#__codelineno-207-11"></a>      name: &quot;to&quot;
+</span><span id="__span-207-12"><a id="__codelineno-207-12" name="__codelineno-207-12" href="#__codelineno-207-12"></a>      i: &lt;resolved_type&gt;
+</span><span id="__span-207-13"><a id="__codelineno-207-13" name="__codelineno-207-13" href="#__codelineno-207-13"></a>      type: INT
+</span><span id="__span-207-14"><a id="__codelineno-207-14" name="__codelineno-207-14" href="#__codelineno-207-14"></a>    }
+</span><span id="__span-207-15"><a id="__codelineno-207-15" name="__codelineno-207-15" href="#__codelineno-207-15"></a>  }
+</span><span id="__span-207-16"><a id="__codelineno-207-16" name="__codelineno-207-16" href="#__codelineno-207-16"></a>  node {
+</span><span id="__span-207-17"><a id="__codelineno-207-17" name="__codelineno-207-17" href="#__codelineno-207-17"></a>    input: &quot;input2&quot;
+</span><span id="__span-207-18"><a id="__codelineno-207-18" name="__codelineno-207-18" href="#__codelineno-207-18"></a>    output: &quot;cast_input2&quot;
+</span><span id="__span-207-19"><a id="__codelineno-207-19" name="__codelineno-207-19" href="#__codelineno-207-19"></a>    op_type: &quot;Cast&quot;
+</span><span id="__span-207-20"><a id="__codelineno-207-20" name="__codelineno-207-20" href="#__codelineno-207-20"></a>    attribute {
+</span><span id="__span-207-21"><a id="__codelineno-207-21" name="__codelineno-207-21" href="#__codelineno-207-21"></a>      name: &quot;to&quot;
+</span><span id="__span-207-22"><a id="__codelineno-207-22" name="__codelineno-207-22" href="#__codelineno-207-22"></a>      i: &lt;resolved_type&gt;
+</span><span id="__span-207-23"><a id="__codelineno-207-23" name="__codelineno-207-23" href="#__codelineno-207-23"></a>      type: INT
+</span><span id="__span-207-24"><a id="__codelineno-207-24" name="__codelineno-207-24" href="#__codelineno-207-24"></a>    }
+</span><span id="__span-207-25"><a id="__codelineno-207-25" name="__codelineno-207-25" href="#__codelineno-207-25"></a>  }
+</span><span id="__span-207-26"><a id="__codelineno-207-26" name="__codelineno-207-26" href="#__codelineno-207-26"></a>  node {
+</span><span id="__span-207-27"><a id="__codelineno-207-27" name="__codelineno-207-27" href="#__codelineno-207-27"></a>    input: &quot;cast_input1&quot;
+</span><span id="__span-207-28"><a id="__codelineno-207-28" name="__codelineno-207-28" href="#__codelineno-207-28"></a>    input: &quot;cast_input2&quot;
+</span><span id="__span-207-29"><a id="__codelineno-207-29" name="__codelineno-207-29" href="#__codelineno-207-29"></a>    output: &quot;output1&quot;
+</span><span id="__span-207-30"><a id="__codelineno-207-30" name="__codelineno-207-30" href="#__codelineno-207-30"></a>    op_type: &quot;Add&quot;
+</span><span id="__span-207-31"><a id="__codelineno-207-31" name="__codelineno-207-31" href="#__codelineno-207-31"></a>  }
+</span><span id="__span-207-32"><a id="__codelineno-207-32" name="__codelineno-207-32" href="#__codelineno-207-32"></a>  input {
+</span><span id="__span-207-33"><a id="__codelineno-207-33" name="__codelineno-207-33" href="#__codelineno-207-33"></a>    name: &quot;input1&quot;
+</span><span id="__span-207-34"><a id="__codelineno-207-34" name="__codelineno-207-34" href="#__codelineno-207-34"></a>    type {
+</span><span id="__span-207-35"><a id="__codelineno-207-35" name="__codelineno-207-35" href="#__codelineno-207-35"></a>      tensor_type {
+</span><span id="__span-207-36"><a id="__codelineno-207-36" name="__codelineno-207-36" href="#__codelineno-207-36"></a>        elem_type: &lt;accumulator_type&gt;
+</span><span id="__span-207-37"><a id="__codelineno-207-37" name="__codelineno-207-37" href="#__codelineno-207-37"></a>      }
+</span><span id="__span-207-38"><a id="__codelineno-207-38" name="__codelineno-207-38" href="#__codelineno-207-38"></a>    }
+</span><span id="__span-207-39"><a id="__codelineno-207-39" name="__codelineno-207-39" href="#__codelineno-207-39"></a>  }
+</span><span id="__span-207-40"><a id="__codelineno-207-40" name="__codelineno-207-40" href="#__codelineno-207-40"></a>  input {
+</span><span id="__span-207-41"><a id="__codelineno-207-41" name="__codelineno-207-41" href="#__codelineno-207-41"></a>    name: &quot;input2&quot;
+</span><span id="__span-207-42"><a id="__codelineno-207-42" name="__codelineno-207-42" href="#__codelineno-207-42"></a>    type {
+</span><span id="__span-207-43"><a id="__codelineno-207-43" name="__codelineno-207-43" href="#__codelineno-207-43"></a>      tensor_type {
+</span><span id="__span-207-44"><a id="__codelineno-207-44" name="__codelineno-207-44" href="#__codelineno-207-44"></a>        elem_type: &lt;input_type&gt;
+</span><span id="__span-207-45"><a id="__codelineno-207-45" name="__codelineno-207-45" href="#__codelineno-207-45"></a>      }
+</span><span id="__span-207-46"><a id="__codelineno-207-46" name="__codelineno-207-46" href="#__codelineno-207-46"></a>    }
+</span><span id="__span-207-47"><a id="__codelineno-207-47" name="__codelineno-207-47" href="#__codelineno-207-47"></a>  }
+</span><span id="__span-207-48"><a id="__codelineno-207-48" name="__codelineno-207-48" href="#__codelineno-207-48"></a>  output {
+</span><span id="__span-207-49"><a id="__codelineno-207-49" name="__codelineno-207-49" href="#__codelineno-207-49"></a>    name: &quot;output1&quot;
+</span><span id="__span-207-50"><a id="__codelineno-207-50" name="__codelineno-207-50" href="#__codelineno-207-50"></a>    type {
+</span><span id="__span-207-51"><a id="__codelineno-207-51" name="__codelineno-207-51" href="#__codelineno-207-51"></a>      tensor_type {
+</span><span id="__span-207-52"><a id="__codelineno-207-52" name="__codelineno-207-52" href="#__codelineno-207-52"></a>        elem_type: &lt;resolved_type&gt;
+</span><span id="__span-207-53"><a id="__codelineno-207-53" name="__codelineno-207-53" href="#__codelineno-207-53"></a>      }
+</span><span id="__span-207-54"><a id="__codelineno-207-54" name="__codelineno-207-54" href="#__codelineno-207-54"></a>    }
+</span><span id="__span-207-55"><a id="__codelineno-207-55" name="__codelineno-207-55" href="#__codelineno-207-55"></a>  }
+</span><span id="__span-207-56"><a id="__codelineno-207-56" name="__codelineno-207-56" href="#__codelineno-207-56"></a>}
+</span><span id="__span-207-57"><a id="__codelineno-207-57" name="__codelineno-207-57" href="#__codelineno-207-57"></a>opset_import {
+</span><span id="__span-207-58"><a id="__codelineno-207-58" name="__codelineno-207-58" href="#__codelineno-207-58"></a>  version: 23
+</span><span id="__span-207-59"><a id="__codelineno-207-59" name="__codelineno-207-59" href="#__codelineno-207-59"></a>}
+</span></code></pre></div>
+</div>
+</div>
+</div>
+</details>
+<hr />
 <h3 id="tensoravg_1"><code>tensor:AVG</code></h3>
+<p><a href="https://w3id.org/rdf-tensor/vocab#DataTensor">tensor:DataTensor</a> <strong>tensor:AVG</strong> (<a href="https://w3id.org/rdf-tensor/vocab#DataTensor">tensor:DataTensor</a> <em>?expr</em>)</p>
+<p>Computes the element-wise average (arithmetic mean) of all tensors in a group. The result is always a DOUBLE-typed tensor of the same shape as the input tensors, where each element is the mean of the corresponding elements across all tensors in the group.</p>
+<p>Internally, the aggregate accumulates the element-wise sum and the count of tensors. On completion, the sum is cast to DOUBLE and divided by the count.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Given the following RDF data:</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-208-1"><a id="__codelineno-208-1" name="__codelineno-208-1" href="#__codelineno-208-1"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p1</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;int32\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[10, 20, 30]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-208-2"><a id="__codelineno-208-2" name="__codelineno-208-2" href="#__codelineno-208-2"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p2</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;float64\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[15.5, 25.5, 30.5]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-208-3"><a id="__codelineno-208-3" name="__codelineno-208-3" href="#__codelineno-208-3"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p3</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;float64\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[15.5, 25.5, 30.5]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-208-4"><a id="__codelineno-208-4" name="__codelineno-208-4" href="#__codelineno-208-4"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p4</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;int32\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[10, 20, 30]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-208-5"><a id="__codelineno-208-5" name="__codelineno-208-5" href="#__codelineno-208-5"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p5</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;int32\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[10, 20, 30]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span></code></pre></div>
+<p>Evaluating the SPARQL query</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-209-1"><a id="__codelineno-209-1" name="__codelineno-209-1" href="#__codelineno-209-1"></a><span class="k">SELECT</span> <span class="p">(</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">AVG</span><span class="p">(</span><span class="nv">?val</span><span class="p">)</span> <span class="k">AS</span> <span class="nv">?avg</span><span class="p">)</span>
+</span><span id="__span-209-2"><a id="__codelineno-209-2" name="__codelineno-209-2" href="#__codelineno-209-2"></a><span class="k">WHERE</span> <span class="p">{</span> <span class="nv">?s</span> <span class="nv">?p</span> <span class="nv">?val</span> <span class="p">}</span>
+</span><span id="__span-209-3"><a id="__codelineno-209-3" name="__codelineno-209-3" href="#__codelineno-209-3"></a><span class="k">GROUP BY</span> <span class="nv">?s</span>
+</span></code></pre></div>
+<p>returns a binding where <code>?avg</code> is</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-210-1"><a id="__codelineno-210-1" name="__codelineno-210-1" href="#__codelineno-210-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float64\&quot;, \&quot;shape\&quot;: [3], \&quot;data\&quot;: [12.2, 22.2, 30.2]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span>
+</span></code></pre></div>
+</div>
+<details class="note">
+<summary>ONNX definition of this aggregate</summary>
+<div class="tabbed-set tabbed-alternate" data-tabs="45:3"><input checked="checked" id="__tabbed_45_1" name="__tabbed_45" type="radio" /><input id="__tabbed_45_2" name="__tabbed_45" type="radio" /><input id="__tabbed_45_3" name="__tabbed_45" type="radio" /><div class="tabbed-labels"><label for="__tabbed_45_1">Model description</label><label for="__tabbed_45_2">Reduce model definition</label><label for="__tabbed_45_3">Complete model definition</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Aggregation phases:</p>
 <ul>
-<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/vocab#AVG</code></li>
-<li><strong>Description:</strong> Computes the element-wise average of grouped tensors.</li>
-<li><strong>Input:</strong> A group of <code>DataTensor</code> values.</li>
-<li><strong>Output:</strong> A <code>DataTensor</code> representing the average tensor.</li>
+<li>Initial: The first tensor value and a count of 1 are stored as the accumulator. No ONNX model is needed.</li>
+<li>Reduce: Each subsequent tensor is added element-wise to the accumulator sum using an ONNX <code>Add</code> operation, and the count is incremented.</li>
+<li>Complete: The accumulated sum is cast to DOUBLE and divided element-wise by the count to produce the mean.</li>
 </ul>
+<p>Reduce model inputs and outputs:</p>
+<ul>
+<li><code>input1</code>: The current sum accumulator tensor of <accumulator_type> type.</li>
+<li><code>input2</code>: The next tensor to add, of <input_type> type.</li>
+<li><code>output1</code>: The updated sum accumulator tensor after element-wise addition of <resolved_type> type.</li>
+</ul>
+<p>Complete model inputs and outputs:</p>
+<ul>
+<li><code>input1</code>: The accumulated sum tensor of <accumulator_type> type.</li>
+<li><code>output1</code>: The average tensor of DOUBLE type, computed as <code>Cast(input1, DOUBLE) / count</code>.</li>
+</ul>
+<p>Model variables:</p>
+<ul>
+<li><code>accumulator_type</code>: The data type of the current sum accumulator tensor.</li>
+<li><code>input_type</code>: The data type of the incoming tensor, which can be any supported numeric type.</li>
+<li><code>resolved_type</code>: The common data type to which both the accumulator and input tensor are cast for addition, determined by type hierarchy and casting rules.</li>
+<li><code>count_value</code>: The total number of tensors in the group, of type DOUBLE.</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><span class="filename">tensor_AVG_reduce_model.pbtxt</span><pre><span></span><code><span id="__span-211-1"><a id="__codelineno-211-1" name="__codelineno-211-1" href="#__codelineno-211-1"></a>ir_version: 11
+</span><span id="__span-211-2"><a id="__codelineno-211-2" name="__codelineno-211-2" href="#__codelineno-211-2"></a>domain: &quot;eu.neverblink.rdf&quot;
+</span><span id="__span-211-3"><a id="__codelineno-211-3" name="__codelineno-211-3" href="#__codelineno-211-3"></a>model_version: 1
+</span><span id="__span-211-4"><a id="__codelineno-211-4" name="__codelineno-211-4" href="#__codelineno-211-4"></a>doc_string: &quot;RDF tensor AVG aggregation function reduction step&quot;
+</span><span id="__span-211-5"><a id="__codelineno-211-5" name="__codelineno-211-5" href="#__codelineno-211-5"></a>graph {
+</span><span id="__span-211-6"><a id="__codelineno-211-6" name="__codelineno-211-6" href="#__codelineno-211-6"></a>  node {
+</span><span id="__span-211-7"><a id="__codelineno-211-7" name="__codelineno-211-7" href="#__codelineno-211-7"></a>    input: &quot;input1&quot;
+</span><span id="__span-211-8"><a id="__codelineno-211-8" name="__codelineno-211-8" href="#__codelineno-211-8"></a>    output: &quot;cast_input1&quot;
+</span><span id="__span-211-9"><a id="__codelineno-211-9" name="__codelineno-211-9" href="#__codelineno-211-9"></a>    op_type: &quot;Cast&quot;
+</span><span id="__span-211-10"><a id="__codelineno-211-10" name="__codelineno-211-10" href="#__codelineno-211-10"></a>    attribute {
+</span><span id="__span-211-11"><a id="__codelineno-211-11" name="__codelineno-211-11" href="#__codelineno-211-11"></a>      name: &quot;to&quot;
+</span><span id="__span-211-12"><a id="__codelineno-211-12" name="__codelineno-211-12" href="#__codelineno-211-12"></a>      i: &lt;resolved_type&gt;
+</span><span id="__span-211-13"><a id="__codelineno-211-13" name="__codelineno-211-13" href="#__codelineno-211-13"></a>      type: INT
+</span><span id="__span-211-14"><a id="__codelineno-211-14" name="__codelineno-211-14" href="#__codelineno-211-14"></a>    }
+</span><span id="__span-211-15"><a id="__codelineno-211-15" name="__codelineno-211-15" href="#__codelineno-211-15"></a>  }
+</span><span id="__span-211-16"><a id="__codelineno-211-16" name="__codelineno-211-16" href="#__codelineno-211-16"></a>  node {
+</span><span id="__span-211-17"><a id="__codelineno-211-17" name="__codelineno-211-17" href="#__codelineno-211-17"></a>    input: &quot;input2&quot;
+</span><span id="__span-211-18"><a id="__codelineno-211-18" name="__codelineno-211-18" href="#__codelineno-211-18"></a>    output: &quot;cast_input2&quot;
+</span><span id="__span-211-19"><a id="__codelineno-211-19" name="__codelineno-211-19" href="#__codelineno-211-19"></a>    op_type: &quot;Cast&quot;
+</span><span id="__span-211-20"><a id="__codelineno-211-20" name="__codelineno-211-20" href="#__codelineno-211-20"></a>    attribute {
+</span><span id="__span-211-21"><a id="__codelineno-211-21" name="__codelineno-211-21" href="#__codelineno-211-21"></a>      name: &quot;to&quot;
+</span><span id="__span-211-22"><a id="__codelineno-211-22" name="__codelineno-211-22" href="#__codelineno-211-22"></a>      i: &lt;resolved_type&gt;
+</span><span id="__span-211-23"><a id="__codelineno-211-23" name="__codelineno-211-23" href="#__codelineno-211-23"></a>      type: INT
+</span><span id="__span-211-24"><a id="__codelineno-211-24" name="__codelineno-211-24" href="#__codelineno-211-24"></a>    }
+</span><span id="__span-211-25"><a id="__codelineno-211-25" name="__codelineno-211-25" href="#__codelineno-211-25"></a>  }
+</span><span id="__span-211-26"><a id="__codelineno-211-26" name="__codelineno-211-26" href="#__codelineno-211-26"></a>  node {
+</span><span id="__span-211-27"><a id="__codelineno-211-27" name="__codelineno-211-27" href="#__codelineno-211-27"></a>    input: &quot;cast_input1&quot;
+</span><span id="__span-211-28"><a id="__codelineno-211-28" name="__codelineno-211-28" href="#__codelineno-211-28"></a>    input: &quot;cast_input2&quot;
+</span><span id="__span-211-29"><a id="__codelineno-211-29" name="__codelineno-211-29" href="#__codelineno-211-29"></a>    output: &quot;output1&quot;
+</span><span id="__span-211-30"><a id="__codelineno-211-30" name="__codelineno-211-30" href="#__codelineno-211-30"></a>    op_type: &quot;Add&quot;
+</span><span id="__span-211-31"><a id="__codelineno-211-31" name="__codelineno-211-31" href="#__codelineno-211-31"></a>  }
+</span><span id="__span-211-32"><a id="__codelineno-211-32" name="__codelineno-211-32" href="#__codelineno-211-32"></a>  input {
+</span><span id="__span-211-33"><a id="__codelineno-211-33" name="__codelineno-211-33" href="#__codelineno-211-33"></a>    name: &quot;input1&quot;
+</span><span id="__span-211-34"><a id="__codelineno-211-34" name="__codelineno-211-34" href="#__codelineno-211-34"></a>    type {
+</span><span id="__span-211-35"><a id="__codelineno-211-35" name="__codelineno-211-35" href="#__codelineno-211-35"></a>      tensor_type {
+</span><span id="__span-211-36"><a id="__codelineno-211-36" name="__codelineno-211-36" href="#__codelineno-211-36"></a>        elem_type: &lt;accumulator_type&gt;
+</span><span id="__span-211-37"><a id="__codelineno-211-37" name="__codelineno-211-37" href="#__codelineno-211-37"></a>      }
+</span><span id="__span-211-38"><a id="__codelineno-211-38" name="__codelineno-211-38" href="#__codelineno-211-38"></a>    }
+</span><span id="__span-211-39"><a id="__codelineno-211-39" name="__codelineno-211-39" href="#__codelineno-211-39"></a>  }
+</span><span id="__span-211-40"><a id="__codelineno-211-40" name="__codelineno-211-40" href="#__codelineno-211-40"></a>  input {
+</span><span id="__span-211-41"><a id="__codelineno-211-41" name="__codelineno-211-41" href="#__codelineno-211-41"></a>    name: &quot;input2&quot;
+</span><span id="__span-211-42"><a id="__codelineno-211-42" name="__codelineno-211-42" href="#__codelineno-211-42"></a>    type {
+</span><span id="__span-211-43"><a id="__codelineno-211-43" name="__codelineno-211-43" href="#__codelineno-211-43"></a>      tensor_type {
+</span><span id="__span-211-44"><a id="__codelineno-211-44" name="__codelineno-211-44" href="#__codelineno-211-44"></a>        elem_type: &lt;input_type&gt;
+</span><span id="__span-211-45"><a id="__codelineno-211-45" name="__codelineno-211-45" href="#__codelineno-211-45"></a>      }
+</span><span id="__span-211-46"><a id="__codelineno-211-46" name="__codelineno-211-46" href="#__codelineno-211-46"></a>    }
+</span><span id="__span-211-47"><a id="__codelineno-211-47" name="__codelineno-211-47" href="#__codelineno-211-47"></a>  }
+</span><span id="__span-211-48"><a id="__codelineno-211-48" name="__codelineno-211-48" href="#__codelineno-211-48"></a>  output {
+</span><span id="__span-211-49"><a id="__codelineno-211-49" name="__codelineno-211-49" href="#__codelineno-211-49"></a>    name: &quot;output1&quot;
+</span><span id="__span-211-50"><a id="__codelineno-211-50" name="__codelineno-211-50" href="#__codelineno-211-50"></a>    type {
+</span><span id="__span-211-51"><a id="__codelineno-211-51" name="__codelineno-211-51" href="#__codelineno-211-51"></a>      tensor_type {
+</span><span id="__span-211-52"><a id="__codelineno-211-52" name="__codelineno-211-52" href="#__codelineno-211-52"></a>        elem_type: &lt;resolved_type&gt;
+</span><span id="__span-211-53"><a id="__codelineno-211-53" name="__codelineno-211-53" href="#__codelineno-211-53"></a>      }
+</span><span id="__span-211-54"><a id="__codelineno-211-54" name="__codelineno-211-54" href="#__codelineno-211-54"></a>    }
+</span><span id="__span-211-55"><a id="__codelineno-211-55" name="__codelineno-211-55" href="#__codelineno-211-55"></a>  }
+</span><span id="__span-211-56"><a id="__codelineno-211-56" name="__codelineno-211-56" href="#__codelineno-211-56"></a>}
+</span><span id="__span-211-57"><a id="__codelineno-211-57" name="__codelineno-211-57" href="#__codelineno-211-57"></a>opset_import {
+</span><span id="__span-211-58"><a id="__codelineno-211-58" name="__codelineno-211-58" href="#__codelineno-211-58"></a>  version: 23
+</span><span id="__span-211-59"><a id="__codelineno-211-59" name="__codelineno-211-59" href="#__codelineno-211-59"></a>}
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><span class="filename">tensor_AVG_complete_model.pbtxt</span><pre><span></span><code><span id="__span-212-1"><a id="__codelineno-212-1" name="__codelineno-212-1" href="#__codelineno-212-1"></a>ir_version: 11
+</span><span id="__span-212-2"><a id="__codelineno-212-2" name="__codelineno-212-2" href="#__codelineno-212-2"></a>domain: &quot;eu.neverblink.rdf&quot;
+</span><span id="__span-212-3"><a id="__codelineno-212-3" name="__codelineno-212-3" href="#__codelineno-212-3"></a>model_version: 1
+</span><span id="__span-212-4"><a id="__codelineno-212-4" name="__codelineno-212-4" href="#__codelineno-212-4"></a>doc_string: &quot;RDF tensor AVG aggregation function completion step&quot;
+</span><span id="__span-212-5"><a id="__codelineno-212-5" name="__codelineno-212-5" href="#__codelineno-212-5"></a>graph {
+</span><span id="__span-212-6"><a id="__codelineno-212-6" name="__codelineno-212-6" href="#__codelineno-212-6"></a>  node {
+</span><span id="__span-212-7"><a id="__codelineno-212-7" name="__codelineno-212-7" href="#__codelineno-212-7"></a>    input: &quot;input1&quot;
+</span><span id="__span-212-8"><a id="__codelineno-212-8" name="__codelineno-212-8" href="#__codelineno-212-8"></a>    output: &quot;cast_input&quot;
+</span><span id="__span-212-9"><a id="__codelineno-212-9" name="__codelineno-212-9" href="#__codelineno-212-9"></a>    op_type: &quot;Cast&quot;
+</span><span id="__span-212-10"><a id="__codelineno-212-10" name="__codelineno-212-10" href="#__codelineno-212-10"></a>    attribute {
+</span><span id="__span-212-11"><a id="__codelineno-212-11" name="__codelineno-212-11" href="#__codelineno-212-11"></a>      name: &quot;to&quot;
+</span><span id="__span-212-12"><a id="__codelineno-212-12" name="__codelineno-212-12" href="#__codelineno-212-12"></a>      i: 11
+</span><span id="__span-212-13"><a id="__codelineno-212-13" name="__codelineno-212-13" href="#__codelineno-212-13"></a>      type: INT
+</span><span id="__span-212-14"><a id="__codelineno-212-14" name="__codelineno-212-14" href="#__codelineno-212-14"></a>    }
+</span><span id="__span-212-15"><a id="__codelineno-212-15" name="__codelineno-212-15" href="#__codelineno-212-15"></a>  }
+</span><span id="__span-212-16"><a id="__codelineno-212-16" name="__codelineno-212-16" href="#__codelineno-212-16"></a>  node {
+</span><span id="__span-212-17"><a id="__codelineno-212-17" name="__codelineno-212-17" href="#__codelineno-212-17"></a>    input: &quot;cast_input&quot;
+</span><span id="__span-212-18"><a id="__codelineno-212-18" name="__codelineno-212-18" href="#__codelineno-212-18"></a>    input: &quot;divisor&quot;
+</span><span id="__span-212-19"><a id="__codelineno-212-19" name="__codelineno-212-19" href="#__codelineno-212-19"></a>    output: &quot;output1&quot;
+</span><span id="__span-212-20"><a id="__codelineno-212-20" name="__codelineno-212-20" href="#__codelineno-212-20"></a>    op_type: &quot;Div&quot;
+</span><span id="__span-212-21"><a id="__codelineno-212-21" name="__codelineno-212-21" href="#__codelineno-212-21"></a>  }
+</span><span id="__span-212-22"><a id="__codelineno-212-22" name="__codelineno-212-22" href="#__codelineno-212-22"></a>  initializer {
+</span><span id="__span-212-23"><a id="__codelineno-212-23" name="__codelineno-212-23" href="#__codelineno-212-23"></a>    data_type: 11
+</span><span id="__span-212-24"><a id="__codelineno-212-24" name="__codelineno-212-24" href="#__codelineno-212-24"></a>    name: &quot;divisor&quot;
+</span><span id="__span-212-25"><a id="__codelineno-212-25" name="__codelineno-212-25" href="#__codelineno-212-25"></a>    double_data: &lt;count_value&gt;
+</span><span id="__span-212-26"><a id="__codelineno-212-26" name="__codelineno-212-26" href="#__codelineno-212-26"></a>  }
+</span><span id="__span-212-27"><a id="__codelineno-212-27" name="__codelineno-212-27" href="#__codelineno-212-27"></a>  input {
+</span><span id="__span-212-28"><a id="__codelineno-212-28" name="__codelineno-212-28" href="#__codelineno-212-28"></a>    name: &quot;input1&quot;
+</span><span id="__span-212-29"><a id="__codelineno-212-29" name="__codelineno-212-29" href="#__codelineno-212-29"></a>    type {
+</span><span id="__span-212-30"><a id="__codelineno-212-30" name="__codelineno-212-30" href="#__codelineno-212-30"></a>      tensor_type {
+</span><span id="__span-212-31"><a id="__codelineno-212-31" name="__codelineno-212-31" href="#__codelineno-212-31"></a>        elem_type: &lt;accumulator_type&gt;
+</span><span id="__span-212-32"><a id="__codelineno-212-32" name="__codelineno-212-32" href="#__codelineno-212-32"></a>      }
+</span><span id="__span-212-33"><a id="__codelineno-212-33" name="__codelineno-212-33" href="#__codelineno-212-33"></a>    }
+</span><span id="__span-212-34"><a id="__codelineno-212-34" name="__codelineno-212-34" href="#__codelineno-212-34"></a>  }
+</span><span id="__span-212-35"><a id="__codelineno-212-35" name="__codelineno-212-35" href="#__codelineno-212-35"></a>  output {
+</span><span id="__span-212-36"><a id="__codelineno-212-36" name="__codelineno-212-36" href="#__codelineno-212-36"></a>    name: &quot;output1&quot;
+</span><span id="__span-212-37"><a id="__codelineno-212-37" name="__codelineno-212-37" href="#__codelineno-212-37"></a>    type {
+</span><span id="__span-212-38"><a id="__codelineno-212-38" name="__codelineno-212-38" href="#__codelineno-212-38"></a>      tensor_type {
+</span><span id="__span-212-39"><a id="__codelineno-212-39" name="__codelineno-212-39" href="#__codelineno-212-39"></a>        elem_type: 11
+</span><span id="__span-212-40"><a id="__codelineno-212-40" name="__codelineno-212-40" href="#__codelineno-212-40"></a>      }
+</span><span id="__span-212-41"><a id="__codelineno-212-41" name="__codelineno-212-41" href="#__codelineno-212-41"></a>    }
+</span><span id="__span-212-42"><a id="__codelineno-212-42" name="__codelineno-212-42" href="#__codelineno-212-42"></a>  }
+</span><span id="__span-212-43"><a id="__codelineno-212-43" name="__codelineno-212-43" href="#__codelineno-212-43"></a>}
+</span><span id="__span-212-44"><a id="__codelineno-212-44" name="__codelineno-212-44" href="#__codelineno-212-44"></a>opset_import {
+</span><span id="__span-212-45"><a id="__codelineno-212-45" name="__codelineno-212-45" href="#__codelineno-212-45"></a>  version: 23
+</span><span id="__span-212-46"><a id="__codelineno-212-46" name="__codelineno-212-46" href="#__codelineno-212-46"></a>}
+</span></code></pre></div>
+</div>
+</div>
+</div>
+</details>
+<hr />
 <h3 id="tensorvar_1"><code>tensor:VAR</code></h3>
+<p><a href="https://w3id.org/rdf-tensor/vocab#DataTensor">tensor:DataTensor</a> <strong>tensor:VAR</strong> (<a href="https://w3id.org/rdf-tensor/vocab#DataTensor">tensor:DataTensor</a> <em>?expr</em>)</p>
+<p>Computes the element-wise population variance of all tensors in a group. The result is always a DOUBLE-typed tensor of the same shape as the input tensors, where each element is the variance of the corresponding elements across all tensors in the group.</p>
+<p>The variance is computed using the formula: Var(X) = E[X^2] − (E[X])^2, where E denotes the mean over the group. Internally, the aggregate tracks the element-wise sum of squares and the element-wise sum. On completion, it divides both by the count and applies the formula.</p>
+<p>Requires at least two tensors in the group.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Given the following RDF data:</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-213-1"><a id="__codelineno-213-1" name="__codelineno-213-1" href="#__codelineno-213-1"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p1</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;int32\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[10, 20, 30]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-213-2"><a id="__codelineno-213-2" name="__codelineno-213-2" href="#__codelineno-213-2"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p2</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;float64\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[15.5, 25.5, 30.5]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-213-3"><a id="__codelineno-213-3" name="__codelineno-213-3" href="#__codelineno-213-3"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p3</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;float64\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[15.5, 25.5, 30.5]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-213-4"><a id="__codelineno-213-4" name="__codelineno-213-4" href="#__codelineno-213-4"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p4</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;int32\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[10, 20, 30]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-213-5"><a id="__codelineno-213-5" name="__codelineno-213-5" href="#__codelineno-213-5"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p5</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;int32\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[10, 20, 30]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span></code></pre></div>
+<p>Evaluating the SPARQL query</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-214-1"><a id="__codelineno-214-1" name="__codelineno-214-1" href="#__codelineno-214-1"></a><span class="k">SELECT</span> <span class="p">(</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">VAR</span><span class="p">(</span><span class="nv">?val</span><span class="p">)</span> <span class="k">AS</span> <span class="nv">?variance</span><span class="p">)</span>
+</span><span id="__span-214-2"><a id="__codelineno-214-2" name="__codelineno-214-2" href="#__codelineno-214-2"></a><span class="k">WHERE</span> <span class="p">{</span> <span class="nv">?s</span> <span class="nv">?p</span> <span class="nv">?val</span> <span class="p">}</span>
+</span><span id="__span-214-3"><a id="__codelineno-214-3" name="__codelineno-214-3" href="#__codelineno-214-3"></a><span class="k">GROUP BY</span> <span class="nv">?s</span>
+</span></code></pre></div>
+<p>returns a binding where <code>?variance</code> is approximately</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-215-1"><a id="__codelineno-215-1" name="__codelineno-215-1" href="#__codelineno-215-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float64\&quot;, \&quot;shape\&quot;: [3], \&quot;data\&quot;: [9.075, 9.075, 0.075]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span>
+</span></code></pre></div>
+</div>
+<details class="note">
+<summary>ONNX definition of this aggregate</summary>
+<div class="tabbed-set tabbed-alternate" data-tabs="46:4"><input checked="checked" id="__tabbed_46_1" name="__tabbed_46" type="radio" /><input id="__tabbed_46_2" name="__tabbed_46" type="radio" /><input id="__tabbed_46_3" name="__tabbed_46" type="radio" /><input id="__tabbed_46_4" name="__tabbed_46" type="radio" /><div class="tabbed-labels"><label for="__tabbed_46_1">Model description</label><label for="__tabbed_46_2">Initial model definition</label><label for="__tabbed_46_3">Reduce model definition</label><label for="__tabbed_46_4">Complete model definition</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Aggregation phases:</p>
 <ul>
-<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/vocab#VAR</code></li>
-<li><strong>Description:</strong> Calculates the element-wise variance across grouped tensors.</li>
-<li><strong>Input:</strong> A group of <code>DataTensor</code> values.</li>
-<li><strong>Output:</strong> A <code>DataTensor</code> representing the variance tensor.</li>
+<li>Initial: the first tensor is cast to DOUBLE. The element-wise square (x^2) is computed as one accumulator, and the cast value itself is the other. The count is initialized to 1.</li>
+<li>Reduce: each subsequent tensor is cast to DOUBLE, squared, and added to the sum-of-squares accumulator. The cast value is added to the sum accumulator. The count is incremented.</li>
+<li>Complete: the variance is computed as E[X^2] − (E[X])^2 by dividing both accumulators by the count and applying the formula.</li>
 </ul>
+<p>Initial model inputs and outputs:</p>
+<ul>
+<li><code>input1</code>: The first tensor value of <input_type> type.</li>
+<li><code>output1</code>: The squared tensor (x^2), cast to DOUBLE type.</li>
+<li><code>output2</code>: The tensor value itself, cast to DOUBLE type.</li>
+</ul>
+<p>Reduce model inputs and outputs:</p>
+<ul>
+<li><code>input1</code>: The current sum-of-squares accumulator tensor of DOUBLE type.</li>
+<li><code>input2</code>: The current sum accumulator tensor of DOUBLE type.</li>
+<li><code>input3</code>: The next tensor to accumulate, of <input_type> type.</li>
+<li><code>output1</code>: The updated sum-of-squares accumulator (input1 + Cast(input3)^2).</li>
+<li><code>output2</code>: The updated sum accumulator (input2 + Cast(input3)).</li>
+</ul>
+<p>Complete model inputs and outputs:</p>
+<ul>
+<li><code>input1</code>: The accumulated sum-of-squares tensor of DOUBLE type.</li>
+<li><code>input2</code>: The accumulated sum tensor of DOUBLE type.</li>
+<li><code>output1</code>: The variance tensor of DOUBLE type, computed as (input1 / count) − (input2 / count)^2.</li>
+</ul>
+<p>Model variables:</p>
+<ul>
+<li><code>input_type</code>: The data type of the incoming tensor, which can be any supported numeric type.</li>
+<li><code>count_value</code>: The total number of tensors in the group, of type DOUBLE.</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><span class="filename">tensor_VAR_initial_model.pbtxt</span><pre><span></span><code><span id="__span-216-1"><a id="__codelineno-216-1" name="__codelineno-216-1" href="#__codelineno-216-1"></a>ir_version: 11
+</span><span id="__span-216-2"><a id="__codelineno-216-2" name="__codelineno-216-2" href="#__codelineno-216-2"></a>domain: &quot;eu.neverblink.rdf&quot;
+</span><span id="__span-216-3"><a id="__codelineno-216-3" name="__codelineno-216-3" href="#__codelineno-216-3"></a>model_version: 1
+</span><span id="__span-216-4"><a id="__codelineno-216-4" name="__codelineno-216-4" href="#__codelineno-216-4"></a>doc_string: &quot;RDF tensor VAR aggregation function initial step&quot;
+</span><span id="__span-216-5"><a id="__codelineno-216-5" name="__codelineno-216-5" href="#__codelineno-216-5"></a>graph {
+</span><span id="__span-216-6"><a id="__codelineno-216-6" name="__codelineno-216-6" href="#__codelineno-216-6"></a>  node {
+</span><span id="__span-216-7"><a id="__codelineno-216-7" name="__codelineno-216-7" href="#__codelineno-216-7"></a>    input: &quot;input1&quot;
+</span><span id="__span-216-8"><a id="__codelineno-216-8" name="__codelineno-216-8" href="#__codelineno-216-8"></a>    output: &quot;cast_input&quot;
+</span><span id="__span-216-9"><a id="__codelineno-216-9" name="__codelineno-216-9" href="#__codelineno-216-9"></a>    op_type: &quot;Cast&quot;
+</span><span id="__span-216-10"><a id="__codelineno-216-10" name="__codelineno-216-10" href="#__codelineno-216-10"></a>    attribute {
+</span><span id="__span-216-11"><a id="__codelineno-216-11" name="__codelineno-216-11" href="#__codelineno-216-11"></a>      name: &quot;to&quot;
+</span><span id="__span-216-12"><a id="__codelineno-216-12" name="__codelineno-216-12" href="#__codelineno-216-12"></a>      i: 11
+</span><span id="__span-216-13"><a id="__codelineno-216-13" name="__codelineno-216-13" href="#__codelineno-216-13"></a>      type: INT
+</span><span id="__span-216-14"><a id="__codelineno-216-14" name="__codelineno-216-14" href="#__codelineno-216-14"></a>    }
+</span><span id="__span-216-15"><a id="__codelineno-216-15" name="__codelineno-216-15" href="#__codelineno-216-15"></a>  }
+</span><span id="__span-216-16"><a id="__codelineno-216-16" name="__codelineno-216-16" href="#__codelineno-216-16"></a>  node {
+</span><span id="__span-216-17"><a id="__codelineno-216-17" name="__codelineno-216-17" href="#__codelineno-216-17"></a>    input: &quot;cast_input&quot;
+</span><span id="__span-216-18"><a id="__codelineno-216-18" name="__codelineno-216-18" href="#__codelineno-216-18"></a>    input: &quot;cast_input&quot;
+</span><span id="__span-216-19"><a id="__codelineno-216-19" name="__codelineno-216-19" href="#__codelineno-216-19"></a>    output: &quot;output1&quot;
+</span><span id="__span-216-20"><a id="__codelineno-216-20" name="__codelineno-216-20" href="#__codelineno-216-20"></a>    op_type: &quot;Mul&quot;
+</span><span id="__span-216-21"><a id="__codelineno-216-21" name="__codelineno-216-21" href="#__codelineno-216-21"></a>  }
+</span><span id="__span-216-22"><a id="__codelineno-216-22" name="__codelineno-216-22" href="#__codelineno-216-22"></a>  node {
+</span><span id="__span-216-23"><a id="__codelineno-216-23" name="__codelineno-216-23" href="#__codelineno-216-23"></a>    input: &quot;cast_input&quot;
+</span><span id="__span-216-24"><a id="__codelineno-216-24" name="__codelineno-216-24" href="#__codelineno-216-24"></a>    output: &quot;output2&quot;
+</span><span id="__span-216-25"><a id="__codelineno-216-25" name="__codelineno-216-25" href="#__codelineno-216-25"></a>    op_type: &quot;Identity&quot;
+</span><span id="__span-216-26"><a id="__codelineno-216-26" name="__codelineno-216-26" href="#__codelineno-216-26"></a>  }
+</span><span id="__span-216-27"><a id="__codelineno-216-27" name="__codelineno-216-27" href="#__codelineno-216-27"></a>  input {
+</span><span id="__span-216-28"><a id="__codelineno-216-28" name="__codelineno-216-28" href="#__codelineno-216-28"></a>    name: &quot;input1&quot;
+</span><span id="__span-216-29"><a id="__codelineno-216-29" name="__codelineno-216-29" href="#__codelineno-216-29"></a>    type {
+</span><span id="__span-216-30"><a id="__codelineno-216-30" name="__codelineno-216-30" href="#__codelineno-216-30"></a>      tensor_type {
+</span><span id="__span-216-31"><a id="__codelineno-216-31" name="__codelineno-216-31" href="#__codelineno-216-31"></a>        elem_type: &lt;input_type&gt;
+</span><span id="__span-216-32"><a id="__codelineno-216-32" name="__codelineno-216-32" href="#__codelineno-216-32"></a>      }
+</span><span id="__span-216-33"><a id="__codelineno-216-33" name="__codelineno-216-33" href="#__codelineno-216-33"></a>    }
+</span><span id="__span-216-34"><a id="__codelineno-216-34" name="__codelineno-216-34" href="#__codelineno-216-34"></a>  }
+</span><span id="__span-216-35"><a id="__codelineno-216-35" name="__codelineno-216-35" href="#__codelineno-216-35"></a>  output {
+</span><span id="__span-216-36"><a id="__codelineno-216-36" name="__codelineno-216-36" href="#__codelineno-216-36"></a>    name: &quot;output1&quot;
+</span><span id="__span-216-37"><a id="__codelineno-216-37" name="__codelineno-216-37" href="#__codelineno-216-37"></a>    type {
+</span><span id="__span-216-38"><a id="__codelineno-216-38" name="__codelineno-216-38" href="#__codelineno-216-38"></a>      tensor_type {
+</span><span id="__span-216-39"><a id="__codelineno-216-39" name="__codelineno-216-39" href="#__codelineno-216-39"></a>        elem_type: 11
+</span><span id="__span-216-40"><a id="__codelineno-216-40" name="__codelineno-216-40" href="#__codelineno-216-40"></a>      }
+</span><span id="__span-216-41"><a id="__codelineno-216-41" name="__codelineno-216-41" href="#__codelineno-216-41"></a>    }
+</span><span id="__span-216-42"><a id="__codelineno-216-42" name="__codelineno-216-42" href="#__codelineno-216-42"></a>  }
+</span><span id="__span-216-43"><a id="__codelineno-216-43" name="__codelineno-216-43" href="#__codelineno-216-43"></a>  output {
+</span><span id="__span-216-44"><a id="__codelineno-216-44" name="__codelineno-216-44" href="#__codelineno-216-44"></a>    name: &quot;output2&quot;
+</span><span id="__span-216-45"><a id="__codelineno-216-45" name="__codelineno-216-45" href="#__codelineno-216-45"></a>    type {
+</span><span id="__span-216-46"><a id="__codelineno-216-46" name="__codelineno-216-46" href="#__codelineno-216-46"></a>      tensor_type {
+</span><span id="__span-216-47"><a id="__codelineno-216-47" name="__codelineno-216-47" href="#__codelineno-216-47"></a>        elem_type: 11
+</span><span id="__span-216-48"><a id="__codelineno-216-48" name="__codelineno-216-48" href="#__codelineno-216-48"></a>      }
+</span><span id="__span-216-49"><a id="__codelineno-216-49" name="__codelineno-216-49" href="#__codelineno-216-49"></a>    }
+</span><span id="__span-216-50"><a id="__codelineno-216-50" name="__codelineno-216-50" href="#__codelineno-216-50"></a>  }
+</span><span id="__span-216-51"><a id="__codelineno-216-51" name="__codelineno-216-51" href="#__codelineno-216-51"></a>}
+</span><span id="__span-216-52"><a id="__codelineno-216-52" name="__codelineno-216-52" href="#__codelineno-216-52"></a>opset_import {
+</span><span id="__span-216-53"><a id="__codelineno-216-53" name="__codelineno-216-53" href="#__codelineno-216-53"></a>  version: 23
+</span><span id="__span-216-54"><a id="__codelineno-216-54" name="__codelineno-216-54" href="#__codelineno-216-54"></a>}
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><span class="filename">tensor_VAR_reduce_model.pbtxt</span><pre><span></span><code><span id="__span-217-1"><a id="__codelineno-217-1" name="__codelineno-217-1" href="#__codelineno-217-1"></a>ir_version: 11
+</span><span id="__span-217-2"><a id="__codelineno-217-2" name="__codelineno-217-2" href="#__codelineno-217-2"></a>domain: &quot;eu.neverblink.rdf&quot;
+</span><span id="__span-217-3"><a id="__codelineno-217-3" name="__codelineno-217-3" href="#__codelineno-217-3"></a>model_version: 1
+</span><span id="__span-217-4"><a id="__codelineno-217-4" name="__codelineno-217-4" href="#__codelineno-217-4"></a>doc_string: &quot;RDF tensor VAR aggregation function reduction step&quot;
+</span><span id="__span-217-5"><a id="__codelineno-217-5" name="__codelineno-217-5" href="#__codelineno-217-5"></a>graph {
+</span><span id="__span-217-6"><a id="__codelineno-217-6" name="__codelineno-217-6" href="#__codelineno-217-6"></a>  node {
+</span><span id="__span-217-7"><a id="__codelineno-217-7" name="__codelineno-217-7" href="#__codelineno-217-7"></a>    input: &quot;input3&quot;
+</span><span id="__span-217-8"><a id="__codelineno-217-8" name="__codelineno-217-8" href="#__codelineno-217-8"></a>    output: &quot;cast_new&quot;
+</span><span id="__span-217-9"><a id="__codelineno-217-9" name="__codelineno-217-9" href="#__codelineno-217-9"></a>    op_type: &quot;Cast&quot;
+</span><span id="__span-217-10"><a id="__codelineno-217-10" name="__codelineno-217-10" href="#__codelineno-217-10"></a>    attribute {
+</span><span id="__span-217-11"><a id="__codelineno-217-11" name="__codelineno-217-11" href="#__codelineno-217-11"></a>      name: &quot;to&quot;
+</span><span id="__span-217-12"><a id="__codelineno-217-12" name="__codelineno-217-12" href="#__codelineno-217-12"></a>      i: 11
+</span><span id="__span-217-13"><a id="__codelineno-217-13" name="__codelineno-217-13" href="#__codelineno-217-13"></a>      type: INT
+</span><span id="__span-217-14"><a id="__codelineno-217-14" name="__codelineno-217-14" href="#__codelineno-217-14"></a>    }
+</span><span id="__span-217-15"><a id="__codelineno-217-15" name="__codelineno-217-15" href="#__codelineno-217-15"></a>  }
+</span><span id="__span-217-16"><a id="__codelineno-217-16" name="__codelineno-217-16" href="#__codelineno-217-16"></a>  node {
+</span><span id="__span-217-17"><a id="__codelineno-217-17" name="__codelineno-217-17" href="#__codelineno-217-17"></a>    input: &quot;cast_new&quot;
+</span><span id="__span-217-18"><a id="__codelineno-217-18" name="__codelineno-217-18" href="#__codelineno-217-18"></a>    input: &quot;cast_new&quot;
+</span><span id="__span-217-19"><a id="__codelineno-217-19" name="__codelineno-217-19" href="#__codelineno-217-19"></a>    output: &quot;newSq&quot;
+</span><span id="__span-217-20"><a id="__codelineno-217-20" name="__codelineno-217-20" href="#__codelineno-217-20"></a>    op_type: &quot;Mul&quot;
+</span><span id="__span-217-21"><a id="__codelineno-217-21" name="__codelineno-217-21" href="#__codelineno-217-21"></a>  }
+</span><span id="__span-217-22"><a id="__codelineno-217-22" name="__codelineno-217-22" href="#__codelineno-217-22"></a>  node {
+</span><span id="__span-217-23"><a id="__codelineno-217-23" name="__codelineno-217-23" href="#__codelineno-217-23"></a>    input: &quot;newSq&quot;
+</span><span id="__span-217-24"><a id="__codelineno-217-24" name="__codelineno-217-24" href="#__codelineno-217-24"></a>    input: &quot;input1&quot;
+</span><span id="__span-217-25"><a id="__codelineno-217-25" name="__codelineno-217-25" href="#__codelineno-217-25"></a>    output: &quot;output1&quot;
+</span><span id="__span-217-26"><a id="__codelineno-217-26" name="__codelineno-217-26" href="#__codelineno-217-26"></a>    op_type: &quot;Add&quot;
+</span><span id="__span-217-27"><a id="__codelineno-217-27" name="__codelineno-217-27" href="#__codelineno-217-27"></a>  }
+</span><span id="__span-217-28"><a id="__codelineno-217-28" name="__codelineno-217-28" href="#__codelineno-217-28"></a>  node {
+</span><span id="__span-217-29"><a id="__codelineno-217-29" name="__codelineno-217-29" href="#__codelineno-217-29"></a>    input: &quot;cast_new&quot;
+</span><span id="__span-217-30"><a id="__codelineno-217-30" name="__codelineno-217-30" href="#__codelineno-217-30"></a>    input: &quot;input2&quot;
+</span><span id="__span-217-31"><a id="__codelineno-217-31" name="__codelineno-217-31" href="#__codelineno-217-31"></a>    output: &quot;output2&quot;
+</span><span id="__span-217-32"><a id="__codelineno-217-32" name="__codelineno-217-32" href="#__codelineno-217-32"></a>    op_type: &quot;Add&quot;
+</span><span id="__span-217-33"><a id="__codelineno-217-33" name="__codelineno-217-33" href="#__codelineno-217-33"></a>  }
+</span><span id="__span-217-34"><a id="__codelineno-217-34" name="__codelineno-217-34" href="#__codelineno-217-34"></a>  input {
+</span><span id="__span-217-35"><a id="__codelineno-217-35" name="__codelineno-217-35" href="#__codelineno-217-35"></a>    name: &quot;input1&quot;
+</span><span id="__span-217-36"><a id="__codelineno-217-36" name="__codelineno-217-36" href="#__codelineno-217-36"></a>    type {
+</span><span id="__span-217-37"><a id="__codelineno-217-37" name="__codelineno-217-37" href="#__codelineno-217-37"></a>      tensor_type {
+</span><span id="__span-217-38"><a id="__codelineno-217-38" name="__codelineno-217-38" href="#__codelineno-217-38"></a>        elem_type: 11
+</span><span id="__span-217-39"><a id="__codelineno-217-39" name="__codelineno-217-39" href="#__codelineno-217-39"></a>      }
+</span><span id="__span-217-40"><a id="__codelineno-217-40" name="__codelineno-217-40" href="#__codelineno-217-40"></a>    }
+</span><span id="__span-217-41"><a id="__codelineno-217-41" name="__codelineno-217-41" href="#__codelineno-217-41"></a>  }
+</span><span id="__span-217-42"><a id="__codelineno-217-42" name="__codelineno-217-42" href="#__codelineno-217-42"></a>  input {
+</span><span id="__span-217-43"><a id="__codelineno-217-43" name="__codelineno-217-43" href="#__codelineno-217-43"></a>    name: &quot;input2&quot;
+</span><span id="__span-217-44"><a id="__codelineno-217-44" name="__codelineno-217-44" href="#__codelineno-217-44"></a>    type {
+</span><span id="__span-217-45"><a id="__codelineno-217-45" name="__codelineno-217-45" href="#__codelineno-217-45"></a>      tensor_type {
+</span><span id="__span-217-46"><a id="__codelineno-217-46" name="__codelineno-217-46" href="#__codelineno-217-46"></a>        elem_type: 11
+</span><span id="__span-217-47"><a id="__codelineno-217-47" name="__codelineno-217-47" href="#__codelineno-217-47"></a>      }
+</span><span id="__span-217-48"><a id="__codelineno-217-48" name="__codelineno-217-48" href="#__codelineno-217-48"></a>    }
+</span><span id="__span-217-49"><a id="__codelineno-217-49" name="__codelineno-217-49" href="#__codelineno-217-49"></a>  }
+</span><span id="__span-217-50"><a id="__codelineno-217-50" name="__codelineno-217-50" href="#__codelineno-217-50"></a>  input {
+</span><span id="__span-217-51"><a id="__codelineno-217-51" name="__codelineno-217-51" href="#__codelineno-217-51"></a>    name: &quot;input3&quot;
+</span><span id="__span-217-52"><a id="__codelineno-217-52" name="__codelineno-217-52" href="#__codelineno-217-52"></a>    type {
+</span><span id="__span-217-53"><a id="__codelineno-217-53" name="__codelineno-217-53" href="#__codelineno-217-53"></a>      tensor_type {
+</span><span id="__span-217-54"><a id="__codelineno-217-54" name="__codelineno-217-54" href="#__codelineno-217-54"></a>        elem_type: &lt;input_type&gt;
+</span><span id="__span-217-55"><a id="__codelineno-217-55" name="__codelineno-217-55" href="#__codelineno-217-55"></a>      }
+</span><span id="__span-217-56"><a id="__codelineno-217-56" name="__codelineno-217-56" href="#__codelineno-217-56"></a>    }
+</span><span id="__span-217-57"><a id="__codelineno-217-57" name="__codelineno-217-57" href="#__codelineno-217-57"></a>  }
+</span><span id="__span-217-58"><a id="__codelineno-217-58" name="__codelineno-217-58" href="#__codelineno-217-58"></a>  output {
+</span><span id="__span-217-59"><a id="__codelineno-217-59" name="__codelineno-217-59" href="#__codelineno-217-59"></a>    name: &quot;output1&quot;
+</span><span id="__span-217-60"><a id="__codelineno-217-60" name="__codelineno-217-60" href="#__codelineno-217-60"></a>    type {
+</span><span id="__span-217-61"><a id="__codelineno-217-61" name="__codelineno-217-61" href="#__codelineno-217-61"></a>      tensor_type {
+</span><span id="__span-217-62"><a id="__codelineno-217-62" name="__codelineno-217-62" href="#__codelineno-217-62"></a>        elem_type: 11
+</span><span id="__span-217-63"><a id="__codelineno-217-63" name="__codelineno-217-63" href="#__codelineno-217-63"></a>      }
+</span><span id="__span-217-64"><a id="__codelineno-217-64" name="__codelineno-217-64" href="#__codelineno-217-64"></a>    }
+</span><span id="__span-217-65"><a id="__codelineno-217-65" name="__codelineno-217-65" href="#__codelineno-217-65"></a>  }
+</span><span id="__span-217-66"><a id="__codelineno-217-66" name="__codelineno-217-66" href="#__codelineno-217-66"></a>  output {
+</span><span id="__span-217-67"><a id="__codelineno-217-67" name="__codelineno-217-67" href="#__codelineno-217-67"></a>    name: &quot;output2&quot;
+</span><span id="__span-217-68"><a id="__codelineno-217-68" name="__codelineno-217-68" href="#__codelineno-217-68"></a>    type {
+</span><span id="__span-217-69"><a id="__codelineno-217-69" name="__codelineno-217-69" href="#__codelineno-217-69"></a>      tensor_type {
+</span><span id="__span-217-70"><a id="__codelineno-217-70" name="__codelineno-217-70" href="#__codelineno-217-70"></a>        elem_type: 11
+</span><span id="__span-217-71"><a id="__codelineno-217-71" name="__codelineno-217-71" href="#__codelineno-217-71"></a>      }
+</span><span id="__span-217-72"><a id="__codelineno-217-72" name="__codelineno-217-72" href="#__codelineno-217-72"></a>    }
+</span><span id="__span-217-73"><a id="__codelineno-217-73" name="__codelineno-217-73" href="#__codelineno-217-73"></a>  }
+</span><span id="__span-217-74"><a id="__codelineno-217-74" name="__codelineno-217-74" href="#__codelineno-217-74"></a>}
+</span><span id="__span-217-75"><a id="__codelineno-217-75" name="__codelineno-217-75" href="#__codelineno-217-75"></a>opset_import {
+</span><span id="__span-217-76"><a id="__codelineno-217-76" name="__codelineno-217-76" href="#__codelineno-217-76"></a>  version: 23
+</span><span id="__span-217-77"><a id="__codelineno-217-77" name="__codelineno-217-77" href="#__codelineno-217-77"></a>}
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><span class="filename">tensor_VAR_complete_model.pbtxt</span><pre><span></span><code><span id="__span-218-1"><a id="__codelineno-218-1" name="__codelineno-218-1" href="#__codelineno-218-1"></a>ir_version: 11
+</span><span id="__span-218-2"><a id="__codelineno-218-2" name="__codelineno-218-2" href="#__codelineno-218-2"></a>domain: &quot;eu.neverblink.rdf&quot;
+</span><span id="__span-218-3"><a id="__codelineno-218-3" name="__codelineno-218-3" href="#__codelineno-218-3"></a>model_version: 1
+</span><span id="__span-218-4"><a id="__codelineno-218-4" name="__codelineno-218-4" href="#__codelineno-218-4"></a>doc_string: &quot;RDF tensor VAR aggregation function complete model&quot;
+</span><span id="__span-218-5"><a id="__codelineno-218-5" name="__codelineno-218-5" href="#__codelineno-218-5"></a>graph {
+</span><span id="__span-218-6"><a id="__codelineno-218-6" name="__codelineno-218-6" href="#__codelineno-218-6"></a>  node {
+</span><span id="__span-218-7"><a id="__codelineno-218-7" name="__codelineno-218-7" href="#__codelineno-218-7"></a>    input: &quot;input1&quot;
+</span><span id="__span-218-8"><a id="__codelineno-218-8" name="__codelineno-218-8" href="#__codelineno-218-8"></a>    input: &quot;count&quot;
+</span><span id="__span-218-9"><a id="__codelineno-218-9" name="__codelineno-218-9" href="#__codelineno-218-9"></a>    output: &quot;meanSq&quot;
+</span><span id="__span-218-10"><a id="__codelineno-218-10" name="__codelineno-218-10" href="#__codelineno-218-10"></a>    op_type: &quot;Div&quot;
+</span><span id="__span-218-11"><a id="__codelineno-218-11" name="__codelineno-218-11" href="#__codelineno-218-11"></a>  }
+</span><span id="__span-218-12"><a id="__codelineno-218-12" name="__codelineno-218-12" href="#__codelineno-218-12"></a>  node {
+</span><span id="__span-218-13"><a id="__codelineno-218-13" name="__codelineno-218-13" href="#__codelineno-218-13"></a>    input: &quot;input2&quot;
+</span><span id="__span-218-14"><a id="__codelineno-218-14" name="__codelineno-218-14" href="#__codelineno-218-14"></a>    input: &quot;count&quot;
+</span><span id="__span-218-15"><a id="__codelineno-218-15" name="__codelineno-218-15" href="#__codelineno-218-15"></a>    output: &quot;mean&quot;
+</span><span id="__span-218-16"><a id="__codelineno-218-16" name="__codelineno-218-16" href="#__codelineno-218-16"></a>    op_type: &quot;Div&quot;
+</span><span id="__span-218-17"><a id="__codelineno-218-17" name="__codelineno-218-17" href="#__codelineno-218-17"></a>  }
+</span><span id="__span-218-18"><a id="__codelineno-218-18" name="__codelineno-218-18" href="#__codelineno-218-18"></a>  node {
+</span><span id="__span-218-19"><a id="__codelineno-218-19" name="__codelineno-218-19" href="#__codelineno-218-19"></a>    input: &quot;mean&quot;
+</span><span id="__span-218-20"><a id="__codelineno-218-20" name="__codelineno-218-20" href="#__codelineno-218-20"></a>    input: &quot;mean&quot;
+</span><span id="__span-218-21"><a id="__codelineno-218-21" name="__codelineno-218-21" href="#__codelineno-218-21"></a>    output: &quot;meanSquared&quot;
+</span><span id="__span-218-22"><a id="__codelineno-218-22" name="__codelineno-218-22" href="#__codelineno-218-22"></a>    op_type: &quot;Mul&quot;
+</span><span id="__span-218-23"><a id="__codelineno-218-23" name="__codelineno-218-23" href="#__codelineno-218-23"></a>  }
+</span><span id="__span-218-24"><a id="__codelineno-218-24" name="__codelineno-218-24" href="#__codelineno-218-24"></a>  node {
+</span><span id="__span-218-25"><a id="__codelineno-218-25" name="__codelineno-218-25" href="#__codelineno-218-25"></a>    input: &quot;meanSq&quot;
+</span><span id="__span-218-26"><a id="__codelineno-218-26" name="__codelineno-218-26" href="#__codelineno-218-26"></a>    input: &quot;meanSquared&quot;
+</span><span id="__span-218-27"><a id="__codelineno-218-27" name="__codelineno-218-27" href="#__codelineno-218-27"></a>    output: &quot;output1&quot;
+</span><span id="__span-218-28"><a id="__codelineno-218-28" name="__codelineno-218-28" href="#__codelineno-218-28"></a>    op_type: &quot;Sub&quot;
+</span><span id="__span-218-29"><a id="__codelineno-218-29" name="__codelineno-218-29" href="#__codelineno-218-29"></a>  }
+</span><span id="__span-218-30"><a id="__codelineno-218-30" name="__codelineno-218-30" href="#__codelineno-218-30"></a>  initializer {
+</span><span id="__span-218-31"><a id="__codelineno-218-31" name="__codelineno-218-31" href="#__codelineno-218-31"></a>    dims: 1
+</span><span id="__span-218-32"><a id="__codelineno-218-32" name="__codelineno-218-32" href="#__codelineno-218-32"></a>    data_type: 11
+</span><span id="__span-218-33"><a id="__codelineno-218-33" name="__codelineno-218-33" href="#__codelineno-218-33"></a>    name: &quot;count&quot;
+</span><span id="__span-218-34"><a id="__codelineno-218-34" name="__codelineno-218-34" href="#__codelineno-218-34"></a>    double_data: &lt;count_value&gt;
+</span><span id="__span-218-35"><a id="__codelineno-218-35" name="__codelineno-218-35" href="#__codelineno-218-35"></a>  }
+</span><span id="__span-218-36"><a id="__codelineno-218-36" name="__codelineno-218-36" href="#__codelineno-218-36"></a>  input {
+</span><span id="__span-218-37"><a id="__codelineno-218-37" name="__codelineno-218-37" href="#__codelineno-218-37"></a>    name: &quot;input1&quot;
+</span><span id="__span-218-38"><a id="__codelineno-218-38" name="__codelineno-218-38" href="#__codelineno-218-38"></a>    type {
+</span><span id="__span-218-39"><a id="__codelineno-218-39" name="__codelineno-218-39" href="#__codelineno-218-39"></a>      tensor_type {
+</span><span id="__span-218-40"><a id="__codelineno-218-40" name="__codelineno-218-40" href="#__codelineno-218-40"></a>        elem_type: 11
+</span><span id="__span-218-41"><a id="__codelineno-218-41" name="__codelineno-218-41" href="#__codelineno-218-41"></a>      }
+</span><span id="__span-218-42"><a id="__codelineno-218-42" name="__codelineno-218-42" href="#__codelineno-218-42"></a>    }
+</span><span id="__span-218-43"><a id="__codelineno-218-43" name="__codelineno-218-43" href="#__codelineno-218-43"></a>  }
+</span><span id="__span-218-44"><a id="__codelineno-218-44" name="__codelineno-218-44" href="#__codelineno-218-44"></a>  input {
+</span><span id="__span-218-45"><a id="__codelineno-218-45" name="__codelineno-218-45" href="#__codelineno-218-45"></a>    name: &quot;input2&quot;
+</span><span id="__span-218-46"><a id="__codelineno-218-46" name="__codelineno-218-46" href="#__codelineno-218-46"></a>    type {
+</span><span id="__span-218-47"><a id="__codelineno-218-47" name="__codelineno-218-47" href="#__codelineno-218-47"></a>      tensor_type {
+</span><span id="__span-218-48"><a id="__codelineno-218-48" name="__codelineno-218-48" href="#__codelineno-218-48"></a>        elem_type: 11
+</span><span id="__span-218-49"><a id="__codelineno-218-49" name="__codelineno-218-49" href="#__codelineno-218-49"></a>      }
+</span><span id="__span-218-50"><a id="__codelineno-218-50" name="__codelineno-218-50" href="#__codelineno-218-50"></a>    }
+</span><span id="__span-218-51"><a id="__codelineno-218-51" name="__codelineno-218-51" href="#__codelineno-218-51"></a>  }
+</span><span id="__span-218-52"><a id="__codelineno-218-52" name="__codelineno-218-52" href="#__codelineno-218-52"></a>  output {
+</span><span id="__span-218-53"><a id="__codelineno-218-53" name="__codelineno-218-53" href="#__codelineno-218-53"></a>    name: &quot;output1&quot;
+</span><span id="__span-218-54"><a id="__codelineno-218-54" name="__codelineno-218-54" href="#__codelineno-218-54"></a>    type {
+</span><span id="__span-218-55"><a id="__codelineno-218-55" name="__codelineno-218-55" href="#__codelineno-218-55"></a>      tensor_type {
+</span><span id="__span-218-56"><a id="__codelineno-218-56" name="__codelineno-218-56" href="#__codelineno-218-56"></a>        elem_type: 11
+</span><span id="__span-218-57"><a id="__codelineno-218-57" name="__codelineno-218-57" href="#__codelineno-218-57"></a>      }
+</span><span id="__span-218-58"><a id="__codelineno-218-58" name="__codelineno-218-58" href="#__codelineno-218-58"></a>    }
+</span><span id="__span-218-59"><a id="__codelineno-218-59" name="__codelineno-218-59" href="#__codelineno-218-59"></a>  }
+</span><span id="__span-218-60"><a id="__codelineno-218-60" name="__codelineno-218-60" href="#__codelineno-218-60"></a>}
+</span><span id="__span-218-61"><a id="__codelineno-218-61" name="__codelineno-218-61" href="#__codelineno-218-61"></a>opset_import {
+</span><span id="__span-218-62"><a id="__codelineno-218-62" name="__codelineno-218-62" href="#__codelineno-218-62"></a>  version: 23
+</span><span id="__span-218-63"><a id="__codelineno-218-63" name="__codelineno-218-63" href="#__codelineno-218-63"></a>}
+</span></code></pre></div>
+</div>
+</div>
+</div>
+</details>
+<hr />
 <h3 id="tensorstd_1"><code>tensor:STD</code></h3>
+<p><a href="https://w3id.org/rdf-tensor/vocab#DataTensor">tensor:DataTensor</a> <strong>tensor:STD</strong> (<a href="https://w3id.org/rdf-tensor/vocab#DataTensor">tensor:DataTensor</a> <em>?expr</em>)</p>
+<p>Computes the element-wise population standard deviation of all tensors in a group. The result is always a DOUBLE-typed tensor of the same shape as the input tensors, where each element is the standard deviation of the corresponding elements across all tensors in the group.</p>
+<p>The standard deviation is computed as the square root of the population variance: Std(X) = sqrtVar(X) = sqrt(E[X^2] − (E[X])^2). Internally, the aggregate uses the same accumulation strategy as <code>tensor:VAR</code> (tracking sum of squares and sum), but applies an additional square root in the completion phase.</p>
+<p>Requires at least two tensors in the group.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>Given the following RDF data:</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-219-1"><a id="__codelineno-219-1" name="__codelineno-219-1" href="#__codelineno-219-1"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p1</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;int32\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[10, 20, 30]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-219-2"><a id="__codelineno-219-2" name="__codelineno-219-2" href="#__codelineno-219-2"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p2</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;float64\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[15.5, 25.5, 30.5]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-219-3"><a id="__codelineno-219-3" name="__codelineno-219-3" href="#__codelineno-219-3"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p3</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;float64\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[15.5, 25.5, 30.5]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-219-4"><a id="__codelineno-219-4" name="__codelineno-219-4" href="#__codelineno-219-4"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p4</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;int32\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[10, 20, 30]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span><span id="__span-219-5"><a id="__codelineno-219-5" name="__codelineno-219-5" href="#__codelineno-219-5"></a><span class="p">:</span><span class="nt">x</span> <span class="p">:</span><span class="nt">p5</span> <span class="s">&quot;{\&quot;type\&quot;:\&quot;int32\&quot;,\&quot;shape\&quot;:[3],\&quot;data\&quot;:[10, 20, 30]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span> <span class="p">.</span>
+</span></code></pre></div>
+<p>Evaluating the SPARQL query</p>
+<div class="language-sparql highlight"><pre><span></span><code><span id="__span-220-1"><a id="__codelineno-220-1" name="__codelineno-220-1" href="#__codelineno-220-1"></a><span class="k">SELECT</span> <span class="p">(</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">STD</span><span class="p">(</span><span class="nv">?val</span><span class="p">)</span> <span class="k">AS</span> <span class="nv">?stddev</span><span class="p">)</span>
+</span><span id="__span-220-2"><a id="__codelineno-220-2" name="__codelineno-220-2" href="#__codelineno-220-2"></a><span class="k">WHERE</span> <span class="p">{</span> <span class="nv">?s</span> <span class="nv">?p</span> <span class="nv">?val</span> <span class="p">}</span>
+</span><span id="__span-220-3"><a id="__codelineno-220-3" name="__codelineno-220-3" href="#__codelineno-220-3"></a><span class="k">GROUP BY</span> <span class="nv">?s</span>
+</span></code></pre></div>
+<p>returns a binding where <code>?stddev</code> is approximately</p>
+<div class="language-turtle highlight"><pre><span></span><code><span id="__span-221-1"><a id="__codelineno-221-1" name="__codelineno-221-1" href="#__codelineno-221-1"></a><span class="s">&quot;{\&quot;type\&quot;: \&quot;float64\&quot;, \&quot;shape\&quot;: [3], \&quot;data\&quot;: [3.0125, 3.0125, 0.2739]}&quot;</span><span class="p">^^</span><span class="nn">tensor</span><span class="p">:</span><span class="nt">DataTensor</span>
+</span></code></pre></div>
+</div>
+<details class="note">
+<summary>ONNX definition of this aggregate</summary>
+<div class="tabbed-set tabbed-alternate" data-tabs="47:4"><input checked="checked" id="__tabbed_47_1" name="__tabbed_47" type="radio" /><input id="__tabbed_47_2" name="__tabbed_47" type="radio" /><input id="__tabbed_47_3" name="__tabbed_47" type="radio" /><input id="__tabbed_47_4" name="__tabbed_47" type="radio" /><div class="tabbed-labels"><label for="__tabbed_47_1">Model description</label><label for="__tabbed_47_2">Initial model definition</label><label for="__tabbed_47_3">Reduce model definition</label><label for="__tabbed_47_4">Complete model definition</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><strong>Aggregation phases:</strong></p>
 <ul>
-<li><strong>IRI:</strong> <code>https://w3id.org/rdf-tensor/vocab#STD</code></li>
-<li><strong>Description:</strong> Computes the element-wise standard deviation across grouped tensors.</li>
-<li><strong>Input:</strong> A group of <code>DataTensor</code> values.</li>
-<li><strong>Output:</strong> A <code>DataTensor</code> representing the standard deviation tensor.</li>
+<li>Initial: the first tensor is cast to DOUBLE. The element-wise square (x^2) is computed as one accumulator, and the cast value itself is the other. The count is initialized to 1.</li>
+<li>Reduce: each subsequent tensor is cast to DOUBLE, squared, and added to the sum-of-squares accumulator. The cast value is added to the sum accumulator. The count is incremented.</li>
+<li>Complete: the variance is computed as E[X^2] − (E[X])^2, followed by an element-wise square root to produce the standard deviation.</li>
 </ul>
+<p><strong>Initial model inputs and outputs:</strong></p>
+<ul>
+<li><code>input1</code>: The first tensor value of <input_type> type.</li>
+<li><code>output1</code>: The squared tensor (x^2), cast to DOUBLE type.</li>
+<li><code>output2</code>: The tensor value itself, cast to DOUBLE type.</li>
+</ul>
+<p><strong>Reduce model inputs and outputs:</strong></p>
+<ul>
+<li><code>input1</code>: The current sum-of-squares accumulator tensor of DOUBLE type.</li>
+<li><code>input2</code>: The current sum accumulator tensor of DOUBLE type.</li>
+<li><code>input3</code>: The next tensor to accumulate, of <input_type> type.</li>
+<li><code>output1</code>: The updated sum-of-squares accumulator (input1 + Cast(input3)^2).</li>
+<li><code>output2</code>: The updated sum accumulator (input2 + Cast(input3)).</li>
+</ul>
+<p><strong>Complete model inputs and outputs:</strong></p>
+<ul>
+<li><code>input1</code>: The accumulated sum-of-squares tensor of DOUBLE type.</li>
+<li><code>input2</code>: The accumulated sum tensor of DOUBLE type.</li>
+<li><code>output1</code>: The standard deviation tensor of DOUBLE type, computed as sqrt((input1 / count) − (input2 / count)^2).</li>
+</ul>
+<p>Model variables:</p>
+<ul>
+<li><code>input_type</code>: The data type of the incoming tensor, which can be any supported numeric type.</li>
+<li><code>count_value</code>: The total number of tensors in the group, of type DOUBLE.</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><span class="filename">tensor_STD_initial_model.pbtxt</span><pre><span></span><code><span id="__span-222-1"><a id="__codelineno-222-1" name="__codelineno-222-1" href="#__codelineno-222-1"></a>ir_version: 11
+</span><span id="__span-222-2"><a id="__codelineno-222-2" name="__codelineno-222-2" href="#__codelineno-222-2"></a>domain: &quot;eu.neverblink.rdf&quot;
+</span><span id="__span-222-3"><a id="__codelineno-222-3" name="__codelineno-222-3" href="#__codelineno-222-3"></a>model_version: 1
+</span><span id="__span-222-4"><a id="__codelineno-222-4" name="__codelineno-222-4" href="#__codelineno-222-4"></a>doc_string: &quot;RDF tensor STD aggregation function initial step&quot;
+</span><span id="__span-222-5"><a id="__codelineno-222-5" name="__codelineno-222-5" href="#__codelineno-222-5"></a>graph {
+</span><span id="__span-222-6"><a id="__codelineno-222-6" name="__codelineno-222-6" href="#__codelineno-222-6"></a>  node {
+</span><span id="__span-222-7"><a id="__codelineno-222-7" name="__codelineno-222-7" href="#__codelineno-222-7"></a>    input: &quot;input1&quot;
+</span><span id="__span-222-8"><a id="__codelineno-222-8" name="__codelineno-222-8" href="#__codelineno-222-8"></a>    output: &quot;cast_input&quot;
+</span><span id="__span-222-9"><a id="__codelineno-222-9" name="__codelineno-222-9" href="#__codelineno-222-9"></a>    op_type: &quot;Cast&quot;
+</span><span id="__span-222-10"><a id="__codelineno-222-10" name="__codelineno-222-10" href="#__codelineno-222-10"></a>    attribute {
+</span><span id="__span-222-11"><a id="__codelineno-222-11" name="__codelineno-222-11" href="#__codelineno-222-11"></a>      name: &quot;to&quot;
+</span><span id="__span-222-12"><a id="__codelineno-222-12" name="__codelineno-222-12" href="#__codelineno-222-12"></a>      i: 11
+</span><span id="__span-222-13"><a id="__codelineno-222-13" name="__codelineno-222-13" href="#__codelineno-222-13"></a>      type: INT
+</span><span id="__span-222-14"><a id="__codelineno-222-14" name="__codelineno-222-14" href="#__codelineno-222-14"></a>    }
+</span><span id="__span-222-15"><a id="__codelineno-222-15" name="__codelineno-222-15" href="#__codelineno-222-15"></a>  }
+</span><span id="__span-222-16"><a id="__codelineno-222-16" name="__codelineno-222-16" href="#__codelineno-222-16"></a>  node {
+</span><span id="__span-222-17"><a id="__codelineno-222-17" name="__codelineno-222-17" href="#__codelineno-222-17"></a>    input: &quot;cast_input&quot;
+</span><span id="__span-222-18"><a id="__codelineno-222-18" name="__codelineno-222-18" href="#__codelineno-222-18"></a>    input: &quot;cast_input&quot;
+</span><span id="__span-222-19"><a id="__codelineno-222-19" name="__codelineno-222-19" href="#__codelineno-222-19"></a>    output: &quot;output1&quot;
+</span><span id="__span-222-20"><a id="__codelineno-222-20" name="__codelineno-222-20" href="#__codelineno-222-20"></a>    op_type: &quot;Mul&quot;
+</span><span id="__span-222-21"><a id="__codelineno-222-21" name="__codelineno-222-21" href="#__codelineno-222-21"></a>  }
+</span><span id="__span-222-22"><a id="__codelineno-222-22" name="__codelineno-222-22" href="#__codelineno-222-22"></a>  node {
+</span><span id="__span-222-23"><a id="__codelineno-222-23" name="__codelineno-222-23" href="#__codelineno-222-23"></a>    input: &quot;cast_input&quot;
+</span><span id="__span-222-24"><a id="__codelineno-222-24" name="__codelineno-222-24" href="#__codelineno-222-24"></a>    output: &quot;output2&quot;
+</span><span id="__span-222-25"><a id="__codelineno-222-25" name="__codelineno-222-25" href="#__codelineno-222-25"></a>    op_type: &quot;Identity&quot;
+</span><span id="__span-222-26"><a id="__codelineno-222-26" name="__codelineno-222-26" href="#__codelineno-222-26"></a>  }
+</span><span id="__span-222-27"><a id="__codelineno-222-27" name="__codelineno-222-27" href="#__codelineno-222-27"></a>  input {
+</span><span id="__span-222-28"><a id="__codelineno-222-28" name="__codelineno-222-28" href="#__codelineno-222-28"></a>    name: &quot;input1&quot;
+</span><span id="__span-222-29"><a id="__codelineno-222-29" name="__codelineno-222-29" href="#__codelineno-222-29"></a>    type {
+</span><span id="__span-222-30"><a id="__codelineno-222-30" name="__codelineno-222-30" href="#__codelineno-222-30"></a>      tensor_type {
+</span><span id="__span-222-31"><a id="__codelineno-222-31" name="__codelineno-222-31" href="#__codelineno-222-31"></a>        elem_type: &lt;input_type&gt;
+</span><span id="__span-222-32"><a id="__codelineno-222-32" name="__codelineno-222-32" href="#__codelineno-222-32"></a>      }
+</span><span id="__span-222-33"><a id="__codelineno-222-33" name="__codelineno-222-33" href="#__codelineno-222-33"></a>    }
+</span><span id="__span-222-34"><a id="__codelineno-222-34" name="__codelineno-222-34" href="#__codelineno-222-34"></a>  }
+</span><span id="__span-222-35"><a id="__codelineno-222-35" name="__codelineno-222-35" href="#__codelineno-222-35"></a>  output {
+</span><span id="__span-222-36"><a id="__codelineno-222-36" name="__codelineno-222-36" href="#__codelineno-222-36"></a>    name: &quot;output1&quot;
+</span><span id="__span-222-37"><a id="__codelineno-222-37" name="__codelineno-222-37" href="#__codelineno-222-37"></a>    type {
+</span><span id="__span-222-38"><a id="__codelineno-222-38" name="__codelineno-222-38" href="#__codelineno-222-38"></a>      tensor_type {
+</span><span id="__span-222-39"><a id="__codelineno-222-39" name="__codelineno-222-39" href="#__codelineno-222-39"></a>        elem_type: 11
+</span><span id="__span-222-40"><a id="__codelineno-222-40" name="__codelineno-222-40" href="#__codelineno-222-40"></a>      }
+</span><span id="__span-222-41"><a id="__codelineno-222-41" name="__codelineno-222-41" href="#__codelineno-222-41"></a>    }
+</span><span id="__span-222-42"><a id="__codelineno-222-42" name="__codelineno-222-42" href="#__codelineno-222-42"></a>  }
+</span><span id="__span-222-43"><a id="__codelineno-222-43" name="__codelineno-222-43" href="#__codelineno-222-43"></a>  output {
+</span><span id="__span-222-44"><a id="__codelineno-222-44" name="__codelineno-222-44" href="#__codelineno-222-44"></a>    name: &quot;output2&quot;
+</span><span id="__span-222-45"><a id="__codelineno-222-45" name="__codelineno-222-45" href="#__codelineno-222-45"></a>    type {
+</span><span id="__span-222-46"><a id="__codelineno-222-46" name="__codelineno-222-46" href="#__codelineno-222-46"></a>      tensor_type {
+</span><span id="__span-222-47"><a id="__codelineno-222-47" name="__codelineno-222-47" href="#__codelineno-222-47"></a>        elem_type: 11
+</span><span id="__span-222-48"><a id="__codelineno-222-48" name="__codelineno-222-48" href="#__codelineno-222-48"></a>      }
+</span><span id="__span-222-49"><a id="__codelineno-222-49" name="__codelineno-222-49" href="#__codelineno-222-49"></a>    }
+</span><span id="__span-222-50"><a id="__codelineno-222-50" name="__codelineno-222-50" href="#__codelineno-222-50"></a>  }
+</span><span id="__span-222-51"><a id="__codelineno-222-51" name="__codelineno-222-51" href="#__codelineno-222-51"></a>}
+</span><span id="__span-222-52"><a id="__codelineno-222-52" name="__codelineno-222-52" href="#__codelineno-222-52"></a>opset_import {
+</span><span id="__span-222-53"><a id="__codelineno-222-53" name="__codelineno-222-53" href="#__codelineno-222-53"></a>  version: 23
+</span><span id="__span-222-54"><a id="__codelineno-222-54" name="__codelineno-222-54" href="#__codelineno-222-54"></a>}
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><span class="filename">tensor_STD_reduce_model.pbtxt</span><pre><span></span><code><span id="__span-223-1"><a id="__codelineno-223-1" name="__codelineno-223-1" href="#__codelineno-223-1"></a>ir_version: 11
+</span><span id="__span-223-2"><a id="__codelineno-223-2" name="__codelineno-223-2" href="#__codelineno-223-2"></a>domain: &quot;eu.neverblink.rdf&quot;
+</span><span id="__span-223-3"><a id="__codelineno-223-3" name="__codelineno-223-3" href="#__codelineno-223-3"></a>model_version: 1
+</span><span id="__span-223-4"><a id="__codelineno-223-4" name="__codelineno-223-4" href="#__codelineno-223-4"></a>doc_string: &quot;RDF tensor STD aggregation function reduction step&quot;
+</span><span id="__span-223-5"><a id="__codelineno-223-5" name="__codelineno-223-5" href="#__codelineno-223-5"></a>graph {
+</span><span id="__span-223-6"><a id="__codelineno-223-6" name="__codelineno-223-6" href="#__codelineno-223-6"></a>  node {
+</span><span id="__span-223-7"><a id="__codelineno-223-7" name="__codelineno-223-7" href="#__codelineno-223-7"></a>    input: &quot;input3&quot;
+</span><span id="__span-223-8"><a id="__codelineno-223-8" name="__codelineno-223-8" href="#__codelineno-223-8"></a>    output: &quot;cast_new&quot;
+</span><span id="__span-223-9"><a id="__codelineno-223-9" name="__codelineno-223-9" href="#__codelineno-223-9"></a>    op_type: &quot;Cast&quot;
+</span><span id="__span-223-10"><a id="__codelineno-223-10" name="__codelineno-223-10" href="#__codelineno-223-10"></a>    attribute {
+</span><span id="__span-223-11"><a id="__codelineno-223-11" name="__codelineno-223-11" href="#__codelineno-223-11"></a>      name: &quot;to&quot;
+</span><span id="__span-223-12"><a id="__codelineno-223-12" name="__codelineno-223-12" href="#__codelineno-223-12"></a>      i: 11
+</span><span id="__span-223-13"><a id="__codelineno-223-13" name="__codelineno-223-13" href="#__codelineno-223-13"></a>      type: INT
+</span><span id="__span-223-14"><a id="__codelineno-223-14" name="__codelineno-223-14" href="#__codelineno-223-14"></a>    }
+</span><span id="__span-223-15"><a id="__codelineno-223-15" name="__codelineno-223-15" href="#__codelineno-223-15"></a>  }
+</span><span id="__span-223-16"><a id="__codelineno-223-16" name="__codelineno-223-16" href="#__codelineno-223-16"></a>  node {
+</span><span id="__span-223-17"><a id="__codelineno-223-17" name="__codelineno-223-17" href="#__codelineno-223-17"></a>    input: &quot;cast_new&quot;
+</span><span id="__span-223-18"><a id="__codelineno-223-18" name="__codelineno-223-18" href="#__codelineno-223-18"></a>    input: &quot;cast_new&quot;
+</span><span id="__span-223-19"><a id="__codelineno-223-19" name="__codelineno-223-19" href="#__codelineno-223-19"></a>    output: &quot;newSq&quot;
+</span><span id="__span-223-20"><a id="__codelineno-223-20" name="__codelineno-223-20" href="#__codelineno-223-20"></a>    op_type: &quot;Mul&quot;
+</span><span id="__span-223-21"><a id="__codelineno-223-21" name="__codelineno-223-21" href="#__codelineno-223-21"></a>  }
+</span><span id="__span-223-22"><a id="__codelineno-223-22" name="__codelineno-223-22" href="#__codelineno-223-22"></a>  node {
+</span><span id="__span-223-23"><a id="__codelineno-223-23" name="__codelineno-223-23" href="#__codelineno-223-23"></a>    input: &quot;newSq&quot;
+</span><span id="__span-223-24"><a id="__codelineno-223-24" name="__codelineno-223-24" href="#__codelineno-223-24"></a>    input: &quot;input1&quot;
+</span><span id="__span-223-25"><a id="__codelineno-223-25" name="__codelineno-223-25" href="#__codelineno-223-25"></a>    output: &quot;output1&quot;
+</span><span id="__span-223-26"><a id="__codelineno-223-26" name="__codelineno-223-26" href="#__codelineno-223-26"></a>    op_type: &quot;Add&quot;
+</span><span id="__span-223-27"><a id="__codelineno-223-27" name="__codelineno-223-27" href="#__codelineno-223-27"></a>  }
+</span><span id="__span-223-28"><a id="__codelineno-223-28" name="__codelineno-223-28" href="#__codelineno-223-28"></a>  node {
+</span><span id="__span-223-29"><a id="__codelineno-223-29" name="__codelineno-223-29" href="#__codelineno-223-29"></a>    input: &quot;cast_new&quot;
+</span><span id="__span-223-30"><a id="__codelineno-223-30" name="__codelineno-223-30" href="#__codelineno-223-30"></a>    input: &quot;input2&quot;
+</span><span id="__span-223-31"><a id="__codelineno-223-31" name="__codelineno-223-31" href="#__codelineno-223-31"></a>    output: &quot;output2&quot;
+</span><span id="__span-223-32"><a id="__codelineno-223-32" name="__codelineno-223-32" href="#__codelineno-223-32"></a>    op_type: &quot;Add&quot;
+</span><span id="__span-223-33"><a id="__codelineno-223-33" name="__codelineno-223-33" href="#__codelineno-223-33"></a>  }
+</span><span id="__span-223-34"><a id="__codelineno-223-34" name="__codelineno-223-34" href="#__codelineno-223-34"></a>  input {
+</span><span id="__span-223-35"><a id="__codelineno-223-35" name="__codelineno-223-35" href="#__codelineno-223-35"></a>    name: &quot;input1&quot;
+</span><span id="__span-223-36"><a id="__codelineno-223-36" name="__codelineno-223-36" href="#__codelineno-223-36"></a>    type {
+</span><span id="__span-223-37"><a id="__codelineno-223-37" name="__codelineno-223-37" href="#__codelineno-223-37"></a>      tensor_type {
+</span><span id="__span-223-38"><a id="__codelineno-223-38" name="__codelineno-223-38" href="#__codelineno-223-38"></a>        elem_type: 11
+</span><span id="__span-223-39"><a id="__codelineno-223-39" name="__codelineno-223-39" href="#__codelineno-223-39"></a>      }
+</span><span id="__span-223-40"><a id="__codelineno-223-40" name="__codelineno-223-40" href="#__codelineno-223-40"></a>    }
+</span><span id="__span-223-41"><a id="__codelineno-223-41" name="__codelineno-223-41" href="#__codelineno-223-41"></a>  }
+</span><span id="__span-223-42"><a id="__codelineno-223-42" name="__codelineno-223-42" href="#__codelineno-223-42"></a>  input {
+</span><span id="__span-223-43"><a id="__codelineno-223-43" name="__codelineno-223-43" href="#__codelineno-223-43"></a>    name: &quot;input2&quot;
+</span><span id="__span-223-44"><a id="__codelineno-223-44" name="__codelineno-223-44" href="#__codelineno-223-44"></a>    type {
+</span><span id="__span-223-45"><a id="__codelineno-223-45" name="__codelineno-223-45" href="#__codelineno-223-45"></a>      tensor_type {
+</span><span id="__span-223-46"><a id="__codelineno-223-46" name="__codelineno-223-46" href="#__codelineno-223-46"></a>        elem_type: 11
+</span><span id="__span-223-47"><a id="__codelineno-223-47" name="__codelineno-223-47" href="#__codelineno-223-47"></a>      }
+</span><span id="__span-223-48"><a id="__codelineno-223-48" name="__codelineno-223-48" href="#__codelineno-223-48"></a>    }
+</span><span id="__span-223-49"><a id="__codelineno-223-49" name="__codelineno-223-49" href="#__codelineno-223-49"></a>  }
+</span><span id="__span-223-50"><a id="__codelineno-223-50" name="__codelineno-223-50" href="#__codelineno-223-50"></a>  input {
+</span><span id="__span-223-51"><a id="__codelineno-223-51" name="__codelineno-223-51" href="#__codelineno-223-51"></a>    name: &quot;input3&quot;
+</span><span id="__span-223-52"><a id="__codelineno-223-52" name="__codelineno-223-52" href="#__codelineno-223-52"></a>    type {
+</span><span id="__span-223-53"><a id="__codelineno-223-53" name="__codelineno-223-53" href="#__codelineno-223-53"></a>      tensor_type {
+</span><span id="__span-223-54"><a id="__codelineno-223-54" name="__codelineno-223-54" href="#__codelineno-223-54"></a>        elem_type: &lt;input_type&gt;
+</span><span id="__span-223-55"><a id="__codelineno-223-55" name="__codelineno-223-55" href="#__codelineno-223-55"></a>      }
+</span><span id="__span-223-56"><a id="__codelineno-223-56" name="__codelineno-223-56" href="#__codelineno-223-56"></a>    }
+</span><span id="__span-223-57"><a id="__codelineno-223-57" name="__codelineno-223-57" href="#__codelineno-223-57"></a>  }
+</span><span id="__span-223-58"><a id="__codelineno-223-58" name="__codelineno-223-58" href="#__codelineno-223-58"></a>  output {
+</span><span id="__span-223-59"><a id="__codelineno-223-59" name="__codelineno-223-59" href="#__codelineno-223-59"></a>    name: &quot;output1&quot;
+</span><span id="__span-223-60"><a id="__codelineno-223-60" name="__codelineno-223-60" href="#__codelineno-223-60"></a>    type {
+</span><span id="__span-223-61"><a id="__codelineno-223-61" name="__codelineno-223-61" href="#__codelineno-223-61"></a>      tensor_type {
+</span><span id="__span-223-62"><a id="__codelineno-223-62" name="__codelineno-223-62" href="#__codelineno-223-62"></a>        elem_type: 11
+</span><span id="__span-223-63"><a id="__codelineno-223-63" name="__codelineno-223-63" href="#__codelineno-223-63"></a>      }
+</span><span id="__span-223-64"><a id="__codelineno-223-64" name="__codelineno-223-64" href="#__codelineno-223-64"></a>    }
+</span><span id="__span-223-65"><a id="__codelineno-223-65" name="__codelineno-223-65" href="#__codelineno-223-65"></a>  }
+</span><span id="__span-223-66"><a id="__codelineno-223-66" name="__codelineno-223-66" href="#__codelineno-223-66"></a>  output {
+</span><span id="__span-223-67"><a id="__codelineno-223-67" name="__codelineno-223-67" href="#__codelineno-223-67"></a>    name: &quot;output2&quot;
+</span><span id="__span-223-68"><a id="__codelineno-223-68" name="__codelineno-223-68" href="#__codelineno-223-68"></a>    type {
+</span><span id="__span-223-69"><a id="__codelineno-223-69" name="__codelineno-223-69" href="#__codelineno-223-69"></a>      tensor_type {
+</span><span id="__span-223-70"><a id="__codelineno-223-70" name="__codelineno-223-70" href="#__codelineno-223-70"></a>        elem_type: 11
+</span><span id="__span-223-71"><a id="__codelineno-223-71" name="__codelineno-223-71" href="#__codelineno-223-71"></a>      }
+</span><span id="__span-223-72"><a id="__codelineno-223-72" name="__codelineno-223-72" href="#__codelineno-223-72"></a>    }
+</span><span id="__span-223-73"><a id="__codelineno-223-73" name="__codelineno-223-73" href="#__codelineno-223-73"></a>  }
+</span><span id="__span-223-74"><a id="__codelineno-223-74" name="__codelineno-223-74" href="#__codelineno-223-74"></a>}
+</span><span id="__span-223-75"><a id="__codelineno-223-75" name="__codelineno-223-75" href="#__codelineno-223-75"></a>opset_import {
+</span><span id="__span-223-76"><a id="__codelineno-223-76" name="__codelineno-223-76" href="#__codelineno-223-76"></a>  version: 23
+</span><span id="__span-223-77"><a id="__codelineno-223-77" name="__codelineno-223-77" href="#__codelineno-223-77"></a>}
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><span class="filename">tensor_STD_complete_model.pbtxt</span><pre><span></span><code><span id="__span-224-1"><a id="__codelineno-224-1" name="__codelineno-224-1" href="#__codelineno-224-1"></a>ir_version: 11
+</span><span id="__span-224-2"><a id="__codelineno-224-2" name="__codelineno-224-2" href="#__codelineno-224-2"></a>domain: &quot;eu.neverblink.rdf&quot;
+</span><span id="__span-224-3"><a id="__codelineno-224-3" name="__codelineno-224-3" href="#__codelineno-224-3"></a>model_version: 1
+</span><span id="__span-224-4"><a id="__codelineno-224-4" name="__codelineno-224-4" href="#__codelineno-224-4"></a>doc_string: &quot;RDF tensor STD aggregation function complete model&quot;
+</span><span id="__span-224-5"><a id="__codelineno-224-5" name="__codelineno-224-5" href="#__codelineno-224-5"></a>graph {
+</span><span id="__span-224-6"><a id="__codelineno-224-6" name="__codelineno-224-6" href="#__codelineno-224-6"></a>  node {
+</span><span id="__span-224-7"><a id="__codelineno-224-7" name="__codelineno-224-7" href="#__codelineno-224-7"></a>    input: &quot;input1&quot;
+</span><span id="__span-224-8"><a id="__codelineno-224-8" name="__codelineno-224-8" href="#__codelineno-224-8"></a>    input: &quot;count&quot;
+</span><span id="__span-224-9"><a id="__codelineno-224-9" name="__codelineno-224-9" href="#__codelineno-224-9"></a>    output: &quot;meanSq&quot;
+</span><span id="__span-224-10"><a id="__codelineno-224-10" name="__codelineno-224-10" href="#__codelineno-224-10"></a>    op_type: &quot;Div&quot;
+</span><span id="__span-224-11"><a id="__codelineno-224-11" name="__codelineno-224-11" href="#__codelineno-224-11"></a>  }
+</span><span id="__span-224-12"><a id="__codelineno-224-12" name="__codelineno-224-12" href="#__codelineno-224-12"></a>  node {
+</span><span id="__span-224-13"><a id="__codelineno-224-13" name="__codelineno-224-13" href="#__codelineno-224-13"></a>    input: &quot;input2&quot;
+</span><span id="__span-224-14"><a id="__codelineno-224-14" name="__codelineno-224-14" href="#__codelineno-224-14"></a>    input: &quot;count&quot;
+</span><span id="__span-224-15"><a id="__codelineno-224-15" name="__codelineno-224-15" href="#__codelineno-224-15"></a>    output: &quot;mean&quot;
+</span><span id="__span-224-16"><a id="__codelineno-224-16" name="__codelineno-224-16" href="#__codelineno-224-16"></a>    op_type: &quot;Div&quot;
+</span><span id="__span-224-17"><a id="__codelineno-224-17" name="__codelineno-224-17" href="#__codelineno-224-17"></a>  }
+</span><span id="__span-224-18"><a id="__codelineno-224-18" name="__codelineno-224-18" href="#__codelineno-224-18"></a>  node {
+</span><span id="__span-224-19"><a id="__codelineno-224-19" name="__codelineno-224-19" href="#__codelineno-224-19"></a>    input: &quot;mean&quot;
+</span><span id="__span-224-20"><a id="__codelineno-224-20" name="__codelineno-224-20" href="#__codelineno-224-20"></a>    input: &quot;mean&quot;
+</span><span id="__span-224-21"><a id="__codelineno-224-21" name="__codelineno-224-21" href="#__codelineno-224-21"></a>    output: &quot;meanSquared&quot;
+</span><span id="__span-224-22"><a id="__codelineno-224-22" name="__codelineno-224-22" href="#__codelineno-224-22"></a>    op_type: &quot;Mul&quot;
+</span><span id="__span-224-23"><a id="__codelineno-224-23" name="__codelineno-224-23" href="#__codelineno-224-23"></a>  }
+</span><span id="__span-224-24"><a id="__codelineno-224-24" name="__codelineno-224-24" href="#__codelineno-224-24"></a>  node {
+</span><span id="__span-224-25"><a id="__codelineno-224-25" name="__codelineno-224-25" href="#__codelineno-224-25"></a>    input: &quot;meanSq&quot;
+</span><span id="__span-224-26"><a id="__codelineno-224-26" name="__codelineno-224-26" href="#__codelineno-224-26"></a>    input: &quot;meanSquared&quot;
+</span><span id="__span-224-27"><a id="__codelineno-224-27" name="__codelineno-224-27" href="#__codelineno-224-27"></a>    output: &quot;variance&quot;
+</span><span id="__span-224-28"><a id="__codelineno-224-28" name="__codelineno-224-28" href="#__codelineno-224-28"></a>    op_type: &quot;Sub&quot;
+</span><span id="__span-224-29"><a id="__codelineno-224-29" name="__codelineno-224-29" href="#__codelineno-224-29"></a>  }
+</span><span id="__span-224-30"><a id="__codelineno-224-30" name="__codelineno-224-30" href="#__codelineno-224-30"></a>  node {
+</span><span id="__span-224-31"><a id="__codelineno-224-31" name="__codelineno-224-31" href="#__codelineno-224-31"></a>    input: &quot;variance&quot;
+</span><span id="__span-224-32"><a id="__codelineno-224-32" name="__codelineno-224-32" href="#__codelineno-224-32"></a>    output: &quot;output1&quot;
+</span><span id="__span-224-33"><a id="__codelineno-224-33" name="__codelineno-224-33" href="#__codelineno-224-33"></a>    op_type: &quot;Sqrt&quot;
+</span><span id="__span-224-34"><a id="__codelineno-224-34" name="__codelineno-224-34" href="#__codelineno-224-34"></a>  }
+</span><span id="__span-224-35"><a id="__codelineno-224-35" name="__codelineno-224-35" href="#__codelineno-224-35"></a>  initializer {
+</span><span id="__span-224-36"><a id="__codelineno-224-36" name="__codelineno-224-36" href="#__codelineno-224-36"></a>    data_type: 11
+</span><span id="__span-224-37"><a id="__codelineno-224-37" name="__codelineno-224-37" href="#__codelineno-224-37"></a>    name: &quot;count&quot;
+</span><span id="__span-224-38"><a id="__codelineno-224-38" name="__codelineno-224-38" href="#__codelineno-224-38"></a>    double_data: &lt;count_value&gt;
+</span><span id="__span-224-39"><a id="__codelineno-224-39" name="__codelineno-224-39" href="#__codelineno-224-39"></a>  }
+</span><span id="__span-224-40"><a id="__codelineno-224-40" name="__codelineno-224-40" href="#__codelineno-224-40"></a>  input {
+</span><span id="__span-224-41"><a id="__codelineno-224-41" name="__codelineno-224-41" href="#__codelineno-224-41"></a>    name: &quot;input1&quot;
+</span><span id="__span-224-42"><a id="__codelineno-224-42" name="__codelineno-224-42" href="#__codelineno-224-42"></a>    type {
+</span><span id="__span-224-43"><a id="__codelineno-224-43" name="__codelineno-224-43" href="#__codelineno-224-43"></a>      tensor_type {
+</span><span id="__span-224-44"><a id="__codelineno-224-44" name="__codelineno-224-44" href="#__codelineno-224-44"></a>        elem_type: 11
+</span><span id="__span-224-45"><a id="__codelineno-224-45" name="__codelineno-224-45" href="#__codelineno-224-45"></a>      }
+</span><span id="__span-224-46"><a id="__codelineno-224-46" name="__codelineno-224-46" href="#__codelineno-224-46"></a>    }
+</span><span id="__span-224-47"><a id="__codelineno-224-47" name="__codelineno-224-47" href="#__codelineno-224-47"></a>  }
+</span><span id="__span-224-48"><a id="__codelineno-224-48" name="__codelineno-224-48" href="#__codelineno-224-48"></a>  input {
+</span><span id="__span-224-49"><a id="__codelineno-224-49" name="__codelineno-224-49" href="#__codelineno-224-49"></a>    name: &quot;input2&quot;
+</span><span id="__span-224-50"><a id="__codelineno-224-50" name="__codelineno-224-50" href="#__codelineno-224-50"></a>    type {
+</span><span id="__span-224-51"><a id="__codelineno-224-51" name="__codelineno-224-51" href="#__codelineno-224-51"></a>      tensor_type {
+</span><span id="__span-224-52"><a id="__codelineno-224-52" name="__codelineno-224-52" href="#__codelineno-224-52"></a>        elem_type: 11
+</span><span id="__span-224-53"><a id="__codelineno-224-53" name="__codelineno-224-53" href="#__codelineno-224-53"></a>      }
+</span><span id="__span-224-54"><a id="__codelineno-224-54" name="__codelineno-224-54" href="#__codelineno-224-54"></a>    }
+</span><span id="__span-224-55"><a id="__codelineno-224-55" name="__codelineno-224-55" href="#__codelineno-224-55"></a>  }
+</span><span id="__span-224-56"><a id="__codelineno-224-56" name="__codelineno-224-56" href="#__codelineno-224-56"></a>  output {
+</span><span id="__span-224-57"><a id="__codelineno-224-57" name="__codelineno-224-57" href="#__codelineno-224-57"></a>    name: &quot;output1&quot;
+</span><span id="__span-224-58"><a id="__codelineno-224-58" name="__codelineno-224-58" href="#__codelineno-224-58"></a>    type {
+</span><span id="__span-224-59"><a id="__codelineno-224-59" name="__codelineno-224-59" href="#__codelineno-224-59"></a>      tensor_type {
+</span><span id="__span-224-60"><a id="__codelineno-224-60" name="__codelineno-224-60" href="#__codelineno-224-60"></a>        elem_type: 11
+</span><span id="__span-224-61"><a id="__codelineno-224-61" name="__codelineno-224-61" href="#__codelineno-224-61"></a>      }
+</span><span id="__span-224-62"><a id="__codelineno-224-62" name="__codelineno-224-62" href="#__codelineno-224-62"></a>    }
+</span><span id="__span-224-63"><a id="__codelineno-224-63" name="__codelineno-224-63" href="#__codelineno-224-63"></a>  }
+</span><span id="__span-224-64"><a id="__codelineno-224-64" name="__codelineno-224-64" href="#__codelineno-224-64"></a>}
+</span><span id="__span-224-65"><a id="__codelineno-224-65" name="__codelineno-224-65" href="#__codelineno-224-65"></a>opset_import {
+</span><span id="__span-224-66"><a id="__codelineno-224-66" name="__codelineno-224-66" href="#__codelineno-224-66"></a>  version: 23
+</span><span id="__span-224-67"><a id="__codelineno-224-67" name="__codelineno-224-67" href="#__codelineno-224-67"></a>}
+</span></code></pre></div>
+</div>
+</div>
+</div>
+</details>
 <h2 id="a-references">A. References</h2>
 <h3 id="a1-informative-references">A.1. Informative references</h3>
 <p><strong>[rdf11-concepts]</strong></p>
@@ -7960,11 +8752,11 @@ After parsing, the JSON object is converted into a tensor structure.</p>
 <p><strong>[RFC-8259]</strong></p>
 <p><a name="rfc-8259"></a>
 &nbsp; <a href="https://www.rfc-editor.org/rfc/rfc8259">RFC 8259</a>. Tim Bray. JSON Data Interchange Format. 2017. URL: https://www.rfc-editor.org/rfc/rfc8259</p>
-<p><strong>[NumPy]</strong>
-<a name="numpy"></a>
+<p><strong>[NumPy]</strong></p>
+<p><a name="numpy"></a>
 &nbsp; <a href="https://numpy.org/">NumPy</a>. NumPy Developers. NumPy. 2023. URL: https://numpy.org/</p>
-<p><strong>[ONNX (Open Neural Network Exchange)]</strong>
-<a name="onnx"></a>
+<p><strong>[ONNX (Open Neural Network Exchange)]</strong></p>
+<p><a name="onnx"></a>
 &nbsp; <a href="https://onnx.ai/">ONNX (Open Neural Network Exchange)</a>. ONNX. 2019. URL: https://onnx.ai/</p>
 
 
@@ -7988,7 +8780,7 @@ After parsing, the JSON object is converted into a tensor structure.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 23, 2026</span>
   </span>
 
     
