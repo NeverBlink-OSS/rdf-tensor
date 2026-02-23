@@ -2732,7 +2732,7 @@ Internally, the aggregate accumulates the element-wise sum and the count of tens
 
     ```sparql
     SELECT (tensor:AVG(?val) AS ?avg)
-    WHERE { :x ?p ?val }
+    WHERE { ?s ?p ?val }
     GROUP BY ?s
     ```
 
