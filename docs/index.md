@@ -2901,7 +2901,7 @@ Requires at least two tensors in the group.
 
     ```sparql
     SELECT (tensor:STD(?val) AS ?stddev)
-    WHERE { :x ?p ?val }
+    WHERE { ?s ?p ?val }
     GROUP BY ?s
     ```
 
