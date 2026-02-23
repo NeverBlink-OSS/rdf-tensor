@@ -2668,7 +2668,7 @@ Computes the element-wise sum of all tensors in a group. The result is a tensor 
 
     ```sparql
     SELECT (tensor:SUM(?val) AS ?sum)
-    WHERE { :x ?p ?val }
+    WHERE { ?s ?p ?val }
     GROUP BY ?s
     ```
 
