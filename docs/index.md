@@ -13,7 +13,7 @@ _Date: {{ git_revision_date_localized }}_
 ## Abstract
 
 This specification defines an approach to represent data tensors (multi-dimensional arrays) as literals in RDF.
-It introduces two new RDF datatypes - `tensor:DataTensor` and `tensor:DataTensor`, along with an extension of the SPARQL language.
+It introduces two new RDF datatypes – `tensor:DataTensor` and `tensor:DataTensor`, along with an extension of the SPARQL language.
 This extension includes 36 functions and 6 aggregates, enabling the efficient processing of tensor data within RDF frameworks.
 
 **[See our paper for more information](https://arxiv.org/abs/2504.19224)**
