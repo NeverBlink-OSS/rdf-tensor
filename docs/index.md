@@ -13,7 +13,7 @@ _Date: {{ git_revision_date_localized }}_
 ## Abstract
 
 This specification defines an approach to represent data tensors (multi-dimensional arrays) as literals in RDF.
-It introduces two new RDF datatypes – `tensor:DataTensor` and `tensor:DataTensor`, along with an extension of the SPARQL language.
+It introduces two new RDF datatypes - `tensor:DataTensor` and `tensor:DataTensor`, along with an extension of the SPARQL language.
 This extension includes 36 functions and 6 aggregates, enabling the efficient processing of tensor data within RDF frameworks.
 
 **[See our paper for more information](https://arxiv.org/abs/2504.19224)**
@@ -818,7 +818,7 @@ Casting of input tensors to a common type is performed according to the rules de
     If the input tensors of a binary operator have identical types, it is allowed to skip the type casting step (usually first two `Cast` nodes in the ONNX model definition) and directly apply the operator to the input tensors. This optimization can improve performance by avoiding unnecessary type conversions. However, it is crucial to ensure that the semantics of the function remain unchanged, and the result is the same as if the casts were applied. 
     
     Implementations may verify that the input tensors have the same type before applying this optimization. If the types are different, the implementation must follow the type casting rules as defined in the ONNX model to ensure correct results.
-    
+
 #### `tensor:add`
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:add** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
@@ -2638,35 +2638,331 @@ This function returns a 1-dimensional tensor of type `int64` containing the shap
 
 ## 5. SPARQL Aggregates
 
-The following aggregation functions are implemented as SPARQL extension aggregates. Each function operates over DataTensor values and returns a DataTensor with the most precise type used within each group. These functions do not support the DISTINCT modifier.
+The following aggregation functions are implemented as SPARQL extension aggregates. Each aggregate operates over a group of `tensor:DataTensor` values bound during SPARQL `GROUP BY` evaluation and returns a single `tensor:DataTensor`. All tensors within a group must have the same shape. When tensors have different numeric data types, automatic type casting is performed to a common type. These aggregates do not support the `DISTINCT` modifier.
+
+Each aggregate is defined by up to three ONNX model templates, corresponding to the three phases of aggregation:
+
+- Initial model - processes the first value in a group to set up internal accumulators.
+- Reduce model - incorporates each subsequent value into the accumulators.
+- Complete model - produces the final aggregated result from the accumulators.
+
+Simple aggregates (e.g., `tensor:SUM`) may not require a separate initial model if the first value can be used directly as the accumulator.
 
 ### `tensor:SUM`
 
-- **IRI:** `https://w3id.org/rdf-tensor/vocab#SUM`
-- **Description:** Sums grouped numeric tensors element-wise.
-- **Input:** A group of `DataTensor` values.
-- **Output:** A `DataTensor` representing the element-wise sum of all tensors in the group.
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:SUM** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _?expr_)
+
+Computes the element-wise sum of all tensors in a group. The result is a tensor of the same shape as the input tensors, where each element is the sum of the corresponding elements across all tensors in the group. When input tensors have different numeric data types, they are cast to a common type before summation.
+
+!!! example
+
+    Given the following RDF data:
+
+    ```turtle
+    :x :p1 "{\"type\":\"int32\",\"shape\":[3],\"data\":[10, 20, 30]}"^^tensor:DataTensor .
+    :x :p2 "{\"type\":\"float64\",\"shape\":[3],\"data\":[15.5, 25.5, 30.5]}"^^tensor:DataTensor .
+    :x :p3 "{\"type\":\"float64\",\"shape\":[3],\"data\":[15.5, 25.5, 30.5]}"^^tensor:DataTensor .
+    ```
+
+    Evaluating the SPARQL query
+
+    ```sparql
+    SELECT (tensor:SUM(?val) AS ?sum)
+    WHERE { :x ?p ?val }
+    GROUP BY ?s
+    ```
+
+    returns a binding where `?sum` is
+
+    ```turtle
+    "{\"type\": \"float64\", \"shape\": [3], \"data\": [41.0, 71.0, 91.0]}"^^tensor:DataTensor
+    ```
+
+??? note "ONNX definition of this aggregate"
+
+    === "Model description"
+
+        Aggregation phases:
+
+        - Initial: The first tensor value is used directly as the accumulator. No ONNX model is needed.
+        - Reduce: Each subsequent tensor is added element-wise to the accumulator using an ONNX `Add` operation.
+        - Complete: The accumulator is returned directly as the result. No ONNX model is needed.
+
+        Reduce model inputs and outputs:
+
+        - `input1`: The current accumulator tensor of <accumulator_type> type.
+        - `input2`: The next tensor to add, of <input_type> type.
+        - `output1`: The updated accumulator tensor after element-wise addition of <resolved_type> type.
+
+        Model variables:
+
+        - `accumulator_type`: The data type of the current accumulator tensor.
+        - `input_type`: The data type of the incoming tensor, which can be any supported numeric type.
+        - `resolved_type`: The common data type to which both the accumulator and input tensor are cast for addition, determined by type hierarchy and casting rules.
+
+    === "Reduce model definition"
+
+        ```pbtxt title="tensor_SUM_reduce_model.pbtxt"
+        {% include "./onnx/tensor_SUM_reduce_model.pbtxt" %}
+        ```
+
+---
 
 ### `tensor:AVG`
 
-- **IRI:** `https://w3id.org/rdf-tensor/vocab#AVG`
-- **Description:** Computes the element-wise average of grouped tensors.
-- **Input:** A group of `DataTensor` values.
-- **Output:** A `DataTensor` representing the average tensor.
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:AVG** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _?expr_)
+
+Computes the element-wise average (arithmetic mean) of all tensors in a group. The result is always a DOUBLE-typed tensor of the same shape as the input tensors, where each element is the mean of the corresponding elements across all tensors in the group.
+
+Internally, the aggregate accumulates the element-wise sum and the count of tensors. On completion, the sum is cast to DOUBLE and divided by the count.
+
+!!! example
+
+    Given the following RDF data:
+
+    ```turtle
+    :x :p1 "{\"type\":\"int32\",\"shape\":[3],\"data\":[10, 20, 30]}"^^tensor:DataTensor .
+    :x :p2 "{\"type\":\"float64\",\"shape\":[3],\"data\":[15.5, 25.5, 30.5]}"^^tensor:DataTensor .
+    :x :p3 "{\"type\":\"float64\",\"shape\":[3],\"data\":[15.5, 25.5, 30.5]}"^^tensor:DataTensor .
+    :x :p4 "{\"type\":\"int32\",\"shape\":[3],\"data\":[10, 20, 30]}"^^tensor:DataTensor .
+    :x :p5 "{\"type\":\"int32\",\"shape\":[3],\"data\":[10, 20, 30]}"^^tensor:DataTensor .
+    ```
+
+    Evaluating the SPARQL query
+
+    ```sparql
+    SELECT (tensor:AVG(?val) AS ?avg)
+    WHERE { :x ?p ?val }
+    GROUP BY ?s
+    ```
+
+    returns a binding where `?avg` is
+
+    ```turtle
+    "{\"type\": \"float64\", \"shape\": [3], \"data\": [12.2, 22.2, 30.2]}"^^tensor:DataTensor
+    ```
+
+??? note "ONNX definition of this aggregate"
+
+    === "Model description"
+
+        Aggregation phases:
+
+        - Initial: The first tensor value and a count of 1 are stored as the accumulator. No ONNX model is needed.
+        - Reduce: Each subsequent tensor is added element-wise to the accumulator sum using an ONNX `Add` operation, and the count is incremented.
+        - Complete: The accumulated sum is cast to DOUBLE and divided element-wise by the count to produce the mean.
+
+        Reduce model inputs and outputs:
+
+        - `input1`: The current sum accumulator tensor of <accumulator_type> type.
+        - `input2`: The next tensor to add, of <input_type> type.
+        - `output1`: The updated sum accumulator tensor after element-wise addition of <resolved_type> type.
+
+        Complete model inputs and outputs:
+
+        - `input1`: The accumulated sum tensor of <accumulator_type> type.
+        - `output1`: The average tensor of DOUBLE type, computed as `Cast(input1, DOUBLE) / count`.
+
+        Model variables:
+
+        - `accumulator_type`: The data type of the current sum accumulator tensor.
+        - `input_type`: The data type of the incoming tensor, which can be any supported numeric type.
+        - `resolved_type`: The common data type to which both the accumulator and input tensor are cast for addition, determined by type hierarchy and casting rules.
+        - `count_value`: The total number of tensors in the group, of type DOUBLE.
+
+    === "Reduce model definition"
+
+        ```pbtxt title="tensor_AVG_reduce_model.pbtxt"
+        {% include "./onnx/tensor_AVG_reduce_model.pbtxt" %}
+        ```
+
+    === "Complete model definition"
+
+        ```pbtxt title="tensor_AVG_complete_model.pbtxt"
+        {% include "./onnx/tensor_AVG_complete_model.pbtxt" %}
+        ```
+
+---
 
 ### `tensor:VAR`
 
-- **IRI:** `https://w3id.org/rdf-tensor/vocab#VAR`
-- **Description:** Calculates the element-wise variance across grouped tensors.
-- **Input:** A group of `DataTensor` values.
-- **Output:** A `DataTensor` representing the variance tensor.
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:VAR** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _?expr_)
+
+Computes the element-wise population variance of all tensors in a group. The result is always a DOUBLE-typed tensor of the same shape as the input tensors, where each element is the variance of the corresponding elements across all tensors in the group.
+
+The variance is computed using the formula: Var(X) = E[X^2] − (E[X])^2, where E denotes the mean over the group. Internally, the aggregate tracks the element-wise sum of squares and the element-wise sum. On completion, it divides both by the count and applies the formula.
+
+Requires at least two tensors in the group.
+
+!!! example
+
+    Given the following RDF data:
+
+    ```turtle
+    :x :p1 "{\"type\":\"int32\",\"shape\":[3],\"data\":[10, 20, 30]}"^^tensor:DataTensor .
+    :x :p2 "{\"type\":\"float64\",\"shape\":[3],\"data\":[15.5, 25.5, 30.5]}"^^tensor:DataTensor .
+    :x :p3 "{\"type\":\"float64\",\"shape\":[3],\"data\":[15.5, 25.5, 30.5]}"^^tensor:DataTensor .
+    :x :p4 "{\"type\":\"int32\",\"shape\":[3],\"data\":[10, 20, 30]}"^^tensor:DataTensor .
+    :x :p5 "{\"type\":\"int32\",\"shape\":[3],\"data\":[10, 20, 30]}"^^tensor:DataTensor .
+    ```
+
+    Evaluating the SPARQL query
+
+    ```sparql
+    SELECT (tensor:VAR(?val) AS ?variance)
+    WHERE { :x ?p ?val }
+    GROUP BY ?s
+    ```
+
+    returns a binding where `?variance` is approximately
+
+    ```turtle
+    "{\"type\": \"float64\", \"shape\": [3], \"data\": [9.075, 9.075, 0.075]}"^^tensor:DataTensor
+    ```
+
+??? note "ONNX definition of this aggregate"
+
+    === "Model description"
+
+        Aggregation phases:
+
+        - Initial: the first tensor is cast to DOUBLE. The element-wise square (x^2) is computed as one accumulator, and the cast value itself is the other. The count is initialized to 1.
+        - Reduce: each subsequent tensor is cast to DOUBLE, squared, and added to the sum-of-squares accumulator. The cast value is added to the sum accumulator. The count is incremented.
+        - Complete: the variance is computed as E[X^2] − (E[X])^2 by dividing both accumulators by the count and applying the formula.
+
+        Initial model inputs and outputs:
+
+        - `input1`: The first tensor value of <input_type> type.
+        - `output1`: The squared tensor (x^2), cast to DOUBLE type.
+        - `output2`: The tensor value itself, cast to DOUBLE type.
+
+        Reduce model inputs and outputs:
+
+        - `input1`: The current sum-of-squares accumulator tensor of DOUBLE type.
+        - `input2`: The current sum accumulator tensor of DOUBLE type.
+        - `input3`: The next tensor to accumulate, of <input_type> type.
+        - `output1`: The updated sum-of-squares accumulator (input1 + Cast(input3)^2).
+        - `output2`: The updated sum accumulator (input2 + Cast(input3)).
+
+        Complete model inputs and outputs:
+
+        - `input1`: The accumulated sum-of-squares tensor of DOUBLE type.
+        - `input2`: The accumulated sum tensor of DOUBLE type.
+        - `output1`: The variance tensor of DOUBLE type, computed as (input1 / count) − (input2 / count)^2.
+
+        Model variables:
+
+        - `input_type`: The data type of the incoming tensor, which can be any supported numeric type.
+        - `count_value`: The total number of tensors in the group, of type DOUBLE.
+
+    === "Initial model definition"
+
+        ```pbtxt title="tensor_VAR_initial_model.pbtxt"
+        {% include "./onnx/tensor_VAR_initial_model.pbtxt" %}
+        ```
+
+    === "Reduce model definition"
+
+        ```pbtxt title="tensor_VAR_reduce_model.pbtxt"
+        {% include "./onnx/tensor_VAR_reduce_model.pbtxt" %}
+        ```
+
+    === "Complete model definition"
+
+        ```pbtxt title="tensor_VAR_complete_model.pbtxt"
+        {% include "./onnx/tensor_VAR_complete_model.pbtxt" %}
+        ```
+
+---
 
 ### `tensor:STD`
 
-- **IRI:** `https://w3id.org/rdf-tensor/vocab#STD`
-- **Description:** Computes the element-wise standard deviation across grouped tensors.
-- **Input:** A group of `DataTensor` values.
-- **Output:** A `DataTensor` representing the standard deviation tensor.
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:STD** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _?expr_)
+
+Computes the element-wise population standard deviation of all tensors in a group. The result is always a DOUBLE-typed tensor of the same shape as the input tensors, where each element is the standard deviation of the corresponding elements across all tensors in the group.
+
+The standard deviation is computed as the square root of the population variance: Std(X) = sqrtVar(X) = sqrt(E[X^2] − (E[X])^2). Internally, the aggregate uses the same accumulation strategy as `tensor:VAR` (tracking sum of squares and sum), but applies an additional square root in the completion phase.
+
+Requires at least two tensors in the group.
+
+!!! example
+
+    Given the following RDF data:
+
+    ```turtle
+    :x :p1 "{\"type\":\"int32\",\"shape\":[3],\"data\":[10, 20, 30]}"^^tensor:DataTensor .
+    :x :p2 "{\"type\":\"float64\",\"shape\":[3],\"data\":[15.5, 25.5, 30.5]}"^^tensor:DataTensor .
+    :x :p3 "{\"type\":\"float64\",\"shape\":[3],\"data\":[15.5, 25.5, 30.5]}"^^tensor:DataTensor .
+    :x :p4 "{\"type\":\"int32\",\"shape\":[3],\"data\":[10, 20, 30]}"^^tensor:DataTensor .
+    :x :p5 "{\"type\":\"int32\",\"shape\":[3],\"data\":[10, 20, 30]}"^^tensor:DataTensor .
+    ```
+
+    Evaluating the SPARQL query
+
+    ```sparql
+    SELECT (tensor:STD(?val) AS ?stddev)
+    WHERE { :x ?p ?val }
+    GROUP BY ?s
+    ```
+
+    returns a binding where `?stddev` is approximately
+
+    ```turtle
+    "{\"type\": \"float64\", \"shape\": [3], \"data\": [3.0125, 3.0125, 0.2739]}"^^tensor:DataTensor
+    ```
+
+??? note "ONNX definition of this aggregate"
+
+    === "Model description"
+
+        **Aggregation phases:**
+
+        - Initial: the first tensor is cast to DOUBLE. The element-wise square (x^2) is computed as one accumulator, and the cast value itself is the other. The count is initialized to 1.
+        - Reduce: each subsequent tensor is cast to DOUBLE, squared, and added to the sum-of-squares accumulator. The cast value is added to the sum accumulator. The count is incremented.
+        - Complete: the variance is computed as E[X^2] − (E[X])^2, followed by an element-wise square root to produce the standard deviation.
+
+        **Initial model inputs and outputs:**
+
+        - `input1`: The first tensor value of <input_type> type.
+        - `output1`: The squared tensor (x^2), cast to DOUBLE type.
+        - `output2`: The tensor value itself, cast to DOUBLE type.
+
+        **Reduce model inputs and outputs:**
+
+        - `input1`: The current sum-of-squares accumulator tensor of DOUBLE type.
+        - `input2`: The current sum accumulator tensor of DOUBLE type.
+        - `input3`: The next tensor to accumulate, of <input_type> type.
+        - `output1`: The updated sum-of-squares accumulator (input1 + Cast(input3)^2).
+        - `output2`: The updated sum accumulator (input2 + Cast(input3)).
+
+        **Complete model inputs and outputs:**
+
+        - `input1`: The accumulated sum-of-squares tensor of DOUBLE type.
+        - `input2`: The accumulated sum tensor of DOUBLE type.
+        - `output1`: The standard deviation tensor of DOUBLE type, computed as sqrt((input1 / count) − (input2 / count)^2).
+
+        Model variables:
+
+        - `input_type`: The data type of the incoming tensor, which can be any supported numeric type.
+        - `count_value`: The total number of tensors in the group, of type DOUBLE.
+
+    === "Initial model definition"
+
+        ```pbtxt title="tensor_STD_initial_model.pbtxt"
+        {% include "./onnx/tensor_STD_initial_model.pbtxt" %}
+        ```
+
+    === "Reduce model definition"
+
+        ```pbtxt title="tensor_STD_reduce_model.pbtxt"
+        {% include "./onnx/tensor_STD_reduce_model.pbtxt" %}
+        ```
+
+    === "Complete model definition"
+
+        ```pbtxt title="tensor_STD_complete_model.pbtxt"
+        {% include "./onnx/tensor_STD_complete_model.pbtxt" %}
+        ```
 
 ## A. References
 
@@ -2683,9 +2979,11 @@ The following aggregation functions are implemented as SPARQL extension aggregat
 &nbsp; [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259). Tim Bray. JSON Data Interchange Format. 2017. URL: https://www.rfc-editor.org/rfc/rfc8259
 
 **[NumPy]**
+
 <a name="numpy"></a>
 &nbsp; [NumPy](https://numpy.org/). NumPy Developers. NumPy. 2023. URL: https://numpy.org/
 
 **[ONNX (Open Neural Network Exchange)]**
+
 <a name="onnx"></a>
 &nbsp; [ONNX (Open Neural Network Exchange)](https://onnx.ai/). ONNX. 2019. URL: https://onnx.ai/

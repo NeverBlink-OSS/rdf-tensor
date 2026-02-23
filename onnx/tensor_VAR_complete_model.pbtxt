@@ -1,0 +1,63 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor VAR aggregation function complete model"
+graph {
+  node {
+    input: "input1"
+    input: "count"
+    output: "meanSq"
+    op_type: "Div"
+  }
+  node {
+    input: "input2"
+    input: "count"
+    output: "mean"
+    op_type: "Div"
+  }
+  node {
+    input: "mean"
+    input: "mean"
+    output: "meanSquared"
+    op_type: "Mul"
+  }
+  node {
+    input: "meanSq"
+    input: "meanSquared"
+    output: "output1"
+    op_type: "Sub"
+  }
+  initializer {
+    dims: 1
+    data_type: 11
+    name: "count"
+    double_data: <count_value>
+  }
+  input {
+    name: "input1"
+    type {
+      tensor_type {
+        elem_type: 11
+      }
+    }
+  }
+  input {
+    name: "input2"
+    type {
+      tensor_type {
+        elem_type: 11
+      }
+    }
+  }
+  output {
+    name: "output1"
+    type {
+      tensor_type {
+        elem_type: 11
+      }
+    }
+  }
+}
+opset_import {
+  version: 23
+}

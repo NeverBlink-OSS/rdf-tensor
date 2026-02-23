@@ -175,11 +175,6 @@ tensor:max a sd:Function ;
     rdfs:comment "Computes the maximum along a specified axis."@en ;
     dc:creator "Piotr Marciniak" .
 
-tensor:median a sd:Function ;
-    rdfs:label "Median" ;
-    rdfs:comment "Computes the median along a specified axis."@en ;
-    dc:creator "Piotr Marciniak" .
-
 tensor:min a sd:Function ;
     rdfs:label "Minimum" ;
     rdfs:comment "Computes the minimum along a specified axis."@en ;
