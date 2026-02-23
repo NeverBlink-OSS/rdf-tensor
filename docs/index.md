@@ -2642,9 +2642,9 @@ The following aggregation functions are implemented as SPARQL extension aggregat
 
 Each aggregate is defined by up to three ONNX model templates, corresponding to the three phases of aggregation:
 
-- Initial model - processes the first value in a group to set up internal accumulators.
-- Reduce model - incorporates each subsequent value into the accumulators.
-- Complete model - produces the final aggregated result from the accumulators.
+- Initial model – processes the first value in a group to set up internal accumulators.
+- Reduce model – incorporates each subsequent value into the accumulators.
+- Complete model – produces the final aggregated result from the accumulators.
 
 Simple aggregates (e.g., `tensor:SUM`) may not require a separate initial model if the first value can be used directly as the accumulator.
 
