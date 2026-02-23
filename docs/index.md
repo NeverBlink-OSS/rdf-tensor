@@ -2636,6 +2636,71 @@ This function returns a 1-dimensional tensor of type `int64` containing the shap
 
 ---
 
+<!--
+/** tensor:arange
+    *
+    * tensor:DataTensor tensor:arange (xsd:string type, xsd:integer start, xsd:integer stop)
+    *
+    * tensor:DataTensor tensor:arange (xsd:string type, xsd:integer start, xsd:integer stop,
+    * xsd:integer step)
+    *
+    * This function creates a 1D tensor containing evenly spaced values within the half-open
+    * interval [start, stop). Similar to NumPy's `np.arange`. The first argument is the data type
+    * (e.g., "int32", "float64"), followed by start, stop, and optionally step (default 1). The
+    * resulting tensor has shape [N], where N is the number of values in the range.
+    */
+-->
+
+#### `tensor:arange`
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:arange** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _start_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _stop_)
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:arange** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _start_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _stop_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _step_)
+
+This function creates a 1D tensor containing evenly spaced values within the half-open interval [start, stop). Similar to NumPy's `np.arange`. The first argument is the data type (e.g., "int32", "float64"), followed by start, stop, and optionally step (default 1). The resulting tensor has shape [N], where N is the number of values in the range.
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:arange("int32", 0, 5)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [5], \"data\": [0, 1, 2, 3, 4]}"^^tensor:DataTensor
+    ```
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:arange("float64", 0, 10, 2)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"float64\", \"shape\": [5], \"data\": [0.0, 2.0, 4.0, 6.0, 8.0]}"^^tensor:DataTensor
+    ```
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:arange("int32", 5, 0, -1)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [5], \"data\": [5, 4, 3, 2, 1]}"^^tensor:DataTensor
+    ```
+
 ## 5. SPARQL Aggregates
 
 The following aggregation functions are implemented as SPARQL extension aggregates. Each aggregate operates over a group of `tensor:DataTensor` values bound during SPARQL `GROUP BY` evaluation and returns a single `tensor:DataTensor`. All tensors within a group must have the same shape. When tensors have different numeric data types, automatic type casting is performed to a common type. These aggregates do not support the `DISTINCT` modifier.
