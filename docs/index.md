@@ -2810,7 +2810,7 @@ Requires at least two tensors in the group.
 
     ```sparql
     SELECT (tensor:VAR(?val) AS ?variance)
-    WHERE { :x ?p ?val }
+    WHERE { ?s ?p ?val }
     GROUP BY ?s
     ```
 
