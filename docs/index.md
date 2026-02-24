@@ -2454,6 +2454,167 @@ This function computes the L2 norm (Euclidean norm) along the specified axis. If
     
 ---
 
+#### `tensor:quantile`
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:quantile** ([xsd:double](http://www.w3.org/2001/XMLSchema#double) _q_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:quantile** ([xsd:double](http://www.w3.org/2001/XMLSchema#double) _q_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+
+This function computes the q-th quantile along the specified axis. The quantile value q should be between 0 and 1 (e.g., 0.5 for median, 0.25 for first quartile). If the axis is negative, the quantile is calculated over the entire flattened tensor. It returns a reduced tensor or a scalar.
+
+If the quantile falls between two data points, the function should return the nearest data point to the quantile.
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:quantile(0.5, 1, "{\"type\": \"float32\", \"shape\": [2,3], \"data\": [1, 2, 3, 4, 5, 6]}"^^tensor:DataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"float32\", \"shape\": [2], \"data\": [2, 5]}"^^tensor:DataTensor
+    ```
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:quantile(0.25, -1, "{\"type\": \"float32\", \"shape\": [2,3], \"data\": [1, 2, 3, 4, 5, 6]}"^^tensor:DataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "2"^^xsd:float
+    ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of <input_type> type, where the shape is determined by reducing the input tensor along the specified axis.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `axis_value`: The axis along which to compute the quantile, which can be any integer value from `-1` to `rank-1`, where `rank` is the number of dimensions in the input tensor.
+        - `axis_size_value`: The size of the specified axis, which is used to determine the position of the quantile in the sorted order of the data along that axis. For `axis_value` >= 0, this is the size of the dimension corresponding to `axis_value`. For `axis_value` < 0, this is the total number of elements in the input tensor.
+        - `quantile_index_value`: The index of the quantile in the sorted order of the data along the specified axis, calculated as `quantile_index_value = floor(q * (axis_size_value - 1))`, where q is the quantile value.
+
+        Model definition dispatch:
+        
+        - if `axis_value` is negative, then the implementation is expected to use **model definition for full reduction**.
+        - if `axis_value` is non-negative, then the implementation is expected to use **model definition for axis reduction**.
+
+    === "Model definition for full reduction"
+
+        ```pbtxt title="tensor_quantile_full_model.pbtxt"
+        {% include "./onnx/tensor_quantile_full_reduction_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction"
+
+        ```pbtxt title="tensor_quantile_axis_model.pbtxt"
+        {% include "./onnx/tensor_quantile_axis_reduction_model.pbtxt" %}
+        ```
+
+---
+
+#### `tensor:quantileInterpolate`
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:quantileInterpolate** ([xsd:double](http://www.w3.org/2001/XMLSchema#double) _q_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+
+[xsd:double](http://www.w3.org/2001/XMLSchema#double) **tensor:quantileInterpolate** ([xsd:double](http://www.w3.org/2001/XMLSchema#double) _q_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+
+This function computes the q-th quantile along the specified axis. The quantile value q should be between 0 and 1 (e.g., 0.5 for median, 0.25 for first quartile). If the axis is negative, the quantile is calculated over the entire flattened tensor. It returns a reduced tensor or a scalar.
+
+If the quantile falls between two data points, the function should interpolate between them to return a value that represents the quantile. The interpolation method is defined as linear interpolation between the two nearest data points.
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:quantileInterpolate(0.5, 1, "{\"type\": \"float32\", \"shape\": [2,3], \"data\": [1, 2, 3, 4, 5, 6]}"^^tensor:DataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"float32\", \"shape\": [2], \"data\": [2, 5]}"^^tensor:DataTensor
+    ```
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:quantileInterpolate(0.25, -1, "{\"type\": \"float32\", \"shape\": [2,3], \"data\": [1, 2, 3, 4, 5, 6]}"^^tensor:DataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "2.25"^^xsd:float
+    ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `lower_index`: A tensor of integer type representing the index of the lower data point for interpolation. For `axis_value` >= 0, this is calculated as `floor(q * (axis_size_value - 1))`. For `axis_value` < 0, this is calculated as `floor(q * (total_size - 1))`, where `total_size` is the total number of elements in the input tensor.
+        - `upper_index`: A tensor of integer type representing the index of the upper data point for interpolation. For `axis_value` >= 0, this is calculated as `ceil(q * (axis_size_value - 1))`. For `axis_value` < 0, this is calculated as `ceil(q * (total_size - 1))`, where `total_size` is the total number of elements in the input tensor.
+        - `fraction`: A tensor of float type representing the fractional part for interpolation, calculated as `q * (axis_size_value - 1) - lower_index` for `axis_value` >= 0, or `q * (total_size - 1) - lower_index` for `axis_value` < 0.
+        - `output1`: A tensor of DOUBLE type, where the shape is determined by reducing the input tensor along the specified axis.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `axis_value`: The axis along which to compute the quantile, which can be any integer value from `-1` to `rank-1`, where `rank` is the number of dimensions in the input tensor.
+        - `axis_size_value`: The size of the specified axis, which is used to determine the position of the quantile in the sorted order of the data along that axis. For `axis_value` >= 0, this is the size of the dimension corresponding to `axis_value`. For `axis_value` < 0, this is the total number of elements in the input tensor.
+
+        Model definition dispatch:
+        
+        - if `axis_value` is negative, then the implementation is expected to use **model definition for full reduction**.
+        - if `axis_value` is non-negative, then the implementation is expected to use **model definition for axis reduction**.
+        - if it is determined that interpolation is needed (i.e., the quantile falls between two data points), then the implementation is expected to use the model definition for interpolation. Otherwise, it should use the model definition for no interpolation.
+
+    === "Model definition for full reduction with no interpolation"
+
+        ```pbtxt title="tensor_quantile_interpolate_no_interpolation_full_reduction_model.pbtxt"
+        {% include "./onnx/tensor_quantile_interpolate_no_interpolation_full_reduction_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction with no interpolation"
+
+        ```pbtxt title="tensor_quantile_interpolate_no_interpolation_axis_reduction_model.pbtxt"
+        {% include "./onnx/tensor_quantile_interpolate_no_interpolation_axis_reduction_model.pbtxt" %}
+        ```
+    
+    === "Model definition for full reduction with interpolation"
+
+        ```pbtxt title="tensor_quantile_interpolate_with_interpolation_full_reduction_model.pbtxt"
+        {% include "./onnx/tensor_quantile_interpolate_with_interpolation_full_reduction_model.pbtxt" %}
+        ```
+
+    === "Model definition for axis reduction with interpolation"
+
+        ```pbtxt title="tensor_quantile_interpolate_with_interpolation_axis_reduction_model.pbtxt"
+        {% include "./onnx/tensor_quantile_interpolate_with_interpolation_axis_reduction_model.pbtxt" %}
+        ```
+
+---
+
 ### 4.6. Similarity Functions
 
 #### `tensor:cosineSimilarity`
@@ -2632,6 +2793,58 @@ This function returns a 1-dimensional tensor of type `int64` containing the shap
 
     ```turtle
     "{\"type\": \"int64\", \"shape\": [3], \"data\": [2, 3, 4]}"^^tensor:DataTensor
+    ```
+
+---
+
+#### `tensor:arange`
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:arange** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _start_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _stop_)
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:arange** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _start_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _stop_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _step_)
+
+This function creates a 1D tensor containing evenly spaced values within the half-open interval [start, stop). Similar to NumPy's `np.arange`. The first argument is the data type (e.g., "int32", "float64"), followed by start, stop, and optionally step (default 1). The resulting tensor has shape [N], where N is the number of values in the range.
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:arange("int32", 0, 5)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [5], \"data\": [0, 1, 2, 3, 4]}"^^tensor:DataTensor
+    ```
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:arange("float64", 0, 10, 2)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"float64\", \"shape\": [5], \"data\": [0.0, 2.0, 4.0, 6.0, 8.0]}"^^tensor:DataTensor
+    ```
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:arange("int32", 5, 0, -1)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [5], \"data\": [5, 4, 3, 2, 1]}"^^tensor:DataTensor
     ```
 
 ---

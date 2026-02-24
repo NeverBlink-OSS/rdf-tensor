@@ -1,0 +1,164 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor quantile interpolate function for full reduction with interpolation"
+graph {
+  node {
+    input: "input1"
+    input: "reshape_shape"
+    output: "reshaped"
+    op_type: "Reshape"
+  }
+  node {
+    input: "reshaped"
+    input: "k_tensor"
+    output: "sorted_values"
+    output: "sorted_indices"
+    op_type: "TopK"
+    attribute {
+      name: "axis"
+      i: 0
+      type: INT
+    }
+    attribute {
+      name: "largest"
+      i: 0
+      type: INT
+    }
+    attribute {
+      name: "sorted"
+      i: 1
+      type: INT
+    }
+  }
+  node {
+    input: "sorted_values"
+    output: "sorted_float"
+    op_type: "Cast"
+    attribute {
+      name: "to"
+      i: 11
+      type: INT
+    }
+  }
+  node {
+    input: "sorted_float"
+    input: "lower_index"
+    output: "lower_gathered"
+    op_type: "Gather"
+    attribute {
+      name: "axis"
+      i: 0
+      type: INT
+    }
+  }
+  node {
+    input: "sorted_float"
+    input: "upper_index"
+    output: "upper_gathered"
+    op_type: "Gather"
+    attribute {
+      name: "axis"
+      i: 0
+      type: INT
+    }
+  }
+  node {
+    input: "lower_gathered"
+    output: "lower_values"
+    op_type: "Squeeze"
+  }
+  node {
+    input: "upper_gathered"
+    output: "upper_values"
+    op_type: "Squeeze"
+  }
+  node {
+    input: "upper_values"
+    input: "lower_values"
+    output: "diff"
+    op_type: "Sub"
+  }
+  node {
+    input: "fraction"
+    input: "diff"
+    output: "scaled_diff"
+    op_type: "Mul"
+  }
+  node {
+    input: "lower_values"
+    input: "scaled_diff"
+    output: "output1"
+    op_type: "Add"
+  }
+  initializer {
+    dims: 1
+    data_type: 7
+    int64_data: <axis_size_value>
+    name: "k_tensor"
+  }
+  initializer {
+    dims: 1
+    data_type: 7
+    int64_data: -1
+    name: "reshape_shape"
+  }
+  input {
+    name: "input1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+  input {
+    name: "lower_index"
+    type {
+      tensor_type {
+        elem_type: 7
+        shape {
+          dim {
+            dim_value: 1
+          }
+        }
+      }
+    }
+  }
+  input {
+    name: "upper_index"
+    type {
+      tensor_type {
+        elem_type: 7
+        shape {
+          dim {
+            dim_value: 1
+          }
+        }
+      }
+    }
+  }
+  input {
+    name: "fraction"
+    type {
+      tensor_type {
+        elem_type: 11
+        shape {
+          dim {
+            dim_value: 1
+          }
+        }
+      }
+    }
+  }
+  output {
+    name: "output1"
+    type {
+      tensor_type {
+        elem_type: 11
+      }
+    }
+  }
+}
+opset_import {
+  version: 23
+}

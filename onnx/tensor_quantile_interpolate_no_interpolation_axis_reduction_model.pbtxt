@@ -1,0 +1,77 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor quantile interpolate function for axis reduction without interpolation"
+graph {
+  node {
+    input: "input1"
+    input: "k_tensor"
+    output: "sorted_values"
+    output: "sorted_indices"
+    op_type: "TopK"
+    attribute {
+      name: "axis"
+      i: <axis_value>
+      type: INT
+    }
+    attribute {
+      name: "largest"
+      i: 0
+      type: INT
+    }
+    attribute {
+      name: "sorted"
+      i: 1
+      type: INT
+    }
+  }
+  node {
+    input: "sorted_values"
+    input: "quantile_index"
+    output: "output1"
+    op_type: "Gather"
+    attribute {
+      name: "axis"
+      i: <axis_value>
+      type: INT
+    }
+  }
+  initializer {
+    dims: 1
+    data_type: 7
+    int64_data: <axis_size_value>
+    name: "k_tensor"
+  }
+  input {
+    name: "input1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+  input {
+    name: "quantile_index"
+    type {
+      tensor_type {
+        elem_type: 7
+        shape {
+          dim {
+            dim_value: 1
+          }
+        }
+      }
+    }
+  }
+  output {
+    name: "output1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+}
+opset_import {
+  version: 23
+}
