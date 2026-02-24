@@ -2454,23 +2454,6 @@ This function computes the L2 norm (Euclidean norm) along the specified axis. If
     
 ---
 
-<!--
-  /** tensor:quantile
-    *
-    * tensor:DataTensor tensor:quantile (xsd:double q, xsd:integer axis, tensor:DataTensor term_1)
-    *
-    * xsd:double tensor:quantile (xsd:double q, xsd:integer axis, tensor:DataTensor term_1)
-    *
-    * This function computes the q-th quantile along the specified axis. The quantile value q should
-    * be between 0 and 1 (e.g., 0.5 for median, 0.25 for first quartile). If the axis is negative,
-    * the quantile is calculated over the entire flattened tensor. It returns a reduced tensor or a
-    * scalar.
-    *
-    * If the quantile falls between two data points, the function should return the nearest data
-    * point to the qualtile.
-    */
--->
-
 #### `tensor:quantile`
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:quantile** ([xsd:double](http://www.w3.org/2001/XMLSchema#double) _q_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
@@ -2543,24 +2526,6 @@ If the quantile falls between two data points, the function should return the ne
         ```
 
 ---
-
-<!--
-  /** tensor:quantileInterpolate
-    *
-    * tensor:DataTensor tensor:quantileInterpolate (xsd:double q, xsd:integer axis, tensor:DataTensor term_1)
-    *
-    * xsd:double tensor:quantileInterpolate (xsd:double q, xsd:integer axis, tensor:DataTensor term_1)
-    *
-    * This function computes the q-th quantile along the specified axis. The quantile value q should
-    * be between 0 and 1 (e.g., 0.5 for median, 0.25 for first quartile). If the axis is negative,
-    * the quantile is calculated over the entire flattened tensor. It returns a reduced tensor or a
-    * scalar.
-    *
-    * If the quantile falls between two data points, the function should interpolate between them to
-    * return a value that represents the quantile. The interpolation method is defined as linear
-    * interpolation between the two nearest data points.
-    */
--->
 
 #### `tensor:quantileInterpolate`
 
