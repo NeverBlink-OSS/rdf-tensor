@@ -236,3 +236,20 @@ tensor:shape  a       sd:Function;
         rdfs:label    "Get Tensor Shape";
         rdfs:comment  "Returns the shape of a tensor as a list of integers."@en;
         dc:creator    "Nikita Kozlov" .
+
+tensor:arange  a      sd:Function;
+        rdfs:label    "Create tensor with Range of Values";
+        rdfs:comment  "Creates a tensor with a range of values defined by start, end, and step."@en;
+        dc:creator    "Nikita Kozlov" .
+
+tensor:quantile  a  sd:Function .
+
+tensor:quantile  rdfs:label  "Quantile";
+        rdfs:comment  "Computes the quantiles of a tensor along a specified axis."@en;
+        dc:creator    "Nikita Kozlov" .
+
+tensor:quantileInterpolate
+        a             sd:Function;
+        rdfs:label    "Quantile Interpolation";
+        rdfs:comment  "Computes the quantiles of a tensor along a specified axis using linear interpolation."@en;
+        dc:creator    "Nikita Kozlov" .
