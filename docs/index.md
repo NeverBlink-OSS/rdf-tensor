@@ -1645,9 +1645,9 @@ This function returns a tensor that is the concatenation of the input tensors al
 
 #### `tensor:hstack`
 
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:hstack** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:hstack** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_3_, ...)
 
-This function returns a tensor that is the result of horizontally stacking the two input tensors (i.e., concatenation along the last axis). The tensors must be broadcast-compatible along other dimensions.
+This function returns a tensor that is the result of horizontally stacking the input tensors (i.e., concatenation along the last axis). The tensors must be broadcast-compatible along other dimensions.
 
 !!! example
 
@@ -1661,6 +1661,20 @@ This function returns a tensor that is the result of horizontally stacking the t
 
     ```turtle
     "{\"type\": \"float32\", \"shape\": [2, 4], \"data\": [1, 2, 5, 6, 3, 4, 7, 8]}"^^tensor:DataTensor
+    ```
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:hstack("{\"type\": \"float32\", \"shape\": [2], \"data\": [1, 2]}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [2], \"data\": [3, 4],}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [2], \"data\": [5, 6],}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [2], \"data\": [7, 8],}"^^tensor:DataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"float32\", \"shape\": [2, 8], \"data\": [1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor
     ```
 
 ??? note "ONNX definition of this function"
@@ -1692,9 +1706,9 @@ This function returns a tensor that is the result of horizontally stacking the t
 
 #### `tensor:vstack`
 
-[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:vstack** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_)
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:vstack** ([tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_2_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_3_, ...)
 
-This function returns a tensor that is the result of vertically stacking the two input tensors (i.e., concatenation along the first axis). The tensors must be broadcast-compatible along other dimensions.
+This function returns a tensor that is the result of vertically stacking the input tensors (i.e., concatenation along the first axis). The tensors must be broadcast-compatible along other dimensions.
 
 !!! example
 
@@ -1708,6 +1722,20 @@ This function returns a tensor that is the result of vertically stacking the two
 
     ```turtle
     "{\"type\": \"float32\", \"shape\": [4, 2], \"data\": [1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor
+    ```
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:vstack("{\"type\": \"float32\", \"shape\": [2], \"data\": [1, 2]}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [2], \"data\": [3, 4],}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [2], \"data\": [5, 6],}"^^tensor:DataTensor, "{\"type\": \"float32\", \"shape\": [2], \"data\": [7, 8],}"^^tensor:DataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"float32\", \"shape\": [8], \"data\": [1, 2, 3, 4, 5, 6, 7, 8]}"^^tensor:DataTensor
     ```
 
 ??? note "ONNX definition of this function"
@@ -2823,7 +2851,20 @@ This function returns a 1-dimensional tensor of type `int64` containing the shap
 
 [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:arange** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _start_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _stop_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _step_)
 
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:arange** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [tensor:Range](https://w3id.org/rdf-tensor/vocab#Range) _range_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _step_)
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:arange** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [tensor:Range](https://w3id.org/rdf-tensor/vocab#Range) _range_)
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:arange** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [xsd:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _dt_, [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) _step_)
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:arange** ([xsd:string](http://www.w3.org/2001/XMLSchema#string) _type_, [xsd:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _dt_)
+
 This function creates a 1D tensor containing evenly spaced values within the half-open interval [start, stop). Similar to NumPy's `np.arange`. The first argument is the data type (e.g., "int32", "float64"), followed by start, stop, and optionally step (default 1). The resulting tensor has shape [N], where N is the number of values in the range.
+
+The function supports multiple overloads for specifying the range:
+- Using `start`, `stop`, and optional `step` as integers.
+- Using a `Range` object to specify the start and stop values.
+- Using a `DataTensor` of shape [2] to specify the start and stop values, where the first element is the start and the second element is the stop.
 
 !!! example
 
@@ -2865,6 +2906,34 @@ This function creates a 1D tensor containing evenly spaced values within the hal
 
     ```turtle
     "{\"type\": \"int32\", \"shape\": [5], \"data\": [5, 4, 3, 2, 1]}"^^tensor:DataTensor
+    ```
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:arange("int32", tensor:range(0, 5))
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [5], \"data\": [0, 1, 2, 3, 4]}"^^tensor:DataTensor
+    ```
+
+!!! example
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:arange("int32", "{\"type\": \"int64\", \"shape\": [2], \"data\": [0, 5]}"^^tensor:DataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [5], \"data\": [0, 1, 2, 3, 4]}"^^tensor:DataTensor
     ```
 
 ---
