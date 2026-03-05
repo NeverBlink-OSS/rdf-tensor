@@ -249,3 +249,8 @@ tensor:quantileInterpolate a sd:Function ;
     rdfs:label "Quantile Interpolation" ;
     rdfs:comment "Computes the quantiles of a tensor along a specified axis using linear interpolation."@en ;
     dc:creator "Nikita Kozlov" .
+
+tensor:sort a sd:Function ;
+    rdfs:label "Sort Tensor" ;
+    rdfs:comment "Sorts the elements of the input tensor along the specified axis in the given direction."@en ;
+    dc:creator "Nikita Kozlov" .
