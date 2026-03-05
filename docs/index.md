@@ -788,6 +788,74 @@ The result of the function is a tensor of the same shape as the input tensor, wh
 
 ---
 
+#### `tensor:sort`
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:sort** (xsd:string _direction_, xsd:integer _axis_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_)
+
+The result of the function is a tensor of the same shape as the input tensor, where the elements are sorted along the specified axis in the given direction. The `direction` argument can be either `asc` for ascending order or `desc` for descending order. The `axis` argument specifies the axis along which to sort, where `0` is the first axis, `1` is the second axis, and so on, and negative values count from the last axis backwards (e.g., `-1` is the last axis).
+
+!!! example "Example 1"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:sort("asc", 0, "{\"type\": \"int32\", \"shape\": [2, 3], \"data\": [2, 3, 1, 5, 6, 4]}"^^tensor:DataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [2, 3], \"data\": [3, 2, 1, 6, 5, 4]}"^^tensor:DataTensor
+    ```
+
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression
+
+    ```sparql
+    tensor:sort("asc", 2, "{\"type\": \"float64\", \"shape\": [2, 2, 3], \"data\": [3, 1, 2, 6, 4, 5, 9, 7, 8, 12, 10, 11]}"^^tensor:DataTensor)
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"float64\", \"shape\": [2, 2, 3], \"data\": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}"^^tensor:DataTensor
+    ```
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `output1`: A tensor of the same shape as `input1` and the same <input_type> type, where the elements are sorted along the specified axis in the given direction.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `largest_value`: 1 if the sorting direction is `desc`, and 0 if the sorting direction is `asc`.
+        - `axis_value`: The value of the `axis` argument, which specifies the axis along which to sort.
+        - `axis_size_value`: The size of the specified axis, which can be determined from the shape of the input tensor.
+
+        Model definition dispatch:
+
+        - For int16 tensors, the implementation is expected to use a different model definition that handles the ONNX limitation of not supporting int16 reduction operations.
+
+    === "Model definition for int16 tensors"
+
+        ```pbtxt title="tensor_sort_int16_model.pbtxt"
+        {% include "./onnx/tensor_sort_int16_model.pbtxt" %}
+        ```
+
+    === "Model definition for non-int16 tensors"
+
+        ```pbtxt title="tensor_sort_model.pbtxt"
+        {% include "./onnx/tensor_sort_model.pbtxt" %}
+        ```
+
+---
+
 ### 4.2 Operators
 
 When using the binary operators, the input tensors are broadcasted to a common shape. The broadcasting rules are the same as in **[ONNX Broadcasting](https://onnx.ai/onnx/repo-docs/Broadcasting.html)**. After broadcasting, the binary operator is applied element-wise to the input tensors.
