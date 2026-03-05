@@ -1,0 +1,73 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor sorting function for int16 tensors"
+graph {
+  node {
+    input: "input1"
+    output: "cast_input"
+    op_type: "Cast"
+    attribute {
+      name: "to"
+      i: 6
+      type: INT
+    }
+  }
+  node {
+    input: "cast_input"
+    input: "k_tensor"
+    output: "values"
+    output: "indices"
+    op_type: "TopK"
+    attribute {
+      name: "axis"
+      i: <axis_value>
+      type: INT
+    }
+    attribute {
+      name: "largest"
+      i: <largest_value>
+      type: INT
+    }
+    attribute {
+      name: "sorted"
+      i: 1
+      type: INT
+    }
+  }
+  node {
+    input: "values"
+    output: "output1"
+    op_type: "Cast"
+    attribute {
+      name: "to"
+      i: 5
+      type: INT
+    }
+  }
+  initializer {
+    dims: 1
+    data_type: 7
+    int64_data: <axis_size_value>
+    name: "k_tensor"
+  }
+  input {
+    name: "input1"
+    type {
+      tensor_type {
+        elem_type: 5
+      }
+    }
+  }
+  output {
+    name: "output1"
+    type {
+      tensor_type {
+        elem_type: 5
+      }
+    }
+  }
+}
+opset_import {
+  version: 23
+}

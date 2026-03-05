@@ -1,27 +1,35 @@
 ir_version: 11
 domain: "eu.neverblink.rdf"
 model_version: 1
-doc_string: "RDF tensor average function for full reduction"
+doc_string: "RDF tensor sorting function"
 graph {
   node {
     input: "input1"
-    output: "cast_input"
-    op_type: "Cast"
+    input: "k_tensor"
+    output: "output1"
+    output: "indices"
+    op_type: "TopK"
     attribute {
-      name: "to"
-      i: 11
+      name: "axis"
+      i: <axis_value>
       type: INT
     }
-  }
-  node {
-    input: "cast_input"
-    output: "output1"
-    op_type: "ReduceMean"
     attribute {
-      name: "keepdims"
+      name: "largest"
+      i: <largest_value>
+      type: INT
+    }
+    attribute {
+      name: "sorted"
       i: 1
       type: INT
     }
+  }
+  initializer {
+    dims: 1
+    data_type: 7
+    int64_data: <axis_size_value>
+    name: "k_tensor"
   }
   input {
     name: "input1"
@@ -35,7 +43,7 @@ graph {
     name: "output1"
     type {
       tensor_type {
-        elem_type: 11
+        elem_type: <input_type>
       }
     }
   }
