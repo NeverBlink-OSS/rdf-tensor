@@ -24,6 +24,27 @@ graph {
     }
   }
   node {
+    input: "input3"
+    output: "cast_input3"
+    op_type: "Cast"
+    attribute {
+      name: "to"
+      i: <resolved_type>
+      type: INT
+    }
+  }
+  ...
+  node {
+    input: "inputN"
+    output: "cast_inputN"
+    op_type: "Cast"
+    attribute {
+      name: "to"
+      i: <resolved_type>
+      type: INT
+    }
+  }
+  node {
     input: "cast_input1"
     input: "unsqueeze_axes"
     output: "unsqueezed_input1"
@@ -36,8 +57,24 @@ graph {
     op_type: "Unsqueeze"
   }
   node {
+    input: "cast_input3"
+    input: "unsqueeze_axes"
+    output: "unsqueezed_input3"
+    op_type: "Unsqueeze"
+  }
+  ...
+  node {
+    input: "cast_inputN"
+    input: "unsqueeze_axes"
+    output: "unsqueezed_inputN"
+    op_type: "Unsqueeze"
+  }
+  node {
     input: "unsqueezed_input1"
     input: "unsqueezed_input2"
+    input: "unsqueezed_input3"
+    ...
+    input: "unsqueezed_inputN"
     output: "output1"
     op_type: "Concat"
     attribute {
@@ -65,6 +102,23 @@ graph {
     type {
       tensor_type {
         elem_type: <input2_type>
+      }
+    }
+  }
+  input {
+    name: "input3"
+    type {
+      tensor_type {
+        elem_type: <input3_type>
+      }
+    }
+  }
+  ...
+  input {
+    name: "inputN"
+    type {
+      tensor_type {
+        elem_type: <inputN_type>
       }
     }
   }

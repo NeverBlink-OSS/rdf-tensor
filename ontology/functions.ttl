@@ -127,17 +127,17 @@ tensor:index a sd:Function ;
 
 tensor:concat a sd:Function ;
     rdfs:label "Concatenate Tensors" ;
-    rdfs:comment "Concatenates two tensors optionally along a specified dimension."@en ;
+    rdfs:comment "Concatenates multiple tensors optionally along a specified dimension."@en ;
     dc:creator "Piotr Marciniak" .
 
 tensor:hstack a sd:Function ;
     rdfs:label "Horizontal Stack" ;
-    rdfs:comment "Stacks two tensors horizontally (along axis 1)."@en ;
+    rdfs:comment "Stacks multiple tensors horizontally (along axis 1)."@en ;
     dc:creator "Piotr Marciniak" .
 
 tensor:vstack a sd:Function ;
     rdfs:label "Vertical Stack" ;
-    rdfs:comment "Stacks two tensors vertically (along axis 0)."@en ;
+    rdfs:comment "Stacks multiple tensors vertically (along axis 0)."@en ;
     dc:creator "Piotr Marciniak" .
 
 tensor:all a sd:Function ;
