@@ -4,9 +4,11 @@
 _Date: {{ git_revision_date_localized }}_
 
 **Editors:** <br>
-&nbsp;Piotr Marciniak (Warsaw University of Technology)<br>
-&nbsp;[Piotr Sowiński](https://ostrzyciel.eu) ([NeverBlink](https://neverblink.eu))<br>
-&nbsp;[Nikita Kozlov](https://nik.kot.tools) ([NeverBlink](https://neverblink.eu))
+&nbsp;[Nikita Kozlov](https://nik.kot.tools) ([NeverBlink](https://neverblink.eu))<br>
+&nbsp;[Piotr Sowiński](https://ostrzyciel.eu) ([NeverBlink](https://neverblink.eu))
+
+**Former editors:** <br>
+&nbsp;Piotr Marciniak (Warsaw University of Technology)
 
 ---
 
