@@ -254,3 +254,13 @@ tensor:sort a sd:Function ;
     rdfs:label "Sort Tensor" ;
     rdfs:comment "Sorts the elements of the input tensor along the specified axis in the given direction."@en ;
     dc:creator "Nikita Kozlov" .
+
+tensor:resize a sd:Function ;
+    rdfs:label "Resize Tensor" ;
+    rdfs:comment "Resizes a tensor to a new shape, interpolating values as necessary."@en ;
+    dc:creator "Nikita Kozlov" .
+
+tensor:resizeByScales a sd:Function ;
+    rdfs:label "Resize Tensor by Scales" ;
+    rdfs:comment "Resizes a tensor by specified scale factors for each dimension."@en ;
+    dc:creator "Nikita Kozlov" .
