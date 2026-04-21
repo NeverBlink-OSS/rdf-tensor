@@ -1,0 +1,65 @@
+ir_version: 11
+domain: "eu.neverblink.rdf"
+model_version: 1
+doc_string: "RDF tensor resize by scales function"
+graph {
+  node {
+    input: "input1"
+    input: ""
+    input: "input2"
+    output: "output1"
+    op_type: "Resize"
+    attribute {
+      name: "mode"
+      s: <mode_value>
+      type: STRING
+    }
+    attribute {
+      name: "coordinate_transformation_mode"
+      s: <coord_transform_mode_value>
+      type: STRING
+    }
+    attribute {
+      name: "nearest_mode"
+      s: <nearest_mode_value>
+      type: STRING
+    }
+    attribute {
+      name: "cubic_coeff_a"
+      f: <cubic_coeff_a_value>
+      type: FLOAT
+    }
+    attribute {
+      name: "antialias"
+      i: <antialias_value>
+      type: INT
+    }
+  }
+  input {
+    name: "input1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+  input {
+    name: "input2"
+    type {
+      tensor_type {
+        elem_type: 1
+      }
+    }
+  }
+  output {
+    name: "output1"
+    type {
+      tensor_type {
+        elem_type: <input_type>
+      }
+    }
+  }
+}
+opset_import {
+  version: 23
+}

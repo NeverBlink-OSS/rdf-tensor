@@ -858,6 +858,213 @@ The result of the function is a tensor of the same shape as the input tensor, wh
 
 ---
 
+#### `tensor:resize`
+
+??? info "Resizing functions"
+
+    The functions starting with `tensor:resize` resize a tensor to a different shape by interpolating values. These functions both accept a common set of optional configuration arguments dispatched left-to-right by XSD type and (for mode-dependent arguments) by the value of `mode`:
+
+    1. If the next argument is `xsd:string`, it is taken as the interpolation _mode_. Default: `"linear"`.
+    2. If the next argument is `xsd:string`, it is taken as the _coordinateTransformationMode_. Default: `"half_pixel"`.
+    3. If _mode_ is `"nearest"` and the next argument is `xsd:string`, it is taken as the _nearestMode_. Default: `"round_prefer_floor"`. Consumed only when _mode_ is `"nearest"`.
+    4. If _mode_ is `"cubic"` and the next argument is `xsd:double`, it is taken as _cubicCoeffA_. Default: `-0.75`. Consumed only when _mode_ is `"cubic"`.
+    5. If the next argument is `xsd:boolean`, it is taken as the _antialias_ flag. Default: `false`.
+
+    ??? info "Validation errors for resizing functions"
+
+        Implementations must raise a query-evaluation error if:
+
+        - _antialias_ is `true` and _mode_ is `"nearest"`.
+        - _coordinateTransformationMode_ is `"tf_crop_and_resize"`. This mode is incompatible with the semantics of these functions and is not supported.
+        - _nearestMode_ is provided but _mode_ is not `"nearest"`.
+        - _cubicCoeffA_ is provided but _mode_ is not `"cubic"`.
+        - The number of sizes/scales does not equal the rank of the input tensor.
+        - Any size is less than or equal to `0`, or any scale is less than or equal to `0`.
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:resize** ([xsd:string _mode_], [xsd:string _coordinateTransformationMode_], [xsd:string _nearestMode_], [xsd:double _cubicCoeffA_], [xsd:boolean _antialias_], [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _sizes_)
+
+The result of the function is a tensor resized to the exact shape given by _sizes_, interpolating elements of _term_1_ according to _mode_ and _coordinateTransformationMode_. The _sizes_ tensor must be a 1-D `int64` tensor whose length equals the rank of _term_1_.
+
+Admissible values for the configuration arguments:
+
+- _mode_: `"nearest"`, `"linear"` (default), or `"cubic"`. The `"linear"` mode performs N-linear interpolation (e.g., bilinear for 2-D); `"cubic"` performs N-cubic.
+- _coordinateTransformationMode_: `"half_pixel"` (default), `"half_pixel_symmetric"`, `"pytorch_half_pixel"`, `"align_corners"`, or `"asymmetric"`.
+- _nearestMode_: `"round_prefer_floor"` (default), `"round_prefer_ceil"`, `"floor"`, or `"ceil"`.
+- _cubicCoeffA_: any `xsd:double`. Common values are `-0.5` (TensorFlow-compatible) and `-0.75` (PyTorch-compatible, default).
+- _antialias_: when `true`, the linear and cubic kernels are stretched by `max(1, 1/scale)` per dimension being downscaled. Ignored by `"nearest"`.
+
+!!! example "Example 1"
+
+    Evaluating the SPARQL expression (nearest-neighbour 2x upscaling)
+
+    ```sparql
+    tensor:resize(
+        "nearest", "asymmetric",
+        "{\"type\":\"int32\",\"shape\":[1,1,2,2],\"data\":[1, 2, 3, 4]}"^^tensor:DataTensor,
+        "{\"type\":\"int64\",\"shape\":[4],\"data\":[1, 1, 4, 4]}"^^tensor:DataTensor
+    )
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [1, 1, 4, 4], \"data\": [1, 1, 2, 2, 1, 1, 2, 2, 3, 3, 4, 4, 3, 3, 4, 4]}"^^tensor:DataTensor
+    ```
+
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression (nearest-neighbour 0.5x downscaling)
+
+    ```sparql
+    tensor:resize(
+        "nearest", "asymmetric",
+        "{\"type\":\"int32\",\"shape\":[1,1,4,4],\"data\":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}"^^tensor:DataTensor,
+        "{\"type\":\"int64\",\"shape\":[4],\"data\":[1, 1, 2, 2]}"^^tensor:DataTensor
+    )
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [1, 1, 2, 2], \"data\": [1, 3, 9, 11]}"^^tensor:DataTensor
+    ```
+
+!!! example "Example 3"
+
+    Evaluating the SPARQL expression (bilinear upscaling, all config defaults)
+
+    ```sparql
+    tensor:resize(
+        "{\"type\":\"float32\",\"shape\":[1,1,2,2],\"data\":[1, 2, 3, 4]}"^^tensor:DataTensor,
+        "{\"type\":\"int64\",\"shape\":[4],\"data\":[1, 1, 4, 4]}"^^tensor:DataTensor
+    )
+    ```
+
+    returns a `[1, 1, 4, 4]` `float32` tensor bilinearly interpolated from the input.
+
+!!! example "Example 4"
+
+    Evaluating the SPARQL expression (anti-aliased bicubic downscaling, TensorFlow-compatible coefficient)
+
+    ```sparql
+    tensor:resize(
+        "cubic", "half_pixel", -0.5, true,
+        "{\"type\":\"float32\",\"shape\":[1,1,8,8],\"data\":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64]}"^^tensor:DataTensor,
+        "{\"type\":\"int64\",\"shape\":[4],\"data\":[1, 1, 3, 3]}"^^tensor:DataTensor
+    )
+    ```
+
+    returns a `[1, 1, 3, 3]` `float32` tensor produced by bicubic downsampling with the `a = -0.5` kernel and an antialiasing prefilter.
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A 1-D tensor of INT64 type, with length equal to the rank of `input1`, specifying the target size of each dimension.
+        - `output1`: A tensor of <input_type> type with shape given by `input2`.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `mode_value`: The resolved value of the _mode_ argument, or `"linear"` if omitted.
+        - `coord_transform_mode_value`: The resolved value of the _coordinateTransformationMode_ argument, or `"half_pixel"` if omitted.
+        - `nearest_mode_value`: The resolved value of the _nearestMode_ argument, or `"round_prefer_floor"` if omitted.
+        - `cubic_coeff_a_value`: The resolved value of _cubicCoeffA_ as FLOAT, or `-0.75` if omitted.
+        - `antialias_value`: `1` if _antialias_ is `true`, `0` otherwise (default).
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_resize_model.pbtxt"
+        {% include "./onnx/tensor_resize_model.pbtxt" %}
+        ```
+
+---
+
+#### `tensor:resizeByScales`
+
+[tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) **tensor:resizeByScales** ([xsd:string _mode_], [xsd:string _coordinateTransformationMode_], [xsd:string _nearestMode_], [xsd:double _cubicCoeffA_], [xsd:boolean _antialias_], [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _term_1_, [tensor:DataTensor](https://w3id.org/rdf-tensor/vocab#DataTensor) _scales_)
+
+The result of the function is a tensor where each dimension is scaled by the corresponding factor in _scales_. The output size on dimension _i_ is `floor(input_size[i] * scales[i])`. The _scales_ tensor must be a 1-D floating-point tensor (`float16`, `float32`, or `float64`) whose length equals the rank of _term_1_, and each value must be greater than `0`. A scale of `1.0` leaves that dimension unchanged.
+
+The configuration arguments _mode_, _coordinateTransformationMode_, _nearestMode_, _cubicCoeffA_, and _antialias_ have identical semantics to [`tensor:resize`](#tensorresize).
+
+!!! example "Example 1"
+
+    Evaluating the SPARQL expression (2× bilinear upscaling on H and W with all defaults)
+ 
+    ```sparql
+    tensor:resizeByScales(
+        "{\"type\":\"float32\",\"shape\":[1,1,2,2],\"data\":[1, 2, 3, 4]}"^^tensor:DataTensor,
+        "{\"type\":\"float32\",\"shape\":[4],\"data\":[1.0, 1.0, 2.0, 2.0]}"^^tensor:DataTensor
+    )
+    ```
+
+    returns a `[1, 1, 4, 4]` `float32` tensor.
+
+!!! example "Example 2"
+
+    Evaluating the SPARQL expression (nearest-neighbour 3× upscaling)
+
+    ```sparql
+    tensor:resizeByScales(
+        "nearest", "asymmetric", "floor",
+        "{\"type\":\"int32\",\"shape\":[1,1,2,2],\"data\":[1, 2, 3, 4]}"^^tensor:DataTensor,
+        "{\"type\":\"float32\",\"shape\":[4],\"data\":[1.0, 1.0, 3.0, 3.0]}"^^tensor:DataTensor
+    )
+    ```
+
+    returns
+
+    ```turtle
+    "{\"type\": \"int32\", \"shape\": [1, 1, 6, 6], \"data\": [1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 3, 3, 3, 4, 4, 4, 3, 3, 3, 4, 4, 4]}"^^tensor:DataTensor
+    ```
+
+!!! example "Example 3"
+
+    Evaluating the SPARQL expression (anti-aliased bicubic downscaling with PyTorch coefficient)
+
+    ```sparql
+    tensor:resizeByScales(
+        "cubic", "half_pixel", -0.75, true,
+        "{\"type\":\"float32\",\"shape\":[1,1,8,8],\"data\":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64]}"^^tensor:DataTensor,
+        "{\"type\":\"float32\",\"shape\":[4],\"data\":[1.0, 1.0, 0.5, 0.5]}"^^tensor:DataTensor
+    )
+    ```
+
+    returns a `[1, 1, 4, 4]` `float32` tensor produced by anti-aliased bicubic downscaling.
+
+??? note "ONNX definition of this function"
+
+    === "Model description"
+
+        Model inputs and outputs:
+
+        - `input1`: A tensor of any shape and <input_type> type.
+        - `input2`: A 1-D tensor of FLOAT type, with length equal to the rank of `input1`, specifying the scale factor for each dimension.
+        - `output1`: A tensor of <input_type> type with shape `floor(input_shape * input2)` per dimension.
+
+        Model variables:
+
+        - `input_type`: The data type of the input tensor, which can be any supported type.
+        - `mode_value`: The resolved value of the _mode_ argument, or `"linear"` if omitted.
+        - `coord_transform_mode_value`: The resolved value of the _coordinateTransformationMode_ argument, or `"half_pixel"` if omitted.
+        - `nearest_mode_value`: The resolved value of the _nearestMode_ argument, or `"round_prefer_floor"` if omitted.
+        - `cubic_coeff_a_value`: The resolved value of _cubicCoeffA_ as FLOAT, or `-0.75` if omitted.
+        - `antialias_value`: `1` if _antialias_ is `true`, `0` otherwise (default).
+
+        Implementations must cast the _scales_ input tensor to FLOAT before passing it to the ONNX `Resize` operator, as required by the operator's type constraints.
+
+    === "Model definition"
+
+        ```pbtxt title="tensor_resize_by_scales_model.pbtxt"
+        {% include "./onnx/tensor_resize_by_scales_model.pbtxt" %}
+        ```
+
+---
+
 ### 4.2 Operators
 
 When using the binary operators, the input tensors are broadcasted to a common shape. The broadcasting rules are the same as in **[ONNX Broadcasting](https://onnx.ai/onnx/repo-docs/Broadcasting.html)**. After broadcasting, the binary operator is applied element-wise to the input tensors.
