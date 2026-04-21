@@ -7,7 +7,7 @@ graph {
     input: "input1"
     input: ""
     input: ""
-    input: "sizes"
+    input: "input2"
     output: "output1"
     op_type: "Resize"
     attribute {
@@ -41,20 +41,19 @@ graph {
       type: STRING
     }
   }
-  initializer {
-    dims: <sizes_length>
-    data_type: 7
-    int64_data: <sizes_values[0]>
-    int64_data: <sizes_values[1]>
-    ...
-    int64_data: <sizes_values[sizes_length-1]>
-    name: "sizes"
-  }
   input {
     name: "input1"
     type {
       tensor_type {
         elem_type: <input_type>
+      }
+    }
+  }
+  input {
+    name: "input2"
+    type {
+      tensor_type {
+        elem_type: 7
       }
     }
   }

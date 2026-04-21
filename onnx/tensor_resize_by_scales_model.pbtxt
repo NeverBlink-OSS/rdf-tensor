@@ -6,7 +6,7 @@ graph {
   node {
     input: "input1"
     input: ""
-    input: "scales"
+    input: "input2"
     output: "output1"
     op_type: "Resize"
     attribute {
@@ -35,20 +35,19 @@ graph {
       type: INT
     }
   }
-  initializer {
-    dims: <scales_length>
-    data_type: 1
-    float_data: <scales_values[0]>
-    float_data: <scales_values[1]>
-    ...
-    float_data: <scales_values[scales_length-1]>
-    name: "scales"
-  }
   input {
     name: "input1"
     type {
       tensor_type {
         elem_type: <input_type>
+      }
+    }
+  }
+  input {
+    name: "input2"
+    type {
+      tensor_type {
+        elem_type: 1
       }
     }
   }
