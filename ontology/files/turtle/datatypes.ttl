@@ -1,0 +1,14 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX tensor: <https://w3id.org/rdf-tensor/vocab#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+rdfs:Datatype  rdf:type  rdfs:Class .
+
+tensor:DataTensor  rdf:type  rdfs:Datatype;
+        rdfs:label    "Data Tensor";
+        rdfs:comment  "The datatype for a tensor representing numeric or boolean data." .
+
+tensor:Range  rdf:type  rdfs:Datatype;
+        rdfs:label    "Range";
+        rdfs:comment  "The datatype for a range of numeric values." .
