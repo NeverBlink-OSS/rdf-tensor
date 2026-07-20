@@ -24,14 +24,19 @@ jobs:
   
       - uses: Jelly-RDF/setup-cli@v1
 
+      - name: Install linkml-scala
+        run: |
+          . <(curl -sSfL https://raw.githubusercontent.com/NeverBlink-OSS/linkml-scala/refs/heads/main/cli/install.sh)
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
       - name: Install dependencies
         run: pip install -r requirements.txt
 
       - name: 'Convert ontologies, prepare for publishing'
         run: |
           bin/build_ontology.sh
-          rm docs/ontology/files/*.ttl
-          cp publish/*.ttl docs/ontology/files/
+          rm docs/ontology/files/turtle/*.ttl
+          cp publish/*.ttl docs/ontology/files/turtle/
 
       - name: Deploy site
         run: |

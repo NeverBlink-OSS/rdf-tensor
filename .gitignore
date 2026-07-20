@@ -209,3 +209,6 @@ __marimo__/
 # RDF-tensor
 *.code-workspace
 .idea/
+
+# Generated ontology artifacts
+/publish/

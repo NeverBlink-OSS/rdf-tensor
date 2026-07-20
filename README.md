@@ -22,19 +22,37 @@ This is an extension to RDF and SPARQL that introduces 2 new datatypes, dozens o
 
 **[See the website](https://w3id.org/rdf-tensor) for more details.**
 
+## Editing the ontology
+
+The vocabulary (datatypes, functions, aggregates) is authored in [LinkML](https://linkml.io/) YAML files in the `ontology/` directory. The published RDF artifacts (RDFS in Turtle, N-Triples, JSON-LD, RDF/XML, and [Jelly](https://w3id.org/jelly)) are generated from these sources.
+
+To regenerate the published files locally you need two tools in your `PATH`:
+
+- [`linkml-scala`](https://github.com/NeverBlink-OSS/linkml-scala) – generates RDFS from the LinkML sources.
+- [`jelly-cli`](https://github.com/Jelly-RDF/cli) – converts between RDF serializations.
+
+Then run, from the root of the repository:
+
+```bash
+bin/build_ontology.sh
+```
+
+The generated files are written to the `publish/` directory. CI runs the same script.
+
 ## Editing the documentation
 
 1. Clone the repository: `git clone git@github.com:NeverBlink-OSS/rdf-tensor.git`
 2. Create a new Python virtual environment using your favorite tool (e.g., [`venv`](https://docs.python.org/3/library/venv.html)).
 3. Install the dependencies: `pip install -r requirements.txt`
-4. Compile the docs and host them locally for testing: `mkdocs serve`
-5. Whenever you make changes to the documentation pages (they reside in the `docs` directory), the docs will be automatically recompiled.
+4. Generate the ontology files so the docs can embed them: `bin/build_ontology.sh` (see above).
+5. Compile the docs and host them locally for testing: `mkdocs serve`
+6. Whenever you make changes to the documentation pages (they reside in the `docs` directory), the docs will be automatically recompiled.
 
 ## Authors, licensing
 
-The original SPARQL extension and implementation for Jena were done by **[Piotr Marciniak](https://github.com/cinekele)** – see the [original repository](https://github.com/RDF-tensor/jena-datatensor).
+This repository is maintained and developed by **[NeverBlink](https://neverblink.eu)**.
 
-The work is continued in this repository under the stewardship of [NeverBlink](https://neverblink.eu). The current maintainers are **[Piotr Sowiński (Ostrzyciel)](https://github.com/Ostrzyciel)** and **[Nik Kozlov](https://github.com/nk2ishere)**.
+The original SPARQL extension and implementation for Jena were done by **[Piotr Marciniak](https://github.com/cinekele)** – see the [original repository](https://github.com/RDF-tensor/jena-datatensor).
 
 This repository is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 

@@ -22,14 +22,27 @@ jobs:
   
       - uses: Jelly-RDF/setup-cli@v1
 
+      # We can't use the linkml-scala action because it doesn't support Turtle output...
+      # which breaks our pretty prefixes.
+      - name: Install linkml-scala
+        run: |
+          . <(curl -sSfL https://raw.githubusercontent.com/NeverBlink-OSS/linkml-scala/refs/heads/main/cli/install.sh)
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: 'Validate ontologies'
+        run: |
+          for f in ontology/*.yaml; do
+            linkml-scala validate "$f"
+          done
 
       - name: 'Convert ontologies, prepare for publishing'
         run: |
           bin/build_ontology.sh
-          rm docs/ontology/files/*.ttl
-          cp publish/*.ttl docs/ontology/files/
+          rm docs/ontology/files/turtle/*.ttl
+          cp publish/*.ttl docs/ontology/files/turtle/
           ls -la publish/*
 
       - name: Compile docs

@@ -11,8 +11,18 @@
 | **JSON-LD** | [`https://w3id.org/rdf-tensor/datatypes.jsonld`](https://w3id.org/rdf-tensor/datatypes.jsonld) |
 | **RDF/XML** | [`https://w3id.org/rdf-tensor/datatypes.rdf`](https://w3id.org/rdf-tensor/datatypes.rdf) |
 
-## Ontology source
+## Ontology source (LinkML)
+
+[Source file](https://github.com/NeverBlink-OSS/rdf-tensor/blob/main/ontology/datatypes.yaml).
+
+This LinkML source is converted to RDFS using [LinkML-Scala](https://github.com/NeverBlink-OSS/linkml-scala).
+
+```yaml
+{% include "./files/linkml/datatypes.yaml" %}
+```
+
+## Ontology source (Turtle)
 
 ```ttl
-{% include "./files/datatypes.ttl" %}
+{% include "./files/turtle/datatypes.ttl" %}
 ```
