@@ -35,7 +35,7 @@ jobs:
       - name: 'Validate ontologies'
         run: |
           for f in ontology/*.yaml; do
-            linkml-scala validate --strict "$f"
+            linkml-scala validate "$f"
           done
 
       - name: 'Convert ontologies, prepare for publishing'

@@ -15,8 +15,8 @@ default_range: string
 license: https://www.apache.org/licenses/LICENSE-2.0
 contributors:
   - https://github.com/cinekele
-  - https://ostrzyciel.eu
-  - https://nik.kot.tools
+  - https://github.com/Ostrzyciel
+  - https://github.com/nk2ishere
 emit_prefixes:
   - tensor
   - sd
