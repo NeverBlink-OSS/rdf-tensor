@@ -1,0 +1,37 @@
+id: https://w3id.org/rdf-tensor/datatypes
+name: rdf-tensor-datatypes
+title: RDF-tensor datatypes
+description: RDF datatypes for representing data tensors as literals in RDF.
+imports:
+  - linkml:types
+prefixes:
+  tensor: https://w3id.org/rdf-tensor/vocab#
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  sd: http://www.w3.org/ns/sparql-service-description#
+  dcterms: http://purl.org/dc/terms/
+  linkml: https://w3id.org/linkml/
+default_prefix: tensor
+default_range: string
+license: https://www.apache.org/licenses/LICENSE-2.0
+contributors:
+  - https://github.com/cinekele
+  - https://ostrzyciel.eu
+  - https://nik.kot.tools
+emit_prefixes:
+  - tensor
+enums:
+  DataTensorDatatypes:
+    enum_uri: rdfs:Datatype
+    permissible_values:
+      "NumericDataTensor":
+        meaning: tensor:NumericDataTensor
+        title: "Numeric Data Tensor"
+        description: "The datatype for a tensor representing numeric data."
+        created_by: https://github.com/cinekele
+        created_on: "2024-07-28"
+      "BooleanDataTensor":
+        meaning: tensor:BooleanDataTensor
+        title: "Boolean Data Tensor"
+        description: "The datatype for a tensor representing boolean data."
+        created_by: https://github.com/cinekele
+        created_on: "2024-07-28"

@@ -11,8 +11,18 @@
 | **JSON-LD** | [`https://w3id.org/rdf-tensor/aggregates.jsonld`](https://w3id.org/rdf-tensor/aggregates.jsonld) |
 | **RDF/XML** | [`https://w3id.org/rdf-tensor/aggregates.rdf`](https://w3id.org/rdf-tensor/aggregates.rdf) |
 
-## Ontology source
+## Ontology source (LinkML)
+
+[Source file](https://github.com/NeverBlink-OSS/rdf-tensor/blob/main/ontology/aggregates.yaml).
+
+This LinkML source is converted to RDFS using [LinkML-Scala](https://github.com/NeverBlink-OSS/linkml-scala).
+
+```yaml
+{% include "./files/linkml/aggregates.yaml" %}
+```
+
+## Ontology source (Turtle)
 
 ```ttl
-{% include "./files/aggregates.ttl" %}
+{% include "./files/turtle/aggregates.ttl" %}
 ```

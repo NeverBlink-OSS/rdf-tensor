@@ -1,0 +1,241 @@
+id: https://w3id.org/rdf-tensor/functions
+name: rdf-tensor-functions
+title: RDF-tensor SPARQL functions
+description: SPARQL functions for processing data tensors.
+imports:
+  - linkml:types
+prefixes:
+  tensor: https://w3id.org/rdf-tensor/vocab#
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  sd: http://www.w3.org/ns/sparql-service-description#
+  dcterms: http://purl.org/dc/terms/
+  linkml: https://w3id.org/linkml/
+default_prefix: tensor
+default_range: string
+license: https://www.apache.org/licenses/LICENSE-2.0
+contributors:
+  - https://github.com/cinekele
+  - https://ostrzyciel.eu
+  - https://nik.kot.tools
+emit_prefixes:
+  - tensor
+  - sd
+enums:
+  TensorFunctions:
+    enum_uri: sd:Function
+    permissible_values:
+      "cos":
+        meaning: tensor:cos
+        title: "Cosine"
+        description: "Computes the cosine of each element in the numerical tensor."
+        created_by: https://github.com/cinekele
+      "exp":
+        meaning: tensor:exp
+        title: "Exponential"
+        description: "Applies the exponential function to each element."
+        created_by: https://github.com/cinekele
+      "log":
+        meaning: tensor:log
+        title: "Natural Logarithm"
+        description: "Applies the natural logarithm to each element."
+        created_by: https://github.com/cinekele
+      "logp":
+        meaning: tensor:logp
+        title: "Logarithm with Base p"
+        description: "Applies logarithm with specified base p."
+        created_by: https://github.com/cinekele
+      "poly":
+        meaning: tensor:poly
+        title: "Polynomial Power"
+        description: "Raises each element to a specified power."
+        created_by: https://github.com/cinekele
+      "scale":
+        meaning: tensor:scale
+        title: "Scale"
+        description: "Scales tensor elements by a constant."
+        created_by: https://github.com/cinekele
+      "sin":
+        meaning: tensor:sin
+        title: "Sine"
+        description: "Computes the sine of each element in the numerical tensor."
+        created_by: https://github.com/cinekele
+      "abs":
+        meaning: tensor:abs
+        title: "Absolute Value"
+        description: "Applies absolute value to each element."
+        created_by: https://github.com/cinekele
+      "cast":
+        meaning: tensor:cast
+        title: "Type Cast"
+        description: "Casts tensor elements to a specified data type."
+        created_by: https://github.com/cinekele
+      "reshape":
+        meaning: tensor:reshape
+        title: "Reshape Tensor"
+        description: "Reshapes a tensor to a new shape."
+        created_by: https://nik.kot.tools
+      "not":
+        meaning: tensor:not
+        title: "Logical NOT"
+        description: "Computes the logical negation of each boolean tensor element."
+        created_by: https://github.com/cinekele
+      "add":
+        meaning: tensor:add
+        title: "Addition"
+        description: "Adds two numerical tensors element-wise."
+        created_by: https://github.com/cinekele
+      "subtract":
+        meaning: tensor:subtract
+        title: "Subtraction"
+        description: "Subtracts the second numerical tensor from the first element-wise."
+        created_by: https://github.com/cinekele
+      "multiply":
+        meaning: tensor:multiply
+        title: "Multiplication"
+        description: "Multiplies two numerical tensors element-wise."
+        created_by: https://github.com/cinekele
+      "divide":
+        meaning: tensor:divide
+        title: "Division"
+        description: "Divides the first numerical tensor by the second element-wise."
+        created_by: https://github.com/cinekele
+      "eq":
+        meaning: tensor:eq
+        title: "Equality Check"
+        description: "Checks if elements in two tensors are equal."
+        created_by: https://github.com/cinekele
+      "neq":
+        meaning: tensor:neq
+        title: "Inequality Check"
+        description: "Checks if elements in two tensors are not equal."
+        created_by: https://github.com/cinekele
+      "and":
+        meaning: tensor:and
+        title: "Logical AND"
+        description: "Performs element-wise logical AND on boolean tensors."
+        created_by: https://github.com/cinekele
+      "or":
+        meaning: tensor:or
+        title: "Logical OR"
+        description: "Performs element-wise logical OR on boolean tensors."
+        created_by: https://github.com/cinekele
+      "gt":
+        meaning: tensor:gt
+        title: "Greater Than"
+        description: "Compares if first tensor is greater than the second element-wise."
+        created_by: https://github.com/cinekele
+      "lt":
+        meaning: tensor:lt
+        title: "Less Than"
+        description: "Compares if first tensor is less than the second element-wise."
+        created_by: https://github.com/cinekele
+      "sub":
+        meaning: tensor:sub
+        title: "Get Sub-Tensor"
+        description: "Extracts a sub-tensor based on an index tensor."
+        created_by: https://github.com/cinekele
+      "mask":
+        meaning: tensor:mask
+        title: "Mask Tensor"
+        description: "Extracts elements from a tensor using a boolean mask tensor."
+        created_by: https://nik.kot.tools
+      "index":
+        meaning: tensor:index
+        title: "Get From Tensor By Index"
+        description: "Extracts elements from a tensor using an index tensor."
+        created_by: https://nik.kot.tools
+      "concat":
+        meaning: tensor:concat
+        title: "Concatenate Tensors"
+        description: "Concatenates two tensors optionally along a specified dimension."
+        created_by: https://github.com/cinekele
+      "hstack":
+        meaning: tensor:hstack
+        title: "Horizontal Stack"
+        description: "Stacks two tensors horizontally (along axis 1)."
+        created_by: https://github.com/cinekele
+      "vstack":
+        meaning: tensor:vstack
+        title: "Vertical Stack"
+        description: "Stacks two tensors vertically (along axis 0)."
+        created_by: https://github.com/cinekele
+      "all":
+        meaning: tensor:all
+        title: "All True"
+        description: "Checks whether all elements in a boolean tensor are true."
+        created_by: https://github.com/cinekele
+      "any":
+        meaning: tensor:any
+        title: "Any True"
+        description: "Checks whether any element in a boolean tensor is true."
+        created_by: https://github.com/cinekele
+      "none":
+        meaning: tensor:none
+        title: "None True"
+        description: "Checks whether no elements in a boolean tensor are non-zero or true."
+        created_by: https://nik.kot.tools
+      "avg":
+        meaning: tensor:avg
+        title: "Average"
+        description: "Computes the average along a specified axis."
+        created_by: https://github.com/cinekele
+      "sum":
+        meaning: tensor:sum
+        title: "Sum"
+        description: "Computes the sum along a specified axis."
+        created_by: https://github.com/cinekele
+      "prod":
+        meaning: tensor:prod
+        title: "Product"
+        description: "Computes the product along a specified axis."
+        created_by: https://nik.kot.tools
+      "max":
+        meaning: tensor:max
+        title: "Maximum"
+        description: "Computes the maximum along a specified axis."
+        created_by: https://github.com/cinekele
+      "median":
+        meaning: tensor:median
+        title: "Median"
+        description: "Computes the median along a specified axis."
+        created_by: https://github.com/cinekele
+      "min":
+        meaning: tensor:min
+        title: "Minimum"
+        description: "Computes the minimum along a specified axis."
+        created_by: https://github.com/cinekele
+      "std":
+        meaning: tensor:std
+        title: "Standard Deviation"
+        description: "Computes the standard deviation along a specified axis."
+        created_by: https://github.com/cinekele
+      "var":
+        meaning: tensor:var
+        title: "Variance"
+        description: "Computes the variance along a specified axis."
+        created_by: https://github.com/cinekele
+      "norm1":
+        meaning: tensor:norm1
+        title: "L1 Norm"
+        description: "Computes the L1 norm along a specified axis."
+        created_by: https://github.com/cinekele
+      "norm2":
+        meaning: tensor:norm2
+        title: "L2 Norm"
+        description: "Computes the L2 norm along a specified axis."
+        created_by: https://github.com/cinekele
+      "cosineSimilarity":
+        meaning: tensor:cosineSimilarity
+        title: "Cosine Similarity"
+        description: "Computes the cosine similarity between two numerical tensors."
+        created_by: https://github.com/cinekele
+      "euclideanDistance":
+        meaning: tensor:euclideanDistance
+        title: "Euclidean Distance"
+        description: "Computes the Euclidean distance between two numerical tensors."
+        created_by: https://github.com/cinekele
+      "create":
+        meaning: tensor:create
+        title: "Create Tensor"
+        description: "Creates a tensor from raw data and type."
+        created_by: https://nik.kot.tools

@@ -1,0 +1,50 @@
+id: https://w3id.org/rdf-tensor/aggregates
+name: rdf-tensor-aggregates
+title: RDF-tensor SPARQL aggregates
+description: SPARQL aggregates for processing grouped data tensors.
+imports:
+  - linkml:types
+prefixes:
+  tensor: https://w3id.org/rdf-tensor/vocab#
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  sd: http://www.w3.org/ns/sparql-service-description#
+  dcterms: http://purl.org/dc/terms/
+  linkml: https://w3id.org/linkml/
+default_prefix: tensor
+default_range: string
+license: https://www.apache.org/licenses/LICENSE-2.0
+contributors:
+  - https://github.com/cinekele
+  - https://ostrzyciel.eu
+  - https://nik.kot.tools
+emit_prefixes:
+  - tensor
+  - sd
+enums:
+  TensorAggregates:
+    enum_uri: sd:Aggregate
+    permissible_values:
+      "SUM":
+        meaning: tensor:SUM
+        title: "Sum"
+        description: "Sums grouped tensors"
+        created_by: https://github.com/cinekele
+        created_on: "2024-07-28"
+      "AVG":
+        meaning: tensor:AVG
+        title: "Average"
+        description: "Averages grouped tensors by summing them elementwise and dividing the result by the number of tensors"
+        created_by: https://github.com/cinekele
+        created_on: "2024-07-28"
+      "VAR":
+        meaning: tensor:VAR
+        title: "Variance"
+        description: "Calculates the variance of grouped tensors"
+        created_by: https://github.com/cinekele
+        created_on: "2024-07-28"
+      "STD":
+        meaning: tensor:STD
+        title: "Standard Deviation"
+        description: "Calculates the standard deviation of grouped tensors"
+        created_by: https://github.com/cinekele
+        created_on: "2024-07-28"

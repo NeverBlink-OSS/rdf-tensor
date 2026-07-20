@@ -11,8 +11,18 @@
 | **JSON-LD** | [`https://w3id.org/rdf-tensor/functions.jsonld`](https://w3id.org/rdf-tensor/functions.jsonld) |
 | **RDF/XML** | [`https://w3id.org/rdf-tensor/functions.rdf`](https://w3id.org/rdf-tensor/functions.rdf) |
 
-## Ontology source
+## Ontology source (LinkML)
+
+[Source file](https://github.com/NeverBlink-OSS/rdf-tensor/blob/main/ontology/functions.yaml).
+
+This LinkML source is converted to RDFS using [LinkML-Scala](https://github.com/NeverBlink-OSS/linkml-scala).
+
+```yaml
+{% include "./files/linkml/functions.yaml" %}
+```
+
+## Ontology source (Turtle)
 
 ```ttl
-{% include "./files/functions.ttl" %}
+{% include "./files/turtle/functions.ttl" %}
 ```
