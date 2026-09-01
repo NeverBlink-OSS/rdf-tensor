@@ -4,20 +4,20 @@ PREFIX sd: <http://www.w3.org/ns/sparql-service-description#>
 PREFIX tensor: <https://w3id.org/rdf-tensor/vocab#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-sd:Aggregate  rdf:type  rdfs:Class .
+sd:Aggregate a rdfs:Class .
 
-tensor:SUM  rdf:type  sd:Aggregate;
-        rdfs:label    "Sum";
-        rdfs:comment  "Sums grouped tensors" .
+tensor:SUM a sd:Aggregate ;
+  rdfs:label "Sum" ;
+  rdfs:comment "Sums grouped tensors" .
 
-tensor:AVG  rdf:type  sd:Aggregate;
-        rdfs:label    "Average";
-        rdfs:comment  "Averages grouped tensors by summing them elementwise and dividing the result by the number of tensors" .
+tensor:AVG a sd:Aggregate ;
+  rdfs:label "Average" ;
+  rdfs:comment "Averages grouped tensors by summing them elementwise and dividing the result by the number of tensors" .
 
-tensor:VAR  rdf:type  sd:Aggregate;
-        rdfs:label    "Variance";
-        rdfs:comment  "Calculates the variance of grouped tensors" .
+tensor:VAR a sd:Aggregate ;
+  rdfs:label "Variance" ;
+  rdfs:comment "Calculates the variance of grouped tensors" .
 
-tensor:STD  rdf:type  sd:Aggregate;
-        rdfs:label    "Standard Deviation";
-        rdfs:comment  "Calculates the standard deviation of grouped tensors" .
+tensor:STD a sd:Aggregate ;
+  rdfs:label "Standard Deviation" ;
+  rdfs:comment "Calculates the standard deviation of grouped tensors" .

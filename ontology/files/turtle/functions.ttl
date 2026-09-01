@@ -4,207 +4,204 @@ PREFIX sd: <http://www.w3.org/ns/sparql-service-description#>
 PREFIX tensor: <https://w3id.org/rdf-tensor/vocab#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-sd:Function  rdf:type  rdfs:Class .
+sd:Function a rdfs:Class .
 
-tensor:cos  rdf:type  sd:Function;
-        rdfs:label    "Cosine";
-        rdfs:comment  "Computes the cosine of each element in the numerical tensor." .
+tensor:cos a sd:Function ;
+  rdfs:label "Cosine" ;
+  rdfs:comment "Computes the cosine of each element in the numerical tensor." .
 
-tensor:exp  rdf:type  sd:Function;
-        rdfs:label    "Exponential";
-        rdfs:comment  "Applies the exponential function to each element." .
+tensor:exp a sd:Function ;
+  rdfs:label "Exponential" ;
+  rdfs:comment "Applies the exponential function to each element." .
 
-tensor:log  rdf:type  sd:Function;
-        rdfs:label    "Natural Logarithm";
-        rdfs:comment  "Applies the natural logarithm to each element." .
+tensor:log a sd:Function ;
+  rdfs:label "Natural Logarithm" ;
+  rdfs:comment "Applies the natural logarithm to each element." .
 
-tensor:logp  rdf:type  sd:Function;
-        rdfs:label    "Logarithm with Base p";
-        rdfs:comment  "Applies logarithm with specified base p." .
+tensor:logp a sd:Function ;
+  rdfs:label "Logarithm with Base p" ;
+  rdfs:comment "Applies logarithm with specified base p." .
 
-tensor:poly  rdf:type  sd:Function;
-        rdfs:label    "Polynomial Power";
-        rdfs:comment  "Raises each element to a specified power." .
+tensor:poly a sd:Function ;
+  rdfs:label "Polynomial Power" ;
+  rdfs:comment "Raises each element to a specified power." .
 
-tensor:scale  rdf:type  sd:Function;
-        rdfs:label    "Scale";
-        rdfs:comment  "Scales tensor elements by a constant." .
+tensor:scale a sd:Function ;
+  rdfs:label "Scale" ;
+  rdfs:comment "Scales tensor elements by a constant." .
 
-tensor:sin  rdf:type  sd:Function;
-        rdfs:label    "Sine";
-        rdfs:comment  "Computes the sine of each element in the numerical tensor." .
+tensor:sin a sd:Function ;
+  rdfs:label "Sine" ;
+  rdfs:comment "Computes the sine of each element in the numerical tensor." .
 
-tensor:abs  rdf:type  sd:Function;
-        rdfs:label    "Absolute Value";
-        rdfs:comment  "Applies absolute value to each element." .
+tensor:abs a sd:Function ;
+  rdfs:label "Absolute Value" ;
+  rdfs:comment "Applies absolute value to each element." .
 
-tensor:cast  rdf:type  sd:Function;
-        rdfs:label    "Type Cast";
-        rdfs:comment  "Casts tensor elements to a specified data type." .
+tensor:cast a sd:Function ;
+  rdfs:label "Type Cast" ;
+  rdfs:comment "Casts tensor elements to a specified data type." .
 
-tensor:reshape  rdf:type  sd:Function;
-        rdfs:label    "Reshape Tensor";
-        rdfs:comment  "Reshapes a tensor to a new shape." .
+tensor:reshape a sd:Function ;
+  rdfs:label "Reshape Tensor" ;
+  rdfs:comment "Reshapes a tensor to a new shape." .
 
-tensor:not  rdf:type  sd:Function;
-        rdfs:label    "Logical NOT";
-        rdfs:comment  "Computes the logical negation of each boolean tensor element." .
+tensor:not a sd:Function ;
+  rdfs:label "Logical NOT" ;
+  rdfs:comment "Computes the logical negation of each boolean tensor element." .
 
-tensor:add  rdf:type  sd:Function;
-        rdfs:label    "Addition";
-        rdfs:comment  "Adds two numerical tensors element-wise." .
+tensor:add a sd:Function ;
+  rdfs:label "Addition" ;
+  rdfs:comment "Adds two numerical tensors element-wise." .
 
-tensor:subtract  rdf:type  sd:Function;
-        rdfs:label    "Subtraction";
-        rdfs:comment  "Subtracts the second numerical tensor from the first element-wise." .
+tensor:subtract a sd:Function ;
+  rdfs:label "Subtraction" ;
+  rdfs:comment "Subtracts the second numerical tensor from the first element-wise." .
 
-tensor:multiply  rdf:type  sd:Function;
-        rdfs:label    "Multiplication";
-        rdfs:comment  "Multiplies two numerical tensors element-wise." .
+tensor:multiply a sd:Function ;
+  rdfs:label "Multiplication" ;
+  rdfs:comment "Multiplies two numerical tensors element-wise." .
 
-tensor:divide  rdf:type  sd:Function;
-        rdfs:label    "Division";
-        rdfs:comment  "Divides the first numerical tensor by the second element-wise." .
+tensor:divide a sd:Function ;
+  rdfs:label "Division" ;
+  rdfs:comment "Divides the first numerical tensor by the second element-wise." .
 
-tensor:eq  rdf:type   sd:Function;
-        rdfs:label    "Equality Check";
-        rdfs:comment  "Checks if elements in two tensors are equal." .
+tensor:eq a sd:Function ;
+  rdfs:label "Equality Check" ;
+  rdfs:comment "Checks if elements in two tensors are equal." .
 
-tensor:neq  rdf:type  sd:Function;
-        rdfs:label    "Inequality Check";
-        rdfs:comment  "Checks if elements in two tensors are not equal." .
+tensor:neq a sd:Function ;
+  rdfs:label "Inequality Check" ;
+  rdfs:comment "Checks if elements in two tensors are not equal." .
 
-tensor:and  rdf:type  sd:Function;
-        rdfs:label    "Logical AND";
-        rdfs:comment  "Performs element-wise logical AND on boolean tensors." .
+tensor:and a sd:Function ;
+  rdfs:label "Logical AND" ;
+  rdfs:comment "Performs element-wise logical AND on boolean tensors." .
 
-tensor:or  rdf:type   sd:Function;
-        rdfs:label    "Logical OR";
-        rdfs:comment  "Performs element-wise logical OR on boolean tensors." .
+tensor:or a sd:Function ;
+  rdfs:label "Logical OR" ;
+  rdfs:comment "Performs element-wise logical OR on boolean tensors." .
 
-tensor:gt  rdf:type   sd:Function;
-        rdfs:label    "Greater Than";
-        rdfs:comment  "Compares if first tensor is greater than the second element-wise." .
+tensor:gt a sd:Function ;
+  rdfs:label "Greater Than" ;
+  rdfs:comment "Compares if first tensor is greater than the second element-wise." .
 
-tensor:lt  rdf:type   sd:Function;
-        rdfs:label    "Less Than";
-        rdfs:comment  "Compares if first tensor is less than the second element-wise." .
+tensor:lt a sd:Function ;
+  rdfs:label "Less Than" ;
+  rdfs:comment "Compares if first tensor is less than the second element-wise." .
 
-tensor:sub  rdf:type  sd:Function;
-        rdfs:label    "Get Sub-Tensor";
-        rdfs:comment  "Extracts a sub-tensor based on an index tensor." .
+tensor:sub a sd:Function ;
+  rdfs:label "Get Sub-Tensor" ;
+  rdfs:comment "Extracts a sub-tensor based on an index tensor." .
 
-tensor:mask  rdf:type  sd:Function;
-        rdfs:label    "Mask Tensor";
-        rdfs:comment  "Extracts elements from a tensor using a boolean mask tensor." .
+tensor:mask a sd:Function ;
+  rdfs:label "Mask Tensor" ;
+  rdfs:comment "Extracts elements from a tensor using a boolean mask tensor." .
 
-tensor:index  rdf:type  sd:Function;
-        rdfs:label    "Get From Tensor By Index";
-        rdfs:comment  "Extracts elements from a tensor using an index tensor." .
+tensor:index a sd:Function ;
+  rdfs:label "Get From Tensor By Index" ;
+  rdfs:comment "Extracts elements from a tensor using an index tensor." .
 
-tensor:concat  rdf:type  sd:Function;
-        rdfs:label    "Concatenate Tensors";
-        rdfs:comment  "Concatenates multiple tensors optionally along a specified dimension." .
+tensor:concat a sd:Function ;
+  rdfs:label "Concatenate Tensors" ;
+  rdfs:comment "Concatenates multiple tensors optionally along a specified dimension." .
 
-tensor:hstack  rdf:type  sd:Function;
-        rdfs:label    "Horizontal Stack";
-        rdfs:comment  "Stacks multiple tensors horizontally (along axis 1)." .
+tensor:hstack a sd:Function ;
+  rdfs:label "Horizontal Stack" ;
+  rdfs:comment "Stacks multiple tensors horizontally (along axis 1)." .
 
-tensor:vstack  rdf:type  sd:Function;
-        rdfs:label    "Vertical Stack";
-        rdfs:comment  "Stacks multiple tensors vertically (along axis 0)." .
+tensor:vstack a sd:Function ;
+  rdfs:label "Vertical Stack" ;
+  rdfs:comment "Stacks multiple tensors vertically (along axis 0)." .
 
-tensor:all  rdf:type  sd:Function;
-        rdfs:label    "All True";
-        rdfs:comment  "Checks whether all elements in a boolean tensor are true." .
+tensor:all a sd:Function ;
+  rdfs:label "All True" ;
+  rdfs:comment "Checks whether all elements in a boolean tensor are true." .
 
-tensor:any  rdf:type  sd:Function;
-        rdfs:label    "Any True";
-        rdfs:comment  "Checks whether any element in a boolean tensor is true." .
+tensor:any a sd:Function ;
+  rdfs:label "Any True" ;
+  rdfs:comment "Checks whether any element in a boolean tensor is true." .
 
-tensor:none  rdf:type  sd:Function;
-        rdfs:label    "None True";
-        rdfs:comment  "Checks whether no elements in a boolean tensor are non-zero or true." .
+tensor:none a sd:Function ;
+  rdfs:label "None True" ;
+  rdfs:comment "Checks whether no elements in a boolean tensor are non-zero or true." .
 
-tensor:avg  rdf:type  sd:Function;
-        rdfs:label    "Average";
-        rdfs:comment  "Computes the average along a specified axis." .
+tensor:avg a sd:Function ;
+  rdfs:label "Average" ;
+  rdfs:comment "Computes the average along a specified axis." .
 
-tensor:sum  rdf:type  sd:Function;
-        rdfs:label    "Sum";
-        rdfs:comment  "Computes the sum along a specified axis." .
+tensor:sum a sd:Function ;
+  rdfs:label "Sum" ;
+  rdfs:comment "Computes the sum along a specified axis." .
 
-tensor:prod  rdf:type  sd:Function;
-        rdfs:label    "Product";
-        rdfs:comment  "Computes the product along a specified axis." .
+tensor:prod a sd:Function ;
+  rdfs:label "Product" ;
+  rdfs:comment "Computes the product along a specified axis." .
 
-tensor:max  rdf:type  sd:Function;
-        rdfs:label    "Maximum";
-        rdfs:comment  "Computes the maximum along a specified axis." .
+tensor:max a sd:Function ;
+  rdfs:label "Maximum" ;
+  rdfs:comment "Computes the maximum along a specified axis." .
 
-tensor:min  rdf:type  sd:Function;
-        rdfs:label    "Minimum";
-        rdfs:comment  "Computes the minimum along a specified axis." .
+tensor:min a sd:Function ;
+  rdfs:label "Minimum" ;
+  rdfs:comment "Computes the minimum along a specified axis." .
 
-tensor:std  rdf:type  sd:Function;
-        rdfs:label    "Standard Deviation";
-        rdfs:comment  "Computes the standard deviation along a specified axis." .
+tensor:std a sd:Function ;
+  rdfs:label "Standard Deviation" ;
+  rdfs:comment "Computes the standard deviation along a specified axis." .
 
-tensor:var  rdf:type  sd:Function;
-        rdfs:label    "Variance";
-        rdfs:comment  "Computes the variance along a specified axis." .
+tensor:var a sd:Function ;
+  rdfs:label "Variance" ;
+  rdfs:comment "Computes the variance along a specified axis." .
 
-tensor:norm1  rdf:type  sd:Function;
-        rdfs:label    "L1 Norm";
-        rdfs:comment  "Computes the L1 norm along a specified axis." .
+tensor:norm1 a sd:Function ;
+  rdfs:label "L1 Norm" ;
+  rdfs:comment "Computes the L1 norm along a specified axis." .
 
-tensor:norm2  rdf:type  sd:Function;
-        rdfs:label    "L2 Norm";
-        rdfs:comment  "Computes the L2 norm along a specified axis." .
+tensor:norm2 a sd:Function ;
+  rdfs:label "L2 Norm" ;
+  rdfs:comment "Computes the L2 norm along a specified axis." .
 
-tensor:cosineSimilarity
-        rdf:type      sd:Function;
-        rdfs:label    "Cosine Similarity";
-        rdfs:comment  "Computes the cosine similarity between two numerical tensors." .
+tensor:cosineSimilarity a sd:Function ;
+  rdfs:label "Cosine Similarity" ;
+  rdfs:comment "Computes the cosine similarity between two numerical tensors." .
 
-tensor:euclideanDistance
-        rdf:type      sd:Function;
-        rdfs:label    "Euclidean Distance";
-        rdfs:comment  "Computes the Euclidean distance between two numerical tensors." .
+tensor:euclideanDistance a sd:Function ;
+  rdfs:label "Euclidean Distance" ;
+  rdfs:comment "Computes the Euclidean distance between two numerical tensors." .
 
-tensor:create  rdf:type  sd:Function;
-        rdfs:label    "Create Tensor";
-        rdfs:comment  "Creates a tensor from raw data and type." .
+tensor:create a sd:Function ;
+  rdfs:label "Create Tensor" ;
+  rdfs:comment "Creates a tensor from raw data and type." .
 
-tensor:transpose  rdf:type  sd:Function;
-        rdfs:label    "Transpose Tensor";
-        rdfs:comment  "Transposes a tensor by permuting its dimensions." .
+tensor:transpose a sd:Function ;
+  rdfs:label "Transpose Tensor" ;
+  rdfs:comment "Transposes a tensor by permuting its dimensions." .
 
-tensor:flatten  rdf:type  sd:Function;
-        rdfs:label    "Flatten Tensor";
-        rdfs:comment  "Flattens a tensor into a one-dimensional array." .
+tensor:flatten a sd:Function ;
+  rdfs:label "Flatten Tensor" ;
+  rdfs:comment "Flattens a tensor into a one-dimensional array." .
 
-tensor:range  rdf:type  sd:Function;
-        rdfs:label    "Create Range";
-        rdfs:comment  "Creates a range of values defined as full or concrete." .
+tensor:range a sd:Function ;
+  rdfs:label "Create Range" ;
+  rdfs:comment "Creates a range of values defined as full or concrete." .
 
-tensor:shape  rdf:type  sd:Function;
-        rdfs:label    "Get Tensor Shape";
-        rdfs:comment  "Returns the shape of a tensor as a list of integers." .
+tensor:shape a sd:Function ;
+  rdfs:label "Get Tensor Shape" ;
+  rdfs:comment "Returns the shape of a tensor as a list of integers." .
 
-tensor:arange  rdf:type  sd:Function;
-        rdfs:label    "Create tensor with Range of Values";
-        rdfs:comment  "Creates a tensor with a range of values defined by start, end, and step." .
+tensor:arange a sd:Function ;
+  rdfs:label "Create tensor with Range of Values" ;
+  rdfs:comment "Creates a tensor with a range of values defined by start, end, and step." .
 
-tensor:quantile  rdf:type  sd:Function;
-        rdfs:label    "Quantile";
-        rdfs:comment  "Computes the quantiles of a tensor along a specified axis." .
+tensor:quantile a sd:Function ;
+  rdfs:label "Quantile" ;
+  rdfs:comment "Computes the quantiles of a tensor along a specified axis." .
 
-tensor:quantileInterpolate
-        rdf:type      sd:Function;
-        rdfs:label    "Quantile Interpolation";
-        rdfs:comment  "Computes the quantiles of a tensor along a specified axis using linear interpolation." .
+tensor:quantileInterpolate a sd:Function ;
+  rdfs:label "Quantile Interpolation" ;
+  rdfs:comment "Computes the quantiles of a tensor along a specified axis using linear interpolation." .
 
-tensor:sort  rdf:type  sd:Function;
-        rdfs:label    "Sort Tensor";
-        rdfs:comment  "Sorts the elements of the input tensor along the specified axis in the given direction." .
+tensor:sort a sd:Function ;
+  rdfs:label "Sort Tensor" ;
+  rdfs:comment "Sorts the elements of the input tensor along the specified axis in the given direction." .
