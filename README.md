@@ -37,7 +37,7 @@ Then run, from the root of the repository:
 bin/build_ontology.sh
 ```
 
-The generated files are written to the `publish/` directory. CI runs the same script.
+The generated files are written to the `publish/` directory. CI runs the same script, except that it generates the RDFS with [`linkml-scala-action`](https://github.com/NeverBlink-OSS/linkml-scala-action) and passes the result to the script, so it only needs `jelly-cli`.
 
 ## Editing the documentation
 
