@@ -24,17 +24,31 @@ jobs:
   
       - uses: Jelly-RDF/setup-cli@v1
 
-      - name: Install linkml-scala
-        run: |
-          . <(curl -sSfL https://raw.githubusercontent.com/NeverBlink-OSS/linkml-scala/refs/heads/main/cli/install.sh)
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: 'Validate ontologies'
+        uses: NeverBlink-OSS/linkml-scala-action@v0.15.0
+        with:
+          files: ontology/*.yaml
+          strict: true
+          # These are vocabularies, not document schemas, so there is no tree to root.
+          ignore: NoTreeRootClass
+
+      - name: 'Generate RDFS'
+        uses: NeverBlink-OSS/linkml-scala-action@v0.15.0
+        with:
+          command: generate
+          generator: rdfs
+          format: ttl
+          files: ontology/*.yaml
+          output: build/rdfs
+          # Already reported by the validate step above.
+          annotations: false
+
       - name: 'Convert ontologies, prepare for publishing'
         run: |
-          bin/build_ontology.sh
+          bin/build_ontology.sh build/rdfs
           rm docs/ontology/files/turtle/*.ttl
           cp publish/*.ttl docs/ontology/files/turtle/
 
