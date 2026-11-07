@@ -24,7 +24,7 @@ This is an extension to RDF and SPARQL that introduces 2 new datatypes, dozens o
 
 ## Editing the ontology
 
-The vocabulary (datatypes, functions, aggregates) is authored in [LinkML](https://linkml.io/) YAML files in the `ontology/` directory. The published RDF artifacts (RDFS in Turtle, N-Triples, JSON-LD, RDF/XML, and [Jelly](https://w3id.org/jelly)) are generated from these sources.
+The vocabulary (datatypes, functions, aggregates) is authored in [LinkML](https://linkml.ohi.dev/) YAML files in the `ontology/` directory. The published RDF artifacts (RDFS in Turtle, N-Triples, JSON-LD, RDF/XML, and [Jelly](https://w3id.org/jelly)) are generated from these sources.
 
 To regenerate the published files locally you need two tools in your `PATH`:
 
